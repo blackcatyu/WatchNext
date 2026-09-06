@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 320" font-family="sans-serif">
+  <rect width="420" height="320" fill="white"/>
+  <text x="210" y="20" text-anchor="middle" font-size="14" font-weight="bold">Genre × Year Preference Heatmap</text>
+
+  <!-- grid: 6 years x 6 genres -->
+  <g transform="translate(90,40)">
+    <!-- cells -->
+    <!-- row: Action -->
+    <rect x="0"   y="0"  width="45" height="30" fill="#ccc"/>
+    <rect x="45"  y="0"  width="45" height="30" fill="#999"/>
+    <rect x="90"  y="0"  width="45" height="30" fill="#666"/>
+    <rect x="135" y="0"  width="45" height="30" fill="#444"/>
+    <rect x="180" y="0"  width="45" height="30" fill="#222"/>
+    <rect x="225" y="0"  width="45" height="30" fill="#555"/>
+    <!-- row: Drama -->
+    <rect x="0"   y="30" width="45" height="30" fill="#888"/>
+    <rect x="45"  y="30" width="45" height="30" fill="#777"/>
+    <rect x="90"  y="30" width="45" height="30" fill="#999"/>
+    <rect x="135" y="30" width="45" height="30" fill="#bbb"/>
+    <rect x="180" y="30" width="45" height="30" fill="#ddd"/>
+    <rect x="225" y="30" width="45" height="30" fill="#aaa"/>
+    <!-- row: Comedy -->
+    <rect x="0"   y="60" width="45" height="30" fill="#eee"/>
+    <rect x="45"  y="60" width="45" height="30" fill="#ccc"/>
+    <rect x="90"  y="60" width="45" height="30" fill="#bbb"/>
+    <rect x="135" y="60" width="45" height="30" fill="#999"/>
+    <rect x="180" y="60" width="45" height="30" fill="#777"/>
+    <rect x="225" y="60" width="45" height="30" fill="#666"/>
+    <!-- row: Sci-Fi -->
+    <rect x="0"   y="90" width="45" height="30" fill="#555"/>
+    <rect x="45"  y="90" width="45" height="30" fill="#444"/>
+    <rect x="90"  y="90" width="45" height="30" fill="#333"/>
+    <rect x="135" y="90" width="45" height="30" fill="#222"/>
+    <rect x="180" y="90" width="45" height="30" fill="#111"/>
+    <rect x="225" y="90" width="45" height="30" fill="#000"/>
+    <!-- row: Horror -->
+    <rect x="0"   y="120" width="45" height="30" fill="#ddd"/>
+    <rect x="45"  y="120" width="45" height="30" fill="#eee"/>
+    <rect x="90"  y="120" width="45" height="30" fill="#ccc"/>
+    <rect x="135" y="120" width="45" height="30" fill="#bbb"/>
+    <rect x="180" y="120" width="45" height="30" fill="#999"/>
+    <rect x="225" y="120" width="45" height="30" fill="#888"/>
+    <!-- row: Animation -->
+    <rect x="0"   y="150" width="45" height="30" fill="#aaa"/>
+    <rect x="45"  y="150" width="45" height="30" fill="#999"/>
+    <rect x="90"  y="150" width="45" height="30" fill="#777"/>
+    <rect x="135" y="150" width="45" height="30" fill="#555"/>
+    <rect x="180" y="150" width="45" height="30" fill="#333"/>
+    <rect x="225" y="150" width="45" height="30" fill="#222"/>
+
+    <!-- grid lines -->
+    <rect x="0" y="0" width="270" height="180" fill="none" stroke="black" stroke-width="1"/>
+
+    <!-- row labels -->
+    <text x="-8" y="18" text-anchor="end" font-size="10">Action</text>
+    <text x="-8" y="48" text-anchor="end" font-size="10">Drama</text>
+    <text x="-8" y="78" text-anchor="end" font-size="10">Comedy</text>
+    <text x="-8" y="108" text-anchor="end" font-size="10">Sci-Fi</text>
+    <text x="-8" y="138" text-anchor="end" font-size="10">Horror</text>
+    <text x="-8" y="168" text-anchor="end" font-size="10">Animation</text>
+
+    <!-- col labels -->
+    <text x="22" y="-8" text-anchor="middle" font-size="10">'00</text>
+    <text x="67" y="-8" text-anchor="middle" font-size="10">'05</text>
+    <text x="112" y="-8" text-anchor="middle" font-size="10">'10</text>
+    <text x="157" y="-8" text-anchor="middle" font-size="10">'15</text>
+    <text x="202" y="-8" text-anchor="middle" font-size="10">'20</text>
+    <text x="247" y="-8" text-anchor="middle" font-size="10">'24</text>
+  </g>
+
+  <text x="210" y="270" text-anchor="middle" font-size="10" fill="#555">cell color = avg. audience rating (or rating volume); drag to select a year range</text>
+</svg>

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 320" font-family="sans-serif">
+  <rect width="420" height="320" fill="white"/>
+  <text x="210" y="20" text-anchor="middle" font-size="14" font-weight="bold">Audience Similarity Network</text>
+
+  <!-- edges -->
+  <line x1="210" y1="160" x2="120" y2="90" stroke="#999"/>
+  <line x1="210" y1="160" x2="300" y2="80" stroke="#999"/>
+  <line x1="210" y1="160" x2="330" y2="180" stroke="#999"/>
+  <line x1="210" y1="160" x2="150" y2="240" stroke="#999"/>
+  <line x1="210" y1="160" x2="270" y2="250" stroke="#999"/>
+  <line x1="120" y1="90" x2="300" y2="80" stroke="#ccc" stroke-dasharray="2,2"/>
+  <line x1="150" y1="240" x2="270" y2="250" stroke="#ccc" stroke-dasharray="2,2"/>
+
+  <!-- selected node -->
+  <circle cx="210" cy="160" r="18" fill="#222"/>
+  <text x="210" y="164" text-anchor="middle" font-size="9" fill="white">selected</text>
+
+  <!-- neighbors, size = strength of overlap -->
+  <circle cx="120" cy="90" r="10" fill="#666"/>
+  <circle cx="300" cy="80" r="14" fill="#444"/>
+  <circle cx="330" cy="180" r="8" fill="#888"/>
+  <circle cx="150" cy="240" r="12" fill="#555"/>
+  <circle cx="270" cy="250" r="9" fill="#777"/>
+
+  <text x="210" y="300" text-anchor="middle" font-size="10" fill="#555">edge thickness = # shared "liked" users; click a node to re-center</text>
+</svg>

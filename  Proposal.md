@@ -18,9 +18,9 @@ Time will be used as a cross-cutting dimension to examine how genres, audience p
 
 ## 2. Datasets and Data Sources
 
-We will use two main data sources: the **TMDB API** and **MovieLens 32M**. The TMDB API will provide movie and people metadata, while MovieLens will provide user-level movie ratings.
+We will use two main data sources: the **[TMDB API](https://developer.themoviedb.org/docs/getting-started)** and **[MovieLens 32M](https://grouplens.org/datasets/movielens/32m/)**. The TMDB API will provide movie and people metadata, while MovieLens will provide user-level movie ratings.
 
-From TMDB, we will collect information such as movie title, release date, genres, vote average, vote count, popularity, budget, revenue, cast, crew, and director information. We will also use the TMDB movie reviews endpoint to collect available audience review text, author information, and review dates. These reviews will allow us to analyze discussion topics and frequently mentioned keywords.
+From TMDB, we will collect information such as movie title, release date, genres, vote average, vote count, popularity, budget, revenue, cast, crew, and director information. We will also use the [TMDB movie reviews endpoint](https://developer.themoviedb.org/reference/movie-reviews) to collect available audience review text, author information, and review dates. These reviews will allow us to analyze discussion topics and frequently mentioned keywords.
 
 For audience preference analysis, we will use **MovieLens 32M**, which contains approximately 32 million ratings from about 201,000 users across approximately 87,000 movies. The dataset also includes movie information, tags, timestamps, and a `links.csv` file that connects MovieLens movies to external identifiers, including TMDB IDs. This mapping will allow us to connect user-rating behavior from MovieLens with movie and people information from TMDB.
 
@@ -64,17 +64,35 @@ This visualization will show how audience preferences and the popularity of diff
 
 The five visualizations will be connected through interactions such as filtering, highlighting, clicking, and linked selections. A movie selected in one visualization can provide additional context in another, creating a unified exploration experience rather than five independent charts.
 
-## 4. Visualization References and Design Rationale
+## 4. Visualization Sketches
 
-For the proposal, we will provide a sketch or reference example for each visualization: a multivariate scatterplot for comparing rating and discussion, a network graph for audience similarity, a timeline for career development, a force-directed graph for collaboration relationships, and a heatmap for changes in genre preferences over time.
+**1. Multivariate scatterplot — Movie Performance vs. Audience Discussion**
+![Scatterplot sketch](sketches/01-scatterplot.svg)
+Positioning rating against discussion level (with size = revenue, color = genre) lets users spot highly rated "hidden gems" that receive little attention, directly addressing our popularity-vs-rating question.
 
-The design will follow the principle that **position should represent the most important quantitative variables**, while size, color, and interaction provide additional dimensions without overcrowding the visualization.
+**2. Node-link network — Audience Similarity**
+![Audience similarity network sketch](sketches/02-similarity-network.svg)
+Centering the graph on a user-selected movie and drawing edges by shared "liked" users lets viewers see at a glance which other movies attract the same audience, and whether that overlap tracks genre, cast, or director.
+
+**3. Timeline — Actor/Director Career**
+![Career timeline sketch](sketches/03-career-timeline.svg)
+Plotting a person's movies by release year with rating/revenue encoded in size and offset reveals career trajectories and whether peaks coincide with specific collaborators or genres.
+
+**4. Force-directed graph — Collaboration Network**
+![Collaboration network sketch](sketches/04-collaboration-network.svg)
+Distinguishing actors and directors as different node shapes and linking them by shared credits exposes the people who bridge otherwise separate groups of movies, supporting our people-and-collaboration question.
+
+**5. Heatmap — Genre × Year Audience Preference**
+![Genre heatmap sketch](sketches/05-genre-heatmap.svg)
+Encoding average rating (or rating volume) as cell color across genre rows and year columns makes long-term shifts in audience taste easy to compare and filter.
+
+These are rough digital mockups, not final designs; exact layout, color scale, and interaction details will be refined once we have processed data. The design will follow the principle that **position should represent the most important quantitative variables**, while size, color, and interaction provide additional dimensions without overcrowding the visualization.
 
 ## 5. Group Roles
 
-**Member 1 – Data Acquisition and Processing:** Collect TMDB API data and MovieLens data, clean and transform datasets, create the movie/people/ratings/review datasets, and document data sources and processing steps.
+**Jiaxuan – Data Acquisition and Processing:** Collect TMDB API data and MovieLens data, clean and transform datasets, create the movie/people/ratings/review datasets, and document data sources and processing steps.
 
-**Member 2 – Visualization and Interaction:** Implement D3.js visualizations, visual encodings, filtering, highlighting, tooltips, and linked interactions.
+**Muyu – Visualization and Interaction:** Implement D3.js visualizations, visual encodings, filtering, highlighting, tooltips, and linked interactions.
 
 **Shared Responsibilities:** Both members will work on HTML/CSS website design, integration of the five visualizations, navigation, responsive layout, usability testing, debugging, documentation, and the final presentation.
 
