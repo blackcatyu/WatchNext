@@ -7,10 +7,10 @@ from tmdb_common import API_KEY, BASE_URL, fetch_and_extract
 
 OUT_DIR = Path("data/processed")
 
-MOVIELENS_CUTOFF = "2023-10-13"
+START_DATE = "2016-09-19"  # last ~10 years
 TODAY = "2026-09-19"
-TARGET_MIN, TARGET_MAX = 150, 200
-VOTE_COUNT_THRESHOLDS = [50, 20, 5]
+TARGET_MIN, TARGET_MAX = 500, 600
+VOTE_COUNT_THRESHOLDS = [200, 50, 20]
 
 
 def discover_ids(min_votes: int, limit: int) -> list[int]:
@@ -26,7 +26,7 @@ def discover_ids(min_votes: int, limit: int) -> list[int]:
             params={
                 "api_key": API_KEY,
                 "sort_by": "vote_count.desc",
-                "primary_release_date.gte": MOVIELENS_CUTOFF,
+                "primary_release_date.gte": START_DATE,
                 "primary_release_date.lte": TODAY,
                 "vote_count.gte": min_votes,
                 "include_adult": "false",
@@ -57,7 +57,7 @@ def main() -> None:
         if len(tmdb_ids) >= TARGET_MIN:
             break
 
-    print(f"fetching details for {len(tmdb_ids)} recent movies (2023-10-13 to {TODAY})")
+    print(f"fetching details for {len(tmdb_ids)} recent movies ({START_DATE} to {TODAY})")
     result = fetch_and_extract(tmdb_ids)
 
     pd.DataFrame(result["movies"]).to_json(

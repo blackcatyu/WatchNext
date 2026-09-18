@@ -18,15 +18,22 @@ def load_track(movies_path: Path, source: str) -> pd.DataFrame:
     return df
 
 
-def concat_side_table(historical_path: Path, recent_path: Path) -> pd.DataFrame:
+def concat_side_table(historical_path: Path, recent_path: Path, overlap_ids: set[int]) -> pd.DataFrame:
     hist = pd.read_csv(historical_path)
     recent = pd.read_csv(recent_path)
+    recent = recent[~recent["tmdbId"].isin(overlap_ids)]
     return pd.concat([hist, recent], ignore_index=True)
 
 
 def main() -> None:
     historical = load_track(OUT_DIR / "tmdb_movies.jsonl", "historical")
     recent = load_track(OUT_DIR / "tmdb_movies_recent.jsonl", "recent")
+
+    # The recent track's discovery window (last ~10 years) overlaps the
+    # historical track's tail (also MovieLens-linked, up to 2019): keep the
+    # historical copy, since it carries real MovieLens rating data.
+    overlap_ids = set(historical["tmdbId"]) & set(recent["tmdbId"])
+    recent = recent[~recent["tmdbId"].isin(overlap_ids)]
 
     candidates = pd.read_csv(OUT_DIR / "candidate_movies.csv")[
         ["tmdbId", "movieId", "imdbId", "rating_count", "rating_mean", "rating_std"]
@@ -40,10 +47,10 @@ def main() -> None:
 
     movies.to_json(OUT_DIR / "movies_final.jsonl", orient="records", lines=True)
 
-    cast = concat_side_table(OUT_DIR / "tmdb_cast.csv", OUT_DIR / "tmdb_cast_recent.csv")
-    crew = concat_side_table(OUT_DIR / "tmdb_directors.csv", OUT_DIR / "tmdb_directors_recent.csv")
-    keywords = concat_side_table(OUT_DIR / "tmdb_keywords.csv", OUT_DIR / "tmdb_keywords_recent.csv")
-    reviews = concat_side_table(OUT_DIR / "tmdb_reviews.csv", OUT_DIR / "tmdb_reviews_recent.csv")
+    cast = concat_side_table(OUT_DIR / "tmdb_cast.csv", OUT_DIR / "tmdb_cast_recent.csv", overlap_ids)
+    crew = concat_side_table(OUT_DIR / "tmdb_directors.csv", OUT_DIR / "tmdb_directors_recent.csv", overlap_ids)
+    keywords = concat_side_table(OUT_DIR / "tmdb_keywords.csv", OUT_DIR / "tmdb_keywords_recent.csv", overlap_ids)
+    reviews = concat_side_table(OUT_DIR / "tmdb_reviews.csv", OUT_DIR / "tmdb_reviews_recent.csv", overlap_ids)
 
     cast.to_csv(OUT_DIR / "cast_final.csv", index=False)
     crew.to_csv(OUT_DIR / "directors_final.csv", index=False)

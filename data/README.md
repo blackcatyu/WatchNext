@@ -34,9 +34,9 @@ This candidate list (`candidate_movies.csv`) is a starting point, not final — 
 
 **Caveats:**
 - MovieLens 32M's ratings stop at **2023-10-12** (see `data/raw/ml-32m/README.txt`). A movie released after that date has ~zero MovieLens ratings, so selecting candidates by MovieLens rating count silently excludes everything recent — see the "two tracks" note below.
-- The historical track is heavily skewed toward the 1990s–2000s (MovieLens' user base rated movies from that era the most) and thins out fast after 2015 — see `data/figures/historical_year_distribution.svg` (regenerate with `python src/plot_year_distribution.py`):
+- The historical track is heavily skewed toward the 1990s–2000s (MovieLens' user base rated movies from that era the most) and thins out fast after 2015. The recent track (below) fills in 2016 onward — see `data/figures/historical_year_distribution.svg` (regenerate with `python src/plot_year_distribution.py`):
 
-  ![Historical track release-decade distribution](figures/historical_year_distribution.svg)
+  ![Candidate set release-decade distribution, historical vs. recent](figures/historical_year_distribution.svg)
 
 ## TMDB
 
@@ -44,10 +44,10 @@ Needs an API key from https://www.themoviedb.org/settings/api, put in a local `.
 
 ### Two tracks
 
-Because MovieLens can't see anything released after 2023-10-12, movies are pulled in two tracks and tagged by `source`:
+Because MovieLens can't see anything released after 2023-10-12, and its own rating-count-based selection thins out even before that (few ratings had accumulated yet for 2016–2019 releases by the 2023-10 snapshot), movies are pulled in two tracks and tagged by `source`:
 
 - **historical** (`src/fetch_tmdb.py`, ~2,000 movies) — TMDB metadata for the MovieLens-selected candidates above. These are the only movies with real MovieLens user-rating data, so they're the only ones usable for the audience-similarity network (Visualization 2).
-- **recent** (`src/fetch_tmdb_recent.py`, ~150–200 movies) — movies released 2023-10-13 through today, discovered directly via TMDB `/discover/movie` (sorted by `vote_count.desc`, not `popularity.desc` — TMDB's popularity score is recomputed continuously, so paginating by it mid-fetch causes movies to drift between pages and produces duplicates/gaps). Filtered to `vote_count >= 50` where available. These have no MovieLens rating data, so they only feed the visualizations that don't need it (scatterplot, timeline, collaboration network, genre heatmap).
+- **recent** (`src/fetch_tmdb_recent.py`, ~500–600 movies) — movies released in the last ~10 years (`START_DATE` in the script), discovered directly via TMDB `/discover/movie` (sorted by `vote_count.desc`, not `popularity.desc` — TMDB's popularity score is recomputed continuously, so paginating by it mid-fetch causes movies to drift between pages and produces duplicates/gaps), taking the top `vote_count.gte` threshold in `VOTE_COUNT_THRESHOLDS` that yields at least `TARGET_MIN` movies. These have no MovieLens rating data, so they only feed the visualizations that don't need it (scatterplot, timeline, collaboration network, genre heatmap). The recent window overlaps the historical track's tail (both can have a 2018 movie, say); `merge_candidates.py` drops the recent copy of any `tmdbId` already present in historical, since the historical copy carries MovieLens ratings the recent one doesn't.
 
 Run both, then merge:
 
