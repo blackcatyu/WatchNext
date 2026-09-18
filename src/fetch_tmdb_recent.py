@@ -7,9 +7,9 @@ from tmdb_common import API_KEY, BASE_URL, fetch_and_extract
 
 OUT_DIR = Path("data/processed")
 
-START_DATE = "2016-09-19"  # last ~10 years
+START_DATE = "2016-01-01"
 TODAY = "2026-09-19"
-TARGET_MIN, TARGET_MAX = 500, 600
+TARGET_MIN, TARGET_MAX = 900, 1000
 VOTE_COUNT_THRESHOLDS = [200, 50, 20]
 
 
