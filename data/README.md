@@ -3,7 +3,34 @@
 ## Layout
 
 - `data/raw/` — untouched downloads (gitignored, regenerate via steps below)
-- `data/processed/` — cleaned outputs of `src/clean_movielens.py` (gitignored, regenerate by running the script)
+- `data/processed/` — cleaned/merged/scored outputs, committed to git so teammates don't need to rerun the whole pipeline (needs MovieLens download + a TMDB key + a GPU for the sentiment step) just to get the data. Regenerate by running the scripts below in order if you need to. One exception: `ratings_candidates.csv` (876MB, MovieLens ratings filtered to the candidate movies) is gitignored — it's over GitHub's 100MB per-file limit, so it can't be pushed. Regenerate it with `src/clean_movielens.py`, or get it directly from a teammate.
+
+## `data/processed/` file reference
+
+**Use these for visualizations** — the final, merged tables:
+
+| file | rows | columns | what it is |
+|---|---|---|---|
+| `movies_final.jsonl` | 2,914 | `tmdbId, movieId, imdbId, title, release_date, year, genres[], vote_average, vote_count, popularity, budget, revenue, runtime, overview, source, rating_count, rating_mean, rating_std` | One row per candidate movie, historical + recent tracks merged. `source` is `"historical"` (has real MovieLens rating data — `movieId`/`rating_count`/`rating_mean`/`rating_std` filled in) or `"recent"` (those columns are null). `budget`/`revenue` are null-clipped to `(0, 3e9]` — see the TMDB section below. |
+| `cast_final.csv` | 28,991 | `tmdbId, person_id, name, character, order` | Top-10 billed cast per movie (by TMDB's own `order`). |
+| `directors_final.csv` | 3,173 | `tmdbId, person_id, name, job` | Director credit(s) per movie (`job` is always `"Director"`; kept for consistency with `cast_final.csv`'s shape). |
+| `keywords_final.csv` | 47,201 | `tmdbId, keyword` | TMDB's own tagged keywords per movie (not derived from reviews — see `review_keywords.jsonl` for that). |
+| `reviews_sentiment.csv` | 11,481 | `tmdbId, author, content, created_at, author_rating, sentiment_label, sentiment_score` | Every cleaned/deduplicated TMDB review, one row each, with its sentiment score. `author_rating` is the reviewer's own 1–10 TMDB score if they left one (often null — most reviewers don't). |
+| `review_sentiment_summary.csv` | 2,648 | `tmdbId, review_count, pct_positive, avg_sentiment_score` | `reviews_sentiment.csv` aggregated to one row per movie. Only movies with ≥1 review appear — absence means no review data, not zero/neutral sentiment. |
+| `review_keywords.jsonl` | 2,648 | `tmdbId, keywords[]` | Top 8 TF-IDF terms (unigrams/bigrams) extracted from that movie's own reviews — themes audiences actually wrote about, different from TMDB's `keywords_final.csv`. |
+
+**Intermediate files** — per-track or per-stage outputs, kept mainly so each pipeline stage is inspectable/debuggable on its own; the `_final` files above already fold these together:
+
+| file | source | notes |
+|---|---|---|
+| `movies_clean.jsonl`, `links_clean.csv` | `clean_movielens.py` | All 87,585 MovieLens movies (not just candidates), cleaned. `links_clean.csv`: `movieId, imdbId, tmdbId`. |
+| `candidate_movies.csv` | `clean_movielens.py` | The 2,000 historical-track movies selected by MovieLens rating count, before TMDB metadata is joined on. |
+| `tags_candidates.csv` | `clean_movielens.py` | MovieLens user tags (`userId, movieId, tag, timestamp`), filtered to candidate movies. Not currently consumed downstream — kept in case a visualization wants free-text user tags alongside/instead of TMDB keywords. |
+| `ratings_candidates.csv` | `clean_movielens.py` | **Gitignored, not in git** — see above. `userId, movieId, rating, timestamp`; every individual MovieLens rating for the historical-track movies. This is the raw material for co-rating overlap (Visualization 2's audience-similarity network). |
+| `tmdb_movies.jsonl`, `tmdb_cast.csv`, `tmdb_directors.csv`, `tmdb_keywords.csv`, `tmdb_reviews.csv` | `fetch_tmdb.py` | Historical-track TMDB pull only, same schemas as the `_final` files. |
+| `tmdb_movies_recent.jsonl`, `tmdb_cast_recent.csv`, `tmdb_directors_recent.csv`, `tmdb_keywords_recent.csv`, `tmdb_reviews_recent.csv` | `fetch_tmdb_recent.py` | Recent-track TMDB pull only, before dedup against the historical track. |
+| `reviews_final.csv` | `merge_candidates.py` | Historical + recent reviews merged, *before* cleaning/sentiment scoring — `analyze_reviews.py` reads this and produces `reviews_sentiment.csv`. |
+| `tmdb_missing_ids.json` | `fetch_tmdb.py` / `fetch_tmdb_recent.py` | tmdbIds that returned 404 (stale/removed TMDB entries) and got skipped. |
 
 ## MovieLens 32M
 

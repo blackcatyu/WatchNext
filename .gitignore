@@ -2,9 +2,12 @@
 # Environment / secrets
 .env
 
-# Raw and large data files (downloaded / generated, not committed)
+# Raw data downloads (regenerate via data/README.md)
 data/raw/
-data/processed/
+
+# Too large for GitHub (876MB, over the 100MB per-file limit) - regenerate
+# with src/clean_movielens.py, or ask a teammate to share it directly.
+data/processed/ratings_candidates.csv
 
 # Python
 __pycache__/
