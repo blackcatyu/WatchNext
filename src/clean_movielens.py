@@ -9,7 +9,7 @@ OUT_DIR = Path("data/processed")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 MIN_RATING_COUNT = 50
-N_CANDIDATES = 1000
+N_CANDIDATES = 2000
 
 YEAR_RE = re.compile(r"\s*\((\d{4})\)\s*$")
 
