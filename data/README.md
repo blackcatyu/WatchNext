@@ -60,3 +60,15 @@ python src/merge_candidates.py
 ```
 
 `src/merge_candidates.py` concatenates both tracks into `movies_final.jsonl` / `cast_final.csv` / `directors_final.csv` / `keywords_final.csv` / `reviews_final.csv`, and null-clips `budget`/`revenue` outside `(0, 3e9]` — TMDB's budget/revenue fields are crowd-edited and very recent/upcoming releases sometimes carry vandalized placeholder numbers (e.g. one 2026 release showed a $2.45B revenue on a 2,746-vote page, implausible for a film that new). The `(0, 3e9]` bound catches obviously-fake and "unset" (0) values but isn't a full fact-check — spot-check before trusting `budget`/`revenue` for very recent titles.
+
+## Review sentiment and keywords
+
+```
+python src/analyze_reviews.py
+```
+
+Reads `reviews_final.csv`, strips HTML/URLs, drops anything under 20 characters, and drops exact-duplicate review text. Sentiment is scored with `siebert/sentiment-roberta-large-english` (binary POSITIVE/NEGATIVE, 512-token limit, batched on GPU if available via `torch.cuda`). This was picked over a Twitter-tuned model or `distilbert-base-uncased-finetuned-sst-2-english`: our reviews run 170 words at the median (479 at the 90th percentile) — far past what a tweet-tuned model's ~128-token limit handles, and past what SST-2 was trained on too (SST-2 is short single-sentence/phrase snippets from critic pull-quotes, not full multi-paragraph audience reviews). siebert's training mix includes IMDB's full-length reviews, closer to what we actually have.
+
+Keywords per movie come from TF-IDF (unigrams + bigrams, English stopwords removed, `min_df=3`) fit across all cleaned reviews, then the top 8 terms by summed TF-IDF weight within each movie's own reviews.
+
+Outputs: `reviews_sentiment.csv` (per-review label/score), `review_sentiment_summary.csv` (per-movie review count, % positive, avg score), `review_keywords.jsonl` (per-movie top keywords). Coverage note: only ~2,650 of the ~2,900 candidate movies have any TMDB reviews at all — the rest get no sentiment/keyword data (`review_count` absent, not zero).
