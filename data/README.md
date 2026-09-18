@@ -32,6 +32,25 @@ python src/clean_movielens.py
 
 This candidate list (`candidate_movies.csv`) is a starting point, not final — once TMDB data is pulled, the subset should be re-filtered for review-data availability per the proposal (500–1,000 movies).
 
+**Caveat:** MovieLens 32M's ratings stop at **2023-10-12** (see `data/raw/ml-32m/README.txt`). A movie released after that date has ~zero MovieLens ratings, so selecting candidates by MovieLens rating count silently excludes everything recent — see the "two tracks" note below.
+
 ## TMDB
 
-Not yet acquired — needs an API key from https://www.themoviedb.org/settings/api. Once available, put it in a local `.env` (gitignored) as `TMDB_API_KEY=...`; the acquisition script will read it via `python-dotenv`.
+Needs an API key from https://www.themoviedb.org/settings/api, put in a local `.env` (gitignored) as `TMDB_API_KEY=...`. `src/tmdb_common.py` holds the shared fetch/cache/retry logic (`GET /movie/{id}?append_to_response=credits,keywords,reviews`, cached to `data/raw/tmdb/{id}.json`).
+
+### Two tracks
+
+Because MovieLens can't see anything released after 2023-10-12, movies are pulled in two tracks and tagged by `source`:
+
+- **historical** (`src/fetch_tmdb.py`, ~1,000 movies) — TMDB metadata for the MovieLens-selected candidates above. These are the only movies with real MovieLens user-rating data, so they're the only ones usable for the audience-similarity network (Visualization 2).
+- **recent** (`src/fetch_tmdb_recent.py`, ~150–200 movies) — movies released 2023-10-13 through today, discovered directly via TMDB `/discover/movie` (sorted by `vote_count.desc`, not `popularity.desc` — TMDB's popularity score is recomputed continuously, so paginating by it mid-fetch causes movies to drift between pages and produces duplicates/gaps). Filtered to `vote_count >= 50` where available. These have no MovieLens rating data, so they only feed the visualizations that don't need it (scatterplot, timeline, collaboration network, genre heatmap).
+
+Run both, then merge:
+
+```
+python src/fetch_tmdb.py
+python src/fetch_tmdb_recent.py
+python src/merge_candidates.py
+```
+
+`src/merge_candidates.py` concatenates both tracks into `movies_final.jsonl` / `cast_final.csv` / `directors_final.csv` / `keywords_final.csv` / `reviews_final.csv`, and null-clips `budget`/`revenue` outside `(0, 3e9]` — TMDB's budget/revenue fields are crowd-edited and very recent/upcoming releases sometimes carry vandalized placeholder numbers (e.g. one 2026 release showed a $2.45B revenue on a 2,746-vote page, implausible for a film that new). The `(0, 3e9]` bound catches obviously-fake and "unset" (0) values but isn't a full fact-check — spot-check before trusting `budget`/`revenue` for very recent titles.
