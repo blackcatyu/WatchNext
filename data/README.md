@@ -34,6 +34,8 @@
 
 ## MovieLens 32M
 
+Raw scale: 32,000,204 ratings + 2,000,072 tags from 200,948 users across 87,585 movies (Jan 1995–Oct 2023).
+
 Download: https://grouplens.org/datasets/movielens/32m/ (direct: https://files.grouplens.org/datasets/movielens/ml-32m.zip)
 
 ```
