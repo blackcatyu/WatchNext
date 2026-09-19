@@ -2,22 +2,116 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>WatchNext — Visualizations</title>
+  <title>WatchNext — Final Project</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
   <h1>WatchNext</h1>
-  <p class="subtitle">Static visualization drafts — no interactions wired up yet.</p>
+  <p class="subtitle">The Movie Universe: Exploring Movies, People, and Audience Preferences</p>
 
   <section class="viz-section">
-    <h2>Visualization 2 — Audience Similarity Network</h2>
+    <h2>Dataset</h2>
+
+    <h3>Raw datasets</h3>
+    <ul>
+      <li>
+        <strong>MovieLens 32M</strong> — 32,000,204 ratings and 2,000,072 free-text tags from
+        200,948 users, across 87,585 movies (Jan 1995–Oct 2023).
+        <a href="https://grouplens.org/datasets/movielens/32m/">grouplens.org</a>
+      </li>
+      <li>
+        <strong>TMDB API</strong> — movie metadata (genres, budget, revenue, ratings), cast/crew
+        credits, keywords, and user reviews, pulled per-movie via the TMDB API.
+        <a href="https://developer.themoviedb.org/docs/getting-started">developer.themoviedb.org</a>
+      </li>
+    </ul>
+
+    <h3>Processed dataset</h3>
+    <p>
+      <strong>2,914 candidate movies</strong>, built in two tracks and merged:
+    </p>
+    <ul>
+      <li>
+        <strong>Historical (1,998 movies, 1922–2019)</strong> — selected from MovieLens by rating
+        count, so each one has real MovieLens user-rating data (needed for the audience-similarity
+        network below).
+      </li>
+      <li>
+        <strong>Recent (916 movies, 2016–2026)</strong> — MovieLens's ratings stop in Oct 2023 and
+        thin out well before that for newer releases, so this track is discovered directly from
+        TMDB (by vote count) to cover the years MovieLens can't see.
+      </li>
+    </ul>
+    <p>
+      Each movie carries TMDB metadata, top-10 billed cast, director(s), and TMDB keywords.
+      11,481 TMDB reviews (covering ~2,650 of the 2,914 movies) were cleaned, deduplicated, and
+      scored for sentiment.
+    </p>
+
+    <h3>Data cleaning / processing completed</h3>
+    <ul>
+      <li>Parsed release year and genre list out of MovieLens's raw title/genre strings; normalized IMDb IDs (zero-padded, since leading zeros are significant).</li>
+      <li>Validated and deduplicated MovieLens ratings; converted timestamps to real dates.</li>
+      <li>Selected the two-track candidate set described above and pulled matching TMDB records for each movie.</li>
+      <li>Deduplicated movies that appeared in both tracks (kept the MovieLens-linked copy) and clipped a handful of implausible TMDB budget/revenue values (crowd-edited fields occasionally carry vandalized placeholder numbers).</li>
+      <li>Cleaned review text (stripped HTML/URLs, dropped near-empty/duplicate reviews), scored sentiment with <code>siebert/sentiment-roberta-large-english</code> (chosen over a tweet-tuned model since our reviews run ~170 words at the median, far past a tweet's length), and extracted per-movie keywords via TF-IDF.</li>
+    </ul>
+    <p class="viz-caption">
+      Full pipeline detail: <a href="https://github.com/blackcatyu/WatchNext/blob/main/data/README.md">data/README.md</a>.
+    </p>
+  </section>
+
+  <section class="viz-section">
+    <h2>Visualizations</h2>
+
+    <h3>Visualization 2 — Audience Similarity Network</h3>
     <p class="viz-caption">
       80 most-rated candidate movies, connected when a large number of MovieLens users
       rated both highly (≥4/5). Node size = number of connections; edge thickness =
       strength of the shared-audience overlap; color = primary genre. Layout is a
-      force-directed simulation run once to a resting position.
+      force-directed simulation run once to a resting position (static — no interaction yet).
     </p>
     <svg id="viz2-svg" width="1000" height="800"></svg>
+  </section>
+
+  <section class="viz-section">
+    <h2>Interaction / Animation Plan</h2>
+
+    <h3>Visualization 2 — Audience Similarity Network</h3>
+    <ul>
+      <li><strong>Click a node</strong> to re-center the view on that movie and highlight (fade everything else) just its direct neighbors — lets a user ask "what else do people who liked this movie also like?", the core purpose of this visualization.</li>
+      <li><strong>Hover tooltip</strong> on a node showing title, genre, and its exact overlap counts with connected movies.</li>
+      <li><strong>Drag</strong> nodes to manually untangle a crowded area.</li>
+      <li><strong>Genre filter</strong>: clicking a legend entry dims nodes outside that genre, to check whether strong connections tend to stay within a genre or cross genre lines.</li>
+      <li><strong>Transition animation</strong> when re-centering (nodes animate to new positions rather than snapping) so the "who's connected to whom" relationship stays legible.</li>
+    </ul>
+  </section>
+
+  <section class="viz-section">
+    <h2>Evaluation Plan</h2>
+    <p>
+      <strong>What we'll evaluate:</strong> (1) whether each visualization's encodings are
+      readable without explanation — can a first-time viewer correctly state what a node's size,
+      color, and an edge mean; (2) whether the visualization actually helps answer the research
+      question it's designed for (e.g., can someone use the similarity network to find a movie
+      they'd likely enjoy, starting from one they already like); (3) whether the planned
+      interactions above make that task noticeably easier than the static version.
+    </p>
+    <p>
+      <strong>How we'll evaluate it:</strong> informal think-aloud sessions with a handful of
+      classmates/friends who weren't involved in building the project — sit them down with a
+      specific task per visualization (e.g., "find a hidden-gem movie," "find two directors who've
+      worked together"), watch where they hesitate or misread an encoding, and ask them to narrate
+      their reasoning out loud. We'll do one round on the static visualizations now and a second
+      round once interactions are implemented, to check the interactions actually closed the gaps
+      the first round found.
+    </p>
+    <p>
+      <strong>What we'll collect:</strong> task success/failure and rough time-to-complete per
+      task, notes on specific points of confusion (tied to a specific encoding or UI element, not
+      just "confusing"), and a short 3–5 question post-task rating (clarity, usefulness,
+      would-you-use-this-again) so feedback across sessions and rounds is comparable.
+    </p>
   </section>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>

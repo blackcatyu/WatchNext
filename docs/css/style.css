@@ -44,6 +44,40 @@ h1 {
   font-size: 1.1rem;
 }
 
+.viz-section h3 {
+  font-size: 0.95rem;
+  margin: 1.5rem 0 0.5rem;
+  color: var(--text);
+}
+
+.viz-section h3:first-of-type {
+  margin-top: 0.5rem;
+}
+
+.viz-section p,
+.viz-section li {
+  line-height: 1.6;
+  font-size: 0.9rem;
+  max-width: 720px;
+}
+
+.viz-section ul {
+  padding-left: 1.25rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.viz-section a {
+  color: #58a6ff;
+}
+
+.viz-section code {
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.1rem 0.35rem;
+  font-size: 0.85em;
+}
+
 .viz-caption {
   color: var(--muted);
   font-size: 0.85rem;
