@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 PROCESSED_DIR = Path("data/processed")
-OUT_PATH = Path("web/data/viz2_similarity_network.json")
+OUT_PATH = Path("docs/data/viz2_similarity_network.json")
 OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 N_MOVIES = 80
