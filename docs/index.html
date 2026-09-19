@@ -78,12 +78,21 @@
     <h2>Interaction / Animation Plan</h2>
 
     <h3>Visualization 2 — Audience Similarity Network</h3>
+    <p>
+      2,914 movies cleaned, but a node-link diagram is only readable up to roughly a hundred
+      nodes shown at once — no amount of animation fixes a 2,000-node hairball. So instead of
+      trying to render everything simultaneously, the plan is <strong>focus + search</strong>:
+      keep the rendered view small at all times, and use interaction to make the full dataset
+      <em>reachable</em> rather than all visible at once.
+    </p>
     <ul>
-      <li><strong>Click a node</strong> to re-center the view on that movie and highlight (fade everything else) just its direct neighbors — lets a user ask "what else do people who liked this movie also like?", the core purpose of this visualization.</li>
+      <li><strong>Expand the backing similarity data</strong> from today's 80 most-rated movies to all ~1,998 historical-track movies (the ones with real MovieLens ratings — the 916 "recent" movies still can't appear here, same MovieLens-coverage limit noted in the Dataset section). This is just a bigger co-rating computation, not a bigger picture.</li>
+      <li><strong>Click a node</strong> to re-center the view on that movie and show only its top neighbors (fading/removing the rest) — answers "what else do people who liked this movie also like?", the core purpose of this visualization. Whatever the total dataset size, the screen only ever shows one movie's neighborhood.</li>
+      <li><strong>Search/jump to any movie</strong> by title, not just the 80 shown by default — this is how the other ~1,900 movies stay useful: reachable on demand, not rendered up front.</li>
       <li><strong>Hover tooltip</strong> on a node showing title, genre, and its exact overlap counts with connected movies.</li>
       <li><strong>Drag</strong> nodes to manually untangle a crowded area.</li>
       <li><strong>Genre filter</strong>: clicking a legend entry dims nodes outside that genre, to check whether strong connections tend to stay within a genre or cross genre lines.</li>
-      <li><strong>Transition animation</strong> when re-centering (nodes animate to new positions rather than snapping) so the "who's connected to whom" relationship stays legible.</li>
+      <li><strong>Transition animation</strong> when re-centering or jumping to a search result (nodes animate to new positions rather than snapping) so the "who's connected to whom" relationship stays legible across the change.</li>
     </ul>
   </section>
 
