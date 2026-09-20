@@ -3,8 +3,50 @@
 
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WatchNext — Final Project</title>
   <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .viz-gallery { max-width: 1180px; }
+    .inline-chart {
+      width: 100%;
+      margin: 1rem 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .inline-chart svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      margin: 0;
+    }
+    .inline-chart--collaboration, .inline-chart--heatmap { background: var(--bg); }
+    .inline-community-key { margin: 1rem 0; }
+    .inline-community-key h4 { margin: 0 0 0.5rem; font-size: 0.9rem; }
+    .inline-community-key p { color: var(--muted); font-size: 0.82rem; }
+    .inline-community-key #community-legend {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+      gap: 0.9rem 1.5rem;
+      list-style: none;
+      padding: 0;
+    }
+    .inline-community-key .community-legend-item {
+      display: flex;
+      gap: 0.6rem;
+      align-items: flex-start;
+      font-size: 0.78rem;
+    }
+    .community-swatch {
+      flex: 0 0 12px;
+      height: 12px;
+      margin-top: 3px;
+      border: 1px solid #e6edf3;
+      border-radius: 3px;
+    }
+    .community-members { display: block; color: var(--muted); overflow-wrap: anywhere; }
+  </style>
 </head>
 
 <body>
@@ -116,7 +158,7 @@
        Visualizations
   ========================================================== -->
 
-  <section class="viz-section">
+  <section class="viz-section viz-gallery">
 
     <h2>Visualizations</h2>
 
@@ -133,6 +175,10 @@
       strength of the shared-audience overlap; color = primary genre. Layout is a
       force-directed simulation run once to a resting position (static — no interaction yet).
     </p>
+
+    <div class="inline-chart" aria-label="Audience similarity network">
+      <svg id="viz2-svg" width="1000" height="800" viewBox="0 0 1000 800"></svg>
+    </div>
 
     <p>
       <a class="viz-link" href="viz1.html">
@@ -231,6 +277,20 @@
       five movies and collaborations with at least three shared movies.
     </p>
 
+    <div class="inline-chart inline-chart--collaboration" aria-label="Actor and director collaboration network">
+      <div id="network"></div>
+    </div>
+
+    <div class="inline-community-key">
+      <h4>Collaboration communities</h4>
+      <p>
+        Each color represents a collaboration community detected from repeated
+        actor–director collaborations. The examples below illustrate how community
+        colors group frequently connected people.
+      </p>
+      <ul id="community-legend" aria-label="Example collaboration communities"></ul>
+    </div>
+
     <p>
       <a class="viz-link" href="viz2.html">
         View Static Visualization 2 →
@@ -325,6 +385,10 @@
       contribute to more than one row, and 2026 is marked as a partial year.
     </p>
 
+    <div class="inline-chart inline-chart--heatmap" aria-label="Genre ratings over time">
+      <div id="heatmap"></div>
+    </div>
+
     <p>
       <a class="viz-link" href="viz3.html">
         View Static Visualization 3 →
@@ -418,6 +482,10 @@
   </section>
 
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+  <script src="js/viz2_similarity_network.js"></script>
+  <script src="js/viz3_collaboration_network.js"></script>
+  <script src="js/viz4_heatmap.js"></script>
 </body>
 
 </html>
