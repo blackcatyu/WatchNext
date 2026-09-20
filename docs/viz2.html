@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Visualization 2 — Actor & Director Collaboration Network
+    </title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .viz-page {
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .viz-page-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .viz-page-header h1 {
+            margin-bottom: 0.5rem;
+        }
+
+        .viz-page-header p {
+            max-width: 780px;
+            color: var(--muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .summary-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin: 1rem 0;
+        }
+
+        .summary-item {
+            padding: 0.45rem 0.75rem;
+            background: #0d1117;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--muted);
+            font-size: 0.82rem;
+        }
+
+        .summary-item strong {
+            color: var(--text);
+        }
+
+        .encoding-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+            margin: 0.75rem 0 1rem;
+            color: var(--muted);
+            font-size: 0.82rem;
+        }
+
+        .encoding-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .actor-symbol {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #8b949e;
+            border: 1px solid #e6edf3;
+        }
+
+        .director-symbol {
+            width: 11px;
+            height: 11px;
+            background: #8b949e;
+            border: 1px solid #e6edf3;
+            transform: rotate(45deg);
+            margin-right: 2px;
+        }
+
+        .network-panel {
+            width: 100%;
+            overflow: hidden;
+            margin-top: 1rem;
+            background: #0f1216;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        #network {
+            width: 100%;
+        }
+
+        #network svg {
+            width: 100%;
+            height: auto;
+            margin: 0 auto;
+        }
+
+        .network-note {
+            margin-top: 1rem;
+            color: var(--muted);
+            font-size: 0.82rem;
+            line-height: 1.55;
+            max-width: 800px;
+        }
+
+        .community-key {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .community-key h2 {
+            font-size: 1rem;
+            margin: 0 0 0.5rem;
+        }
+
+        .community-key p {
+            color: var(--muted);
+            font-size: 0.82rem;
+            line-height: 1.55;
+            max-width: 800px;
+        }
+
+        #community-legend {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0 0;
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fit,
+                minmax(min(100%, 260px), 1fr)
+            );
+            gap: 0.9rem 1.5rem;
+        }
+
+        .community-legend-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            font-size: 0.78rem;
+            line-height: 1.5;
+        }
+
+        .community-swatch {
+            flex: 0 0 12px;
+            height: 12px;
+            margin-top: 3px;
+            border: 1px solid #e6edf3;
+            border-radius: 3px;
+        }
+
+        .community-members {
+            display: block;
+            color: var(--muted);
+            overflow-wrap: anywhere;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 1.25rem;
+            color: #58a6ff;
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="viz-page">
+
+        <div class="viz-page-header">
+
+            <h1>
+                Actor &amp; Director Collaboration Network
+            </h1>
+
+            <p>
+                This network shows repeated collaboration relationships
+                between actors and directors in our movie dataset.
+                It focuses on stronger collaborations so that the overall
+                structure remains readable in a static view.
+            </p>
+
+        </div>
+
+
+        <!-- Static summary information -->
+
+        <div class="summary-row">
+
+            <div class="summary-item">
+                <strong id="person-count">318</strong>
+                people
+            </div>
+
+            <div class="summary-item">
+                <strong id="collaboration-count">278</strong>
+                collaborations
+            </div>
+
+            <div class="summary-item">
+                Minimum person movies:
+                <strong>5</strong>
+            </div>
+
+            <div class="summary-item">
+                Minimum shared movies:
+                <strong>3</strong>
+            </div>
+
+        </div>
+
+
+        <!-- Static encoding legend -->
+
+        <div class="encoding-row">
+
+            <div class="encoding-item">
+                <span class="actor-symbol"></span>
+                Actor
+            </div>
+
+            <div class="encoding-item">
+                <span class="director-symbol"></span>
+                Director
+            </div>
+
+            <div class="encoding-item">
+                Color = Collaboration community
+            </div>
+
+            <div class="encoding-item">
+                Node size = Collaboration strength
+            </div>
+
+            <div class="encoding-item">
+                Edge width = Number of shared movies
+            </div>
+
+        </div>
+
+
+        <!-- Static network -->
+
+        <div class="network-panel">
+            <div id="network"></div>
+        </div>
+
+
+        <p class="network-note">
+            The current static view includes people with at least five
+            movies and actor–director pairs that worked together on at
+            least three movies. Circles represent actors and diamonds
+            represent directors. Larger nodes have stronger overall
+            collaboration relationships, while thicker edges represent
+            pairs that worked together more often. Colors distinguish
+            collaboration communities; people in the same community
+            share a color.
+        </p>
+
+
+        <!-- Only two examples are shown here to explain the community colors. -->
+
+        <section
+            class="community-key"
+            aria-labelledby="community-key-title"
+        >
+
+            <h2 id="community-key-title">
+                Collaboration communities
+            </h2>
+
+            <p>
+                Each color represents a collaboration community detected
+                from repeated actor–director collaborations. The examples
+                below illustrate how community colors group frequently
+                connected people.
+            </p>
+
+            <ul
+                id="community-legend"
+                aria-label="Example collaboration communities"
+            ></ul>
+
+        </section>
+
+
+        <a class="back-link" href="index.html">
+            ← Back to Project Overview
+        </a>
+
+    </main>
+
+
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js">
+    </script>
+
+    <script src="js/viz3_collaboration_network.js"></script>
+
+</body>
+
+</html>

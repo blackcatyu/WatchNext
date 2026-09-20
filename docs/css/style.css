@@ -105,3 +105,146 @@ svg {
   font-size: 10px;
   fill: var(--muted);
 }
+
+
+/* ============================================================
+   Visualization 3 / 4 additions
+   Everything above this point is the original stylesheet.
+============================================================ */
+
+
+/* ------------------------------------------------------------
+   Divider between visualizations
+------------------------------------------------------------ */
+
+.viz-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2.5rem 0;
+}
+
+
+/* ------------------------------------------------------------
+   Static summary labels
+
+   Examples:
+   318 people
+   278 collaborations
+   Minimum shared movies: 3
+
+   or:
+
+   2016–2026
+   13 genres
+   Metric: Weighted Average Rating
+------------------------------------------------------------ */
+
+.static-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0.8rem 0 1rem;
+}
+
+.static-summary span {
+  display: inline-block;
+  padding: 0.4rem 0.65rem;
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.static-summary strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+
+/* ------------------------------------------------------------
+   Visualization design explanation
+------------------------------------------------------------ */
+
+.design-list {
+  margin-top: 1rem;
+}
+
+.design-list li {
+  margin-bottom: 0.65rem;
+}
+
+.design-list strong {
+  color: var(--text);
+}
+
+
+/* ------------------------------------------------------------
+   Static encoding information
+------------------------------------------------------------ */
+
+.static-encoding {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 1rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.encoding-symbol {
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+
+/* Actor = circle */
+
+.actor-symbol {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #8b949e;
+  border: 1px solid var(--text);
+}
+
+
+/* Director = diamond */
+
+.director-symbol {
+  width: 10px;
+  height: 10px;
+  margin-left: 0.5rem;
+  background: #8b949e;
+  border: 1px solid var(--text);
+  transform: rotate(45deg);
+}
+
+.encoding-text {
+  margin-left: 0.75rem;
+}
+
+
+/* ------------------------------------------------------------
+   Links to full static visualizations
+------------------------------------------------------------ */
+
+.viz-link {
+  display: inline-block;
+  margin-top: 0.35rem;
+  padding: 0.5rem 0.8rem;
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: #58a6ff !important;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.viz-link:hover {
+  background: #21262d;
+  border-color: var(--muted);
+  text-decoration: none;
+}

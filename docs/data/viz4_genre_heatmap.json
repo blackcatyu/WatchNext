@@ -1,0 +1,1257 @@
+{
+  "metadata": {
+    "title": "Genre Ratings Over Time",
+    "start_year": 2016,
+    "end_year": 2026,
+    "genres": [
+      "Action",
+      "Adventure",
+      "Animation",
+      "Comedy",
+      "Crime",
+      "Drama",
+      "Family",
+      "Fantasy",
+      "Horror",
+      "Mystery",
+      "Romance",
+      "Science Fiction",
+      "Thriller"
+    ],
+    "years": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025,
+      2026
+    ],
+    "default_metric": "weighted_rating",
+    "metrics": {
+      "weighted_rating": {
+        "label": "Weighted Average Rating",
+        "description": "TMDB vote averages weighted by each movie's vote count.",
+        "unit": "/ 10"
+      },
+      "total_votes": {
+        "label": "Total Vote Count",
+        "description": "Total number of TMDB votes received by movies in the cell.",
+        "unit": "votes"
+      },
+      "movie_count": {
+        "label": "Number of Movies",
+        "description": "Number of movies in the genre-year cell.",
+        "unit": "movies"
+      }
+    },
+    "note": "Movies can belong to multiple genres, so one movie may contribute to more than one genre. 2026 represents partial-year coverage."
+  },
+  "year_coverage": [
+    {
+      "year": 2016,
+      "movie_count": 152,
+      "total_votes": 912395
+    },
+    {
+      "year": 2017,
+      "movie_count": 129,
+      "total_votes": 860902
+    },
+    {
+      "year": 2018,
+      "movie_count": 133,
+      "total_votes": 725616
+    },
+    {
+      "year": 2019,
+      "movie_count": 127,
+      "total_votes": 690306
+    },
+    {
+      "year": 2020,
+      "movie_count": 67,
+      "total_votes": 280035
+    },
+    {
+      "year": 2021,
+      "movie_count": 97,
+      "total_votes": 435111
+    },
+    {
+      "year": 2022,
+      "movie_count": 88,
+      "total_votes": 365179
+    },
+    {
+      "year": 2023,
+      "movie_count": 75,
+      "total_votes": 291442
+    },
+    {
+      "year": 2024,
+      "movie_count": 61,
+      "total_votes": 203304
+    },
+    {
+      "year": 2025,
+      "movie_count": 43,
+      "total_votes": 127565
+    },
+    {
+      "year": 2026,
+      "movie_count": 28,
+      "total_votes": 76473
+    }
+  ],
+  "cells": [
+    {
+      "year": 2016,
+      "genre": "Action",
+      "weighted_rating": 6.608,
+      "mean_rating": 6.37,
+      "total_votes": 355391,
+      "movie_count": 52
+    },
+    {
+      "year": 2016,
+      "genre": "Adventure",
+      "weighted_rating": 6.792,
+      "mean_rating": 6.548,
+      "total_votes": 413623,
+      "movie_count": 51
+    },
+    {
+      "year": 2016,
+      "genre": "Animation",
+      "weighted_rating": 7.23,
+      "mean_rating": 7.095,
+      "total_votes": 120195,
+      "movie_count": 17
+    },
+    {
+      "year": 2016,
+      "genre": "Comedy",
+      "weighted_rating": 6.923,
+      "mean_rating": 6.607,
+      "total_votes": 249667,
+      "movie_count": 45
+    },
+    {
+      "year": 2016,
+      "genre": "Crime",
+      "weighted_rating": 6.835,
+      "mean_rating": 6.764,
+      "total_votes": 94721,
+      "movie_count": 20
+    },
+    {
+      "year": 2016,
+      "genre": "Drama",
+      "weighted_rating": 7.382,
+      "mean_rating": 7.147,
+      "total_votes": 320645,
+      "movie_count": 63
+    },
+    {
+      "year": 2016,
+      "genre": "Family",
+      "weighted_rating": 7.023,
+      "mean_rating": 6.921,
+      "total_votes": 126457,
+      "movie_count": 21
+    },
+    {
+      "year": 2016,
+      "genre": "Fantasy",
+      "weighted_rating": 6.517,
+      "mean_rating": 6.418,
+      "total_votes": 197971,
+      "movie_count": 23
+    },
+    {
+      "year": 2016,
+      "genre": "Horror",
+      "weighted_rating": 6.702,
+      "mean_rating": 6.509,
+      "total_votes": 108506,
+      "movie_count": 25
+    },
+    {
+      "year": 2016,
+      "genre": "Mystery",
+      "weighted_rating": 6.777,
+      "mean_rating": 6.542,
+      "total_votes": 80162,
+      "movie_count": 14
+    },
+    {
+      "year": 2016,
+      "genre": "Romance",
+      "weighted_rating": 7.513,
+      "mean_rating": 7.195,
+      "total_votes": 103163,
+      "movie_count": 17
+    },
+    {
+      "year": 2016,
+      "genre": "Science Fiction",
+      "weighted_rating": 6.814,
+      "mean_rating": 6.528,
+      "total_votes": 160785,
+      "movie_count": 21
+    },
+    {
+      "year": 2016,
+      "genre": "Thriller",
+      "weighted_rating": 6.707,
+      "mean_rating": 6.586,
+      "total_votes": 179510,
+      "movie_count": 41
+    },
+    {
+      "year": 2017,
+      "genre": "Action",
+      "weighted_rating": 6.922,
+      "mean_rating": 6.707,
+      "total_votes": 368835,
+      "movie_count": 36
+    },
+    {
+      "year": 2017,
+      "genre": "Adventure",
+      "weighted_rating": 7.004,
+      "mean_rating": 6.868,
+      "total_votes": 265708,
+      "movie_count": 28
+    },
+    {
+      "year": 2017,
+      "genre": "Animation",
+      "weighted_rating": 7.274,
+      "mean_rating": 6.982,
+      "total_votes": 58090,
+      "movie_count": 8
+    },
+    {
+      "year": 2017,
+      "genre": "Comedy",
+      "weighted_rating": 6.874,
+      "mean_rating": 6.745,
+      "total_votes": 172971,
+      "movie_count": 32
+    },
+    {
+      "year": 2017,
+      "genre": "Crime",
+      "weighted_rating": 6.872,
+      "mean_rating": 6.684,
+      "total_votes": 154260,
+      "movie_count": 25
+    },
+    {
+      "year": 2017,
+      "genre": "Drama",
+      "weighted_rating": 7.157,
+      "mean_rating": 6.941,
+      "total_votes": 360021,
+      "movie_count": 67
+    },
+    {
+      "year": 2017,
+      "genre": "Family",
+      "weighted_rating": 7.287,
+      "mean_rating": 7.1,
+      "total_votes": 92387,
+      "movie_count": 14
+    },
+    {
+      "year": 2017,
+      "genre": "Fantasy",
+      "weighted_rating": 6.69,
+      "mean_rating": 6.568,
+      "total_votes": 133403,
+      "movie_count": 16
+    },
+    {
+      "year": 2017,
+      "genre": "Horror",
+      "weighted_rating": 6.634,
+      "mean_rating": 6.29,
+      "total_votes": 159162,
+      "movie_count": 28
+    },
+    {
+      "year": 2017,
+      "genre": "Mystery",
+      "weighted_rating": 6.937,
+      "mean_rating": 6.687,
+      "total_votes": 87832,
+      "movie_count": 15
+    },
+    {
+      "year": 2017,
+      "genre": "Romance",
+      "weighted_rating": 7.172,
+      "mean_rating": 6.994,
+      "total_votes": 69992,
+      "movie_count": 11
+    },
+    {
+      "year": 2017,
+      "genre": "Science Fiction",
+      "weighted_rating": 6.949,
+      "mean_rating": 6.645,
+      "total_votes": 233469,
+      "movie_count": 23
+    },
+    {
+      "year": 2017,
+      "genre": "Thriller",
+      "weighted_rating": 6.824,
+      "mean_rating": 6.546,
+      "total_votes": 194286,
+      "movie_count": 35
+    },
+    {
+      "year": 2018,
+      "genre": "Action",
+      "weighted_rating": 7.102,
+      "mean_rating": 6.748,
+      "total_votes": 340848,
+      "movie_count": 44
+    },
+    {
+      "year": 2018,
+      "genre": "Adventure",
+      "weighted_rating": 7.177,
+      "mean_rating": 6.793,
+      "total_votes": 295558,
+      "movie_count": 35
+    },
+    {
+      "year": 2018,
+      "genre": "Animation",
+      "weighted_rating": 7.634,
+      "mean_rating": 7.425,
+      "total_votes": 63698,
+      "movie_count": 10
+    },
+    {
+      "year": 2018,
+      "genre": "Comedy",
+      "weighted_rating": 7.181,
+      "mean_rating": 6.962,
+      "total_votes": 180457,
+      "movie_count": 39
+    },
+    {
+      "year": 2018,
+      "genre": "Crime",
+      "weighted_rating": 6.965,
+      "mean_rating": 6.917,
+      "total_votes": 69578,
+      "movie_count": 18
+    },
+    {
+      "year": 2018,
+      "genre": "Drama",
+      "weighted_rating": 7.303,
+      "mean_rating": 7.156,
+      "total_votes": 206194,
+      "movie_count": 46
+    },
+    {
+      "year": 2018,
+      "genre": "Family",
+      "weighted_rating": 6.92,
+      "mean_rating": 6.637,
+      "total_votes": 52297,
+      "movie_count": 13
+    },
+    {
+      "year": 2018,
+      "genre": "Fantasy",
+      "weighted_rating": 6.634,
+      "mean_rating": 6.567,
+      "total_votes": 83023,
+      "movie_count": 20
+    },
+    {
+      "year": 2018,
+      "genre": "Horror",
+      "weighted_rating": 6.56,
+      "mean_rating": 6.376,
+      "total_votes": 114170,
+      "movie_count": 25
+    },
+    {
+      "year": 2018,
+      "genre": "Mystery",
+      "weighted_rating": 6.628,
+      "mean_rating": 6.474,
+      "total_votes": 66029,
+      "movie_count": 18
+    },
+    {
+      "year": 2018,
+      "genre": "Romance",
+      "weighted_rating": 7.215,
+      "mean_rating": 7.135,
+      "total_votes": 74748,
+      "movie_count": 16
+    },
+    {
+      "year": 2018,
+      "genre": "Science Fiction",
+      "weighted_rating": 7.115,
+      "mean_rating": 6.679,
+      "total_votes": 258894,
+      "movie_count": 29
+    },
+    {
+      "year": 2018,
+      "genre": "Thriller",
+      "weighted_rating": 6.633,
+      "mean_rating": 6.554,
+      "total_votes": 169469,
+      "movie_count": 42
+    },
+    {
+      "year": 2019,
+      "genre": "Action",
+      "weighted_rating": 6.995,
+      "mean_rating": 6.771,
+      "total_votes": 218943,
+      "movie_count": 34
+    },
+    {
+      "year": 2019,
+      "genre": "Adventure",
+      "weighted_rating": 7.085,
+      "mean_rating": 6.986,
+      "total_votes": 234133,
+      "movie_count": 34
+    },
+    {
+      "year": 2019,
+      "genre": "Animation",
+      "weighted_rating": 7.366,
+      "mean_rating": 7.326,
+      "total_votes": 62862,
+      "movie_count": 12
+    },
+    {
+      "year": 2019,
+      "genre": "Comedy",
+      "weighted_rating": 7.163,
+      "mean_rating": 6.875,
+      "total_votes": 210780,
+      "movie_count": 40
+    },
+    {
+      "year": 2019,
+      "genre": "Crime",
+      "weighted_rating": 7.357,
+      "mean_rating": 6.913,
+      "total_votes": 111474,
+      "movie_count": 19
+    },
+    {
+      "year": 2019,
+      "genre": "Drama",
+      "weighted_rating": 7.408,
+      "mean_rating": 7.192,
+      "total_votes": 305782,
+      "movie_count": 56
+    },
+    {
+      "year": 2019,
+      "genre": "Family",
+      "weighted_rating": 7.261,
+      "mean_rating": 7.231,
+      "total_votes": 90785,
+      "movie_count": 19
+    },
+    {
+      "year": 2019,
+      "genre": "Fantasy",
+      "weighted_rating": 6.966,
+      "mean_rating": 6.926,
+      "total_votes": 93478,
+      "movie_count": 17
+    },
+    {
+      "year": 2019,
+      "genre": "Horror",
+      "weighted_rating": 6.479,
+      "mean_rating": 6.279,
+      "total_votes": 97311,
+      "movie_count": 24
+    },
+    {
+      "year": 2019,
+      "genre": "Mystery",
+      "weighted_rating": 6.927,
+      "mean_rating": 6.512,
+      "total_votes": 54253,
+      "movie_count": 11
+    },
+    {
+      "year": 2019,
+      "genre": "Romance",
+      "weighted_rating": 7.222,
+      "mean_rating": 7.174,
+      "total_votes": 62871,
+      "movie_count": 15
+    },
+    {
+      "year": 2019,
+      "genre": "Science Fiction",
+      "weighted_rating": 6.918,
+      "mean_rating": 6.559,
+      "total_votes": 157626,
+      "movie_count": 19
+    },
+    {
+      "year": 2019,
+      "genre": "Thriller",
+      "weighted_rating": 7.2,
+      "mean_rating": 6.766,
+      "total_votes": 191755,
+      "movie_count": 33
+    },
+    {
+      "year": 2020,
+      "genre": "Action",
+      "weighted_rating": 6.963,
+      "mean_rating": 6.906,
+      "total_votes": 129173,
+      "movie_count": 25
+    },
+    {
+      "year": 2020,
+      "genre": "Adventure",
+      "weighted_rating": 6.897,
+      "mean_rating": 6.885,
+      "total_votes": 75387,
+      "movie_count": 18
+    },
+    {
+      "year": 2020,
+      "genre": "Animation",
+      "weighted_rating": 7.78,
+      "mean_rating": 7.646,
+      "total_votes": 36154,
+      "movie_count": 8
+    },
+    {
+      "year": 2020,
+      "genre": "Comedy",
+      "weighted_rating": 7.125,
+      "mean_rating": 6.963,
+      "total_votes": 81077,
+      "movie_count": 22
+    },
+    {
+      "year": 2020,
+      "genre": "Crime",
+      "weighted_rating": 6.997,
+      "mean_rating": 6.868,
+      "total_votes": 61239,
+      "movie_count": 11
+    },
+    {
+      "year": 2020,
+      "genre": "Drama",
+      "weighted_rating": 7.441,
+      "mean_rating": 7.357,
+      "total_votes": 78532,
+      "movie_count": 21
+    },
+    {
+      "year": 2020,
+      "genre": "Family",
+      "weighted_rating": 7.359,
+      "mean_rating": 7.087,
+      "total_votes": 53191,
+      "movie_count": 11
+    },
+    {
+      "year": 2020,
+      "genre": "Fantasy",
+      "weighted_rating": 7.145,
+      "mean_rating": 7.023,
+      "total_votes": 75352,
+      "movie_count": 16
+    },
+    {
+      "year": 2020,
+      "genre": "Horror",
+      "weighted_rating": 6.535,
+      "mean_rating": 6.469,
+      "total_votes": 38569,
+      "movie_count": 13
+    },
+    {
+      "year": 2020,
+      "genre": "Mystery",
+      "weighted_rating": 6.609,
+      "mean_rating": 6.401,
+      "total_votes": 17211,
+      "movie_count": 6
+    },
+    {
+      "year": 2020,
+      "genre": "Romance",
+      "weighted_rating": 7.319,
+      "mean_rating": 7.411,
+      "total_votes": 38845,
+      "movie_count": 10
+    },
+    {
+      "year": 2020,
+      "genre": "Science Fiction",
+      "weighted_rating": 6.857,
+      "mean_rating": 6.613,
+      "total_votes": 61600,
+      "movie_count": 13
+    },
+    {
+      "year": 2020,
+      "genre": "Thriller",
+      "weighted_rating": 6.913,
+      "mean_rating": 6.751,
+      "total_votes": 75968,
+      "movie_count": 18
+    },
+    {
+      "year": 2021,
+      "genre": "Action",
+      "weighted_rating": 7.222,
+      "mean_rating": 6.987,
+      "total_votes": 196461,
+      "movie_count": 33
+    },
+    {
+      "year": 2021,
+      "genre": "Adventure",
+      "weighted_rating": 7.35,
+      "mean_rating": 7.195,
+      "total_votes": 207071,
+      "movie_count": 28
+    },
+    {
+      "year": 2021,
+      "genre": "Animation",
+      "weighted_rating": 7.57,
+      "mean_rating": 7.534,
+      "total_votes": 48899,
+      "movie_count": 10
+    },
+    {
+      "year": 2021,
+      "genre": "Comedy",
+      "weighted_rating": 7.305,
+      "mean_rating": 7.181,
+      "total_votes": 123927,
+      "movie_count": 26
+    },
+    {
+      "year": 2021,
+      "genre": "Crime",
+      "weighted_rating": 6.997,
+      "mean_rating": 6.826,
+      "total_votes": 59836,
+      "movie_count": 14
+    },
+    {
+      "year": 2021,
+      "genre": "Drama",
+      "weighted_rating": 7.164,
+      "mean_rating": 7.109,
+      "total_votes": 104494,
+      "movie_count": 34
+    },
+    {
+      "year": 2021,
+      "genre": "Family",
+      "weighted_rating": 7.597,
+      "mean_rating": 7.455,
+      "total_votes": 55718,
+      "movie_count": 10
+    },
+    {
+      "year": 2021,
+      "genre": "Fantasy",
+      "weighted_rating": 7.524,
+      "mean_rating": 7.392,
+      "total_votes": 76173,
+      "movie_count": 12
+    },
+    {
+      "year": 2021,
+      "genre": "Horror",
+      "weighted_rating": 6.754,
+      "mean_rating": 6.651,
+      "total_votes": 61555,
+      "movie_count": 19
+    },
+    {
+      "year": 2021,
+      "genre": "Mystery",
+      "weighted_rating": 6.742,
+      "mean_rating": 6.662,
+      "total_votes": 38651,
+      "movie_count": 13
+    },
+    {
+      "year": 2021,
+      "genre": "Romance",
+      "weighted_rating": 7.193,
+      "mean_rating": 7.175,
+      "total_votes": 17853,
+      "movie_count": 8
+    },
+    {
+      "year": 2021,
+      "genre": "Science Fiction",
+      "weighted_rating": 7.265,
+      "mean_rating": 7.036,
+      "total_votes": 144790,
+      "movie_count": 20
+    },
+    {
+      "year": 2021,
+      "genre": "Thriller",
+      "weighted_rating": 6.974,
+      "mean_rating": 6.783,
+      "total_votes": 104019,
+      "movie_count": 30
+    },
+    {
+      "year": 2022,
+      "genre": "Action",
+      "weighted_rating": 7.168,
+      "mean_rating": 7.064,
+      "total_votes": 155407,
+      "movie_count": 31
+    },
+    {
+      "year": 2022,
+      "genre": "Adventure",
+      "weighted_rating": 7.175,
+      "mean_rating": 7.091,
+      "total_votes": 136008,
+      "movie_count": 28
+    },
+    {
+      "year": 2022,
+      "genre": "Animation",
+      "weighted_rating": 7.545,
+      "mean_rating": 7.44,
+      "total_votes": 45074,
+      "movie_count": 13
+    },
+    {
+      "year": 2022,
+      "genre": "Comedy",
+      "weighted_rating": 7.205,
+      "mean_rating": 7.154,
+      "total_votes": 114946,
+      "movie_count": 29
+    },
+    {
+      "year": 2022,
+      "genre": "Crime",
+      "weighted_rating": 7.14,
+      "mean_rating": 6.984,
+      "total_votes": 45446,
+      "movie_count": 11
+    },
+    {
+      "year": 2022,
+      "genre": "Drama",
+      "weighted_rating": 7.434,
+      "mean_rating": 7.217,
+      "total_votes": 82296,
+      "movie_count": 27
+    },
+    {
+      "year": 2022,
+      "genre": "Family",
+      "weighted_rating": 7.402,
+      "mean_rating": 7.218,
+      "total_votes": 44484,
+      "movie_count": 12
+    },
+    {
+      "year": 2022,
+      "genre": "Fantasy",
+      "weighted_rating": 7.106,
+      "mean_rating": 7.082,
+      "total_votes": 75215,
+      "movie_count": 18
+    },
+    {
+      "year": 2022,
+      "genre": "Horror",
+      "weighted_rating": 6.849,
+      "mean_rating": 6.732,
+      "total_votes": 60232,
+      "movie_count": 18
+    },
+    {
+      "year": 2022,
+      "genre": "Mystery",
+      "weighted_rating": 6.992,
+      "mean_rating": 6.815,
+      "total_votes": 57445,
+      "movie_count": 13
+    },
+    {
+      "year": 2022,
+      "genre": "Romance",
+      "weighted_rating": 7.226,
+      "mean_rating": 7.111,
+      "total_votes": 14015,
+      "movie_count": 6
+    },
+    {
+      "year": 2022,
+      "genre": "Science Fiction",
+      "weighted_rating": 7.058,
+      "mean_rating": 6.931,
+      "total_votes": 100008,
+      "movie_count": 19
+    },
+    {
+      "year": 2022,
+      "genre": "Thriller",
+      "weighted_rating": 6.998,
+      "mean_rating": 6.733,
+      "total_votes": 92362,
+      "movie_count": 23
+    },
+    {
+      "year": 2023,
+      "genre": "Action",
+      "weighted_rating": 7.087,
+      "mean_rating": 6.952,
+      "total_votes": 131042,
+      "movie_count": 33
+    },
+    {
+      "year": 2023,
+      "genre": "Adventure",
+      "weighted_rating": 7.05,
+      "mean_rating": 6.836,
+      "total_votes": 114442,
+      "movie_count": 25
+    },
+    {
+      "year": 2023,
+      "genre": "Animation",
+      "weighted_rating": 7.678,
+      "mean_rating": 7.396,
+      "total_votes": 34542,
+      "movie_count": 7
+    },
+    {
+      "year": 2023,
+      "genre": "Comedy",
+      "weighted_rating": 7.067,
+      "mean_rating": 6.947,
+      "total_votes": 79965,
+      "movie_count": 20
+    },
+    {
+      "year": 2023,
+      "genre": "Crime",
+      "weighted_rating": 7.092,
+      "mean_rating": 6.945,
+      "total_votes": 45324,
+      "movie_count": 12
+    },
+    {
+      "year": 2023,
+      "genre": "Drama",
+      "weighted_rating": 7.455,
+      "mean_rating": 7.364,
+      "total_votes": 63589,
+      "movie_count": 18
+    },
+    {
+      "year": 2023,
+      "genre": "Family",
+      "weighted_rating": 7.247,
+      "mean_rating": 7.018,
+      "total_votes": 28782,
+      "movie_count": 6
+    },
+    {
+      "year": 2023,
+      "genre": "Fantasy",
+      "weighted_rating": 6.975,
+      "mean_rating": 6.801,
+      "total_votes": 51916,
+      "movie_count": 11
+    },
+    {
+      "year": 2023,
+      "genre": "Horror",
+      "weighted_rating": 6.857,
+      "mean_rating": 6.806,
+      "total_votes": 43515,
+      "movie_count": 14
+    },
+    {
+      "year": 2023,
+      "genre": "Mystery",
+      "weighted_rating": 6.691,
+      "mean_rating": 6.664,
+      "total_votes": 19194,
+      "movie_count": 7
+    },
+    {
+      "year": 2023,
+      "genre": "Romance",
+      "weighted_rating": 7.215,
+      "mean_rating": 7.147,
+      "total_votes": 30863,
+      "movie_count": 8
+    },
+    {
+      "year": 2023,
+      "genre": "Science Fiction",
+      "weighted_rating": 7.109,
+      "mean_rating": 6.916,
+      "total_votes": 70150,
+      "movie_count": 15
+    },
+    {
+      "year": 2023,
+      "genre": "Thriller",
+      "weighted_rating": 7.063,
+      "mean_rating": 6.954,
+      "total_votes": 84928,
+      "movie_count": 24
+    },
+    {
+      "year": 2024,
+      "genre": "Action",
+      "weighted_rating": 7.003,
+      "mean_rating": 6.923,
+      "total_votes": 90260,
+      "movie_count": 25
+    },
+    {
+      "year": 2024,
+      "genre": "Adventure",
+      "weighted_rating": 7.315,
+      "mean_rating": 7.19,
+      "total_votes": 77308,
+      "movie_count": 20
+    },
+    {
+      "year": 2024,
+      "genre": "Animation",
+      "weighted_rating": 7.574,
+      "mean_rating": 7.52,
+      "total_votes": 31482,
+      "movie_count": 8
+    },
+    {
+      "year": 2024,
+      "genre": "Comedy",
+      "weighted_rating": 7.134,
+      "mean_rating": 6.997,
+      "total_votes": 61483,
+      "movie_count": 18
+    },
+    {
+      "year": 2024,
+      "genre": "Crime",
+      "weighted_rating": 6.669,
+      "mean_rating": 6.639,
+      "total_votes": 20406,
+      "movie_count": 7
+    },
+    {
+      "year": 2024,
+      "genre": "Drama",
+      "weighted_rating": 6.844,
+      "mean_rating": 6.876,
+      "total_votes": 43126,
+      "movie_count": 15
+    },
+    {
+      "year": 2024,
+      "genre": "Family",
+      "weighted_rating": 7.547,
+      "mean_rating": 7.47,
+      "total_votes": 36633,
+      "movie_count": 10
+    },
+    {
+      "year": 2024,
+      "genre": "Fantasy",
+      "weighted_rating": 6.814,
+      "mean_rating": 6.776,
+      "total_votes": 31325,
+      "movie_count": 11
+    },
+    {
+      "year": 2024,
+      "genre": "Horror",
+      "weighted_rating": 6.784,
+      "mean_rating": 6.719,
+      "total_votes": 44255,
+      "movie_count": 15
+    },
+    {
+      "year": 2024,
+      "genre": "Mystery",
+      "weighted_rating": 6.487,
+      "mean_rating": 6.469,
+      "total_votes": 10666,
+      "movie_count": 5
+    },
+    {
+      "year": 2024,
+      "genre": "Romance",
+      "weighted_rating": 6.973,
+      "mean_rating": 6.972,
+      "total_votes": 19385,
+      "movie_count": 7
+    },
+    {
+      "year": 2024,
+      "genre": "Science Fiction",
+      "weighted_rating": 7.418,
+      "mean_rating": 7.313,
+      "total_votes": 68737,
+      "movie_count": 14
+    },
+    {
+      "year": 2024,
+      "genre": "Thriller",
+      "weighted_rating": 6.711,
+      "mean_rating": 6.681,
+      "total_votes": 47149,
+      "movie_count": 17
+    },
+    {
+      "year": 2025,
+      "genre": "Action",
+      "weighted_rating": 7.151,
+      "mean_rating": 7.072,
+      "total_votes": 60195,
+      "movie_count": 20
+    },
+    {
+      "year": 2025,
+      "genre": "Adventure",
+      "weighted_rating": 7.141,
+      "mean_rating": 7.081,
+      "total_votes": 45448,
+      "movie_count": 13
+    },
+    {
+      "year": 2025,
+      "genre": "Animation",
+      "weighted_rating": 8.077,
+      "mean_rating": 8.165,
+      "total_votes": 8781,
+      "movie_count": 3
+    },
+    {
+      "year": 2025,
+      "genre": "Comedy",
+      "weighted_rating": 7.128,
+      "mean_rating": 7.09,
+      "total_votes": 29387,
+      "movie_count": 10
+    },
+    {
+      "year": 2025,
+      "genre": "Crime",
+      "weighted_rating": 6.961,
+      "mean_rating": 6.879,
+      "total_votes": 16853,
+      "movie_count": 7
+    },
+    {
+      "year": 2025,
+      "genre": "Drama",
+      "weighted_rating": 7.656,
+      "mean_rating": 7.608,
+      "total_votes": 10691,
+      "movie_count": 3
+    },
+    {
+      "year": 2025,
+      "genre": "Family",
+      "weighted_rating": 6.884,
+      "mean_rating": 6.659,
+      "total_votes": 13842,
+      "movie_count": 5
+    },
+    {
+      "year": 2025,
+      "genre": "Fantasy",
+      "weighted_rating": 7.349,
+      "mean_rating": 7.202,
+      "total_votes": 21653,
+      "movie_count": 7
+    },
+    {
+      "year": 2025,
+      "genre": "Horror",
+      "weighted_rating": 7.193,
+      "mean_rating": 7.138,
+      "total_votes": 27616,
+      "movie_count": 9
+    },
+    {
+      "year": 2025,
+      "genre": "Mystery",
+      "weighted_rating": 7.276,
+      "mean_rating": 7.257,
+      "total_votes": 18340,
+      "movie_count": 6
+    },
+    {
+      "year": 2025,
+      "genre": "Romance",
+      "weighted_rating": 7.695,
+      "mean_rating": 7.695,
+      "total_votes": 4193,
+      "movie_count": 1
+    },
+    {
+      "year": 2025,
+      "genre": "Science Fiction",
+      "weighted_rating": 7.031,
+      "mean_rating": 6.962,
+      "total_votes": 54231,
+      "movie_count": 17
+    },
+    {
+      "year": 2025,
+      "genre": "Thriller",
+      "weighted_rating": 7.065,
+      "mean_rating": 7.007,
+      "total_votes": 54323,
+      "movie_count": 20
+    },
+    {
+      "year": 2026,
+      "genre": "Action",
+      "weighted_rating": 7.541,
+      "mean_rating": 7.492,
+      "total_votes": 25616,
+      "movie_count": 11
+    },
+    {
+      "year": 2026,
+      "genre": "Adventure",
+      "weighted_rating": 8.128,
+      "mean_rating": 8.006,
+      "total_votes": 31273,
+      "movie_count": 10
+    },
+    {
+      "year": 2026,
+      "genre": "Animation",
+      "weighted_rating": 8.381,
+      "mean_rating": 8.412,
+      "total_votes": 10384,
+      "movie_count": 4
+    },
+    {
+      "year": 2026,
+      "genre": "Comedy",
+      "weighted_rating": 7.585,
+      "mean_rating": 7.509,
+      "total_votes": 18184,
+      "movie_count": 8
+    },
+    {
+      "year": 2026,
+      "genre": "Crime",
+      "weighted_rating": 7.592,
+      "mean_rating": 7.55,
+      "total_votes": 7710,
+      "movie_count": 4
+    },
+    {
+      "year": 2026,
+      "genre": "Drama",
+      "weighted_rating": 7.923,
+      "mean_rating": 7.713,
+      "total_votes": 10710,
+      "movie_count": 4
+    },
+    {
+      "year": 2026,
+      "genre": "Family",
+      "weighted_rating": 8.319,
+      "mean_rating": 8.317,
+      "total_votes": 12049,
+      "movie_count": 5
+    },
+    {
+      "year": 2026,
+      "genre": "Fantasy",
+      "weighted_rating": 8.027,
+      "mean_rating": 8.006,
+      "total_votes": 14344,
+      "movie_count": 5
+    },
+    {
+      "year": 2026,
+      "genre": "Horror",
+      "weighted_rating": 7.601,
+      "mean_rating": 7.447,
+      "total_votes": 15575,
+      "movie_count": 5
+    },
+    {
+      "year": 2026,
+      "genre": "Mystery",
+      "weighted_rating": 7.448,
+      "mean_rating": 7.484,
+      "total_votes": 9326,
+      "movie_count": 4
+    },
+    {
+      "year": 2026,
+      "genre": "Romance",
+      "weighted_rating": 6.899,
+      "mean_rating": 6.899,
+      "total_votes": 1797,
+      "movie_count": 1
+    },
+    {
+      "year": 2026,
+      "genre": "Science Fiction",
+      "weighted_rating": 7.675,
+      "mean_rating": 7.461,
+      "total_votes": 31566,
+      "movie_count": 11
+    },
+    {
+      "year": 2026,
+      "genre": "Thriller",
+      "weighted_rating": 7.491,
+      "mean_rating": 7.345,
+      "total_votes": 22823,
+      "movie_count": 9
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visualization 1 — Audience Similarity Network</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .viz-page { max-width: 1180px; margin: 0 auto; }
+    .viz-page-header { margin-bottom: 1.5rem; }
+    .viz-page-header h1 { margin-bottom: 0.5rem; }
+    .viz-page-header p { max-width: 780px; line-height: 1.6; }
+    .network-panel {
+      width: 100%;
+      overflow-x: auto;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .back-link {
+      display: inline-block;
+      margin-top: 1.25rem;
+      color: #58a6ff;
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+    .back-link:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <main class="viz-page">
+    <div class="viz-page-header">
+      <h1>Visualization 1 — Audience Similarity Network</h1>
+      <p class="viz-caption">
+      80 most-rated candidate movies, connected when a large number of MovieLens users
+      rated both highly (≥4/5). Node size = number of connections; edge thickness =
+      strength of the shared-audience overlap; color = primary genre. Layout is a
+      force-directed simulation run once to a resting position (static — no interaction yet).
+    </p>
+    </div>
+
+    <div class="network-panel">
+      <!-- Keep the original selector and canvas dimensions for the unchanged renderer. -->
+      <svg id="viz2-svg" width="1000" height="800"></svg>
+    </div>
+
+    <a class="back-link" href="index.html">← Back to Project Overview</a>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+  <script src="js/viz2_similarity_network.js"></script>
+</body>
+</html>

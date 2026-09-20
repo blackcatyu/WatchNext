@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Visualization 3 — Genre Ratings Over Time
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+
+    <style>
+
+        .viz-page {
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+
+        .viz-page-header {
+            margin-bottom: 1.5rem;
+        }
+
+
+        .viz-page-header h1 {
+            margin-bottom: 0.5rem;
+        }
+
+
+        .viz-page-header p {
+            max-width: 780px;
+
+            color: var(--muted);
+
+            font-size: 0.9rem;
+
+            line-height: 1.6;
+        }
+
+
+        .summary-row {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 0.75rem;
+
+            margin: 1rem 0;
+        }
+
+
+        .summary-item {
+            padding: 0.45rem 0.75rem;
+
+            background: #0d1117;
+
+            border: 1px solid var(--border);
+
+            border-radius: 6px;
+
+            color: var(--muted);
+
+            font-size: 0.82rem;
+        }
+
+
+        .summary-item strong {
+            color: var(--text);
+        }
+
+
+        .heatmap-panel {
+            width: 100%;
+
+            overflow-x: auto;
+
+            margin-top: 1rem;
+
+            padding: 0.5rem;
+
+            background: #0f1216;
+
+            border: 1px solid var(--border);
+
+            border-radius: 8px;
+        }
+
+
+        #heatmap svg {
+            margin: 0 auto;
+        }
+
+
+        .heatmap-note {
+            max-width: 820px;
+
+            margin-top: 1rem;
+
+            color: var(--muted);
+
+            font-size: 0.82rem;
+
+            line-height: 1.55;
+        }
+
+
+        .back-link {
+            display: inline-block;
+
+            margin-top: 1.25rem;
+
+            color: #58a6ff;
+
+            text-decoration: none;
+
+            font-size: 0.85rem;
+        }
+
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <main class="viz-page">
+
+
+        <div class="viz-page-header">
+
+            <h1>
+                Genre Ratings Over Time
+            </h1>
+
+
+            <p>
+                This heatmap compares major movie genres across
+                release years from 2016 through 2026.
+                The static view uses TMDB ratings to show how
+                rating patterns differ across genres and years.
+            </p>
+
+        </div>
+
+
+        <!-- Static summary -->
+
+        <div class="summary-row">
+
+            <div class="summary-item">
+                Years:
+                <strong>2016–2026</strong>
+            </div>
+
+
+            <div class="summary-item">
+                Genres:
+                <strong id="genre-count">13</strong>
+            </div>
+
+
+            <div class="summary-item">
+                Metric:
+                <strong>
+                    Weighted Average Rating
+                </strong>
+            </div>
+
+
+            <div class="summary-item">
+                Source:
+                <strong>TMDB</strong>
+            </div>
+
+        </div>
+
+
+        <!-- Static heatmap -->
+
+        <div class="heatmap-panel">
+
+            <div id="heatmap"></div>
+
+        </div>
+
+
+        <p class="heatmap-note">
+
+            Each cell represents one genre–year combination.
+            Color represents the vote-count-weighted average
+            TMDB rating.
+
+            Movies with multiple genres contribute to each
+            relevant genre.
+
+            The 2026 column is marked with an asterisk because
+            it contains partial-year data.
+
+        </p>
+
+
+        <a
+            class="back-link"
+            href="index.html"
+        >
+            ← Back to Project Overview
+        </a>
+
+    </main>
+
+
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"
+    ></script>
+
+
+    <script
+        src="js/viz4_heatmap.js"
+    ></script>
+
+</body>
+
+</html>
