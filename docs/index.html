@@ -286,15 +286,22 @@
 
       <li>
         <strong>Use hover tooltips for details.</strong>
-        Hovering over a movie or collaboration will provide exact information without
-        permanently adding too much text to the visualization.
+        Hovering over a person will show their name, role, movie count, and collaboration
+        strength. Hovering over an edge will show the two collaborators, their shared-movie
+        count, and movie titles. In the career view, movie tooltips will show title, year,
+        rating, genre, and revenue. This lets users check exact values behind the visual
+        encodings without permanently crowding the charts with labels.
       </li>
 
       <li>
         <strong>Use transitions when the view changes.</strong>
-        When users change the genre, collaboration threshold, or selected person, short
-        transitions will help them follow which nodes and relationships remain instead of
-        making the visualization change suddenly.
+        When users change the genre or collaboration threshold, filtered-out edges and
+        nodes with no remaining links will fade out, and returning elements will fade in.
+        Node sizes and edge widths will transition to the updated collaboration counts;
+        retained nodes will stay near their previous positions, and community colors will
+        remain consistent. Selecting a person will fade unrelated elements while emphasizing
+        their collaborators. These changes will help users follow the same people and
+        relationships across views without having to locate them again.
       </li>
     </ul>
 
@@ -336,53 +343,34 @@
     <ul>
       <li>
         <strong>Switch between different metrics.</strong>
-        A dropdown will allow users to choose Weighted Average Rating, Total Vote Count,
-        or Number of Movies. Keeping the same genre-by-year layout makes it easier to compare
-        how the overall pattern changes depending on the metric.
-      </li>
-
-      <li>
-        <strong>Weighted Average Rating</strong> will show how highly movies in each
-        genre–year group are rated.
-      </li>
-
-      <li>
-        <strong>Total Vote Count</strong> will show audience voting activity.
-        A genre may have a high rating but relatively few votes, so this gives a different
-        perspective from rating alone.
-      </li>
-
-      <li>
-        <strong>Number of Movies</strong> will show how many movies from the dataset
-        contribute to each genre–year cell. This also helps users understand whether a
-        rating is based on a relatively large or small group of movies.
+        A dropdown will let users recolor the same genre–year grid by Weighted Average
+        Rating, Total Vote Count, or Number of Movies. These measures show rating levels,
+        voting activity, and dataset coverage, respectively. For example, users could check
+        whether a highly rated genre–year also has many votes or contains only a few movies.
       </li>
 
       <li>
         <strong>Hover over a cell for exact values.</strong>
-        The tooltip will show genre, year, weighted rating, number of movies, and total
-        vote count. The heatmap is useful for seeing overall patterns, while the tooltip
-        provides exact values when needed.
+        A tooltip will show the genre, year, weighted rating, total votes, and movie count.
+        Showing all three measures together will help users interpret a cell's color in
+        context, especially when a high rating is based on limited coverage.
       </li>
 
       <li>
         <strong>Highlight the corresponding row and column.</strong>
-        When users hover over a cell, the selected genre row and year column will remain
-        emphasized while unrelated cells are dimmed. This can make it easier to compare
-        one genre across years or several genres within the same year.
+        Hovering over a cell will emphasize its genre row and year column while dimming
+        unrelated cells. Moving the pointer away will restore the full heatmap. This will
+        help users follow one genre across years or compare genres within the same year.
       </li>
 
       <li>
-        <strong>Update the color legend when the metric changes.</strong>
-        Since rating, vote count, and movie count have different numerical ranges,
-        the legend will change to match the selected metric.
-      </li>
-
-      <li>
-        <strong>Animate metric changes.</strong>
-        Instead of immediately replacing all colors, a short transition will show how
-        the pattern changes when users switch between rating, voting activity, and
-        movie count.
+        <strong>Animate metric changes with a synchronized legend.</strong>
+        When users select a different metric, the rows and columns will stay in the same
+        positions while cell colors transition to the new values. The metric label, legend
+        range, units, and displayed values will update with the selection, so a color is
+        always interpreted using the active metric. Keeping cell positions fixed will help
+        users track the same genre–year across rating, voting activity, and movie count;
+        the transition represents a change of measure, not a change over time.
       </li>
     </ul>
 
