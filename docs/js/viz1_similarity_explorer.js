@@ -366,6 +366,7 @@
     const m = d.movie;
     let html = `<div class="tt-title">${esc(titleYear(m))}</div>
       <div class="tt-sub">${esc(m.genres.join(" · ") || "No genre")}</div>
+      <div class="tt-row">MovieLens ${m.ratingMean.toFixed(2)}/5 · TMDB ${m.voteAverage.toFixed(1)}/10</div>
       <div class="tt-row">${num(m.fans)} MovieLens users rated it ≥${data.likeThreshold}/5</div>`;
 
     if (view.center && d !== view.center) {
@@ -485,6 +486,7 @@
         <dt>Director</dt><dd>${esc(m.directors.join(", ") || "—")}</dd>
         <dt>Starring</dt><dd>${esc(m.cast.join(", ") || "—")}</dd>
         <dt>MovieLens</dt><dd>${m.ratingMean.toFixed(2)} / 5 from ${num(m.ratingCount)} ratings</dd>
+        <dt>TMDB</dt><dd>${m.voteAverage.toFixed(1)} / 10 from ${num(m.voteCount)} votes</dd>
       </dl>
       ${smallAudience}
 

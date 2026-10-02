@@ -322,7 +322,7 @@
          <div class="tt-sub">${esc(m.genres.join(" · ") || "No genre")}</div>
          <div class="tt-row">${
            s.mode === "audience"
-             ? `${num(m.fans)} MovieLens fans · placed by audience overlap`
+             ? `MovieLens ${m.ratingMean.toFixed(2)}/5 · TMDB ${m.voteAverage.toFixed(1)}/10<br>${num(m.fans)} MovieLens fans · placed by audience overlap`
              : `TMDB ${m.voteAverage.toFixed(1)}/10 · no MovieLens data, placed by content similarity`
          }</div>
          <div class="tt-hint">${s === selected ? "Click again to deselect and zoom out" : "Click to zoom in"} · lines show its nearest ${s.mode === "audience" ? "audience" : "content"} neighbors</div>`
@@ -445,7 +445,7 @@
       <div class="card-sub">${esc(s.m.genres.join(" · "))}</div>
       <div class="card-sub">${
         audience
-          ? `${num(s.m.fans)} MovieLens fans · nearest by audience overlap:`
+          ? `MovieLens ${s.m.ratingMean.toFixed(2)}/5 · TMDB ${s.m.voteAverage.toFixed(1)}/10<br>${num(s.m.fans)} MovieLens fans · nearest by audience overlap:`
           : "No MovieLens data · placed beside similar-content movies:"
       }</div>
       <ol>${rows}</ol>
@@ -504,11 +504,8 @@
       <dl class="facts">
         <dt>Director</dt><dd>${esc(m.directors.join(", ") || "—")}</dd>
         <dt>Starring</dt><dd>${esc(m.cast.join(", ") || "—")}</dd>
-        ${
-          audience
-            ? `<dt>MovieLens</dt><dd>${m.ratingMean.toFixed(2)} / 5 from ${num(m.ratingCount)} ratings</dd>`
-            : `<dt>TMDB</dt><dd>${m.voteAverage.toFixed(1)} / 10 from ${num(m.voteCount)} votes</dd>`
-        }
+        ${audience ? `<dt>MovieLens</dt><dd>${m.ratingMean.toFixed(2)} / 5 from ${num(m.ratingCount)} ratings</dd>` : ""}
+        <dt>TMDB</dt><dd>${m.voteAverage.toFixed(1)} / 10 from ${num(m.voteCount)} votes</dd>
       </dl>
       ${audience ? `<button class="expand-btn" type="button" id="universe-open">Explore in the audience network →</button>` : ""}
       <h3>${audience ? "Nearest by audience" : "Placed beside"}</h3>
