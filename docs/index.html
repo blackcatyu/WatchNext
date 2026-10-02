@@ -288,8 +288,40 @@
     <hr class="viz-divider">
 
 
+    <h3>Visualization 2 — Movie Performance and Audience Discussion</h3>
+
+    <p class="viz-caption">
+      Each bubble is a movie with box-office data (2,745 movies; streaming-first releases with
+      no box office are left out). Size = box office, color = primary genre.
+      <strong>Rating vs. discussion</strong>: audience rating against how much the movie is
+      discussed (TMDB votes compared with movies released within ±2 years, so older movies'
+      extra decades of votes don't dominate); median lines split out <em>hidden gems</em>,
+      <em>acclaimed hits</em> and movies <em>talked about despite low ratings</em>.
+      <strong>Rating vs. review tone</strong>: rating percentile against the share of positive
+      written reviews (movies with ≥3 reviews); distance from the diagonal is disagreement.
+      Pick a region in the side panel to list its most typical movies; click a bubble for
+      director, cast and review keywords.
+    </p>
+
+    <div id="scatter" class="scatter"></div>
+
+    <p>
+      <a class="viz-link" href="viz2.html">
+        Open Visualization 2 →
+      </a>
+    </p>
+
+
+
+    <!-- =======================================================
+         Visualization 3
+    ======================================================== -->
+
+    <hr class="viz-divider">
+
+
     <h3>
-      Visualization 2 — Actor &amp; Director Collaboration Network
+      Visualization 3 — Actor &amp; Director Collaboration Network
     </h3>
 
     <p class="viz-caption">
@@ -315,8 +347,8 @@
     </div>
 
     <p>
-      <a class="viz-link" href="viz2.html">
-        View Static Visualization 2 →
+      <a class="viz-link" href="viz3.html">
+        View Static Visualization 3 →
       </a>
     </p>
 
@@ -391,14 +423,14 @@
 
 
     <!-- =======================================================
-         Visualization 3
+         Visualization 4
     ======================================================== -->
 
     <hr class="viz-divider">
 
 
     <h3>
-      Visualization 3 — Genre Ratings Over Time
+      Visualization 4 — Genre Ratings Over Time
     </h3>
 
     <p class="viz-caption">
@@ -413,8 +445,8 @@
     </div>
 
     <p>
-      <a class="viz-link" href="viz3.html">
-        View Static Visualization 3 →
+      <a class="viz-link" href="viz4.html">
+        View Static Visualization 4 →
       </a>
     </p>
 
@@ -507,6 +539,7 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
   <script src="js/viz1_universe.js"></script>
+  <script src="js/viz2_scatter.js"></script>
   <script src="js/viz3_collaboration_network.js"></script>
   <script src="js/viz4_heatmap.js"></script>
 </body>

@@ -385,3 +385,193 @@ svg {
 @media (max-width: 640px) {
   .universe-card { top: auto; bottom: 8px; left: 8px; right: 8px; width: auto; max-height: 45%; }
 }
+
+/* ============================================================
+   Shared detail-panel bits (Visualizations 1 and 2)
+============================================================ */
+
+.chips { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.3rem; }
+.chip {
+  padding: 0.1rem 0.45rem;
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 0.74rem;
+}
+.chip-kw { color: #d2a8ff; }
+.chip-person { color: #7ee787; }
+.sentiment-bar { height: 8px; background: #da3633; border-radius: 4px; overflow: hidden; margin: 0.3rem 0; }
+.sentiment-bar span { display: block; height: 100%; background: #2ea043; }
+
+
+/* ============================================================
+   Visualization 2 scatterplot (viz2.html and the homepage)
+   Used by docs/js/viz2_scatter.js wherever it is embedded.
+============================================================ */
+
+.scatter {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.scatter .hidden { display: none !important; }
+.scatter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.9rem;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.seg { display: inline-flex; align-items: center; gap: 0.35rem; }
+.seg button {
+  padding: 0.3rem 0.6rem;
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  cursor: pointer;
+}
+.seg button:hover { color: var(--text); }
+.seg button.active { border-color: var(--text); color: var(--text); font-weight: 600; }
+.scatter-mode button.active[data-mode="tone"] { border-color: #e3b341; color: #e3b341; }
+.scatter-size { display: inline-flex; align-items: center; gap: 0.3rem; cursor: pointer; }
+.scatter-decade,
+.scatter-search input {
+  padding: 0.3rem 0.5rem;
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 0.78rem;
+}
+.scatter-search { position: relative; margin-left: auto; }
+.scatter-search input { width: 190px; }
+.scatter-search ul {
+  display: none;
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 4px);
+  right: 0;
+  width: 260px;
+  margin: 0;
+  padding: 0.25rem 0;
+  list-style: none;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+.scatter-search li { padding: 0.35rem 0.7rem; font-size: 0.8rem; color: var(--text); cursor: pointer; }
+.scatter-search li:hover { background: #21262d; }
+.scatter-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.45rem 0.75rem 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+.scatter-status .scatter-hint { margin-left: auto; }
+.scatter-status button {
+  padding: 0;
+  background: none;
+  border: none;
+  color: #58a6ff;
+  font-size: inherit;
+  cursor: pointer;
+}
+.scatter-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 290px;
+}
+@media (max-width: 900px) { .scatter-body { grid-template-columns: 1fr; } }
+.scatter-chart { position: relative; }
+.scatter-chart svg { display: block; width: 100%; height: auto; margin: 0; }
+.scatter .axis text { fill: var(--muted); font-size: 11px; }
+.scatter .axis path,
+.scatter .axis line { stroke: var(--border); }
+.scatter .axis-label { fill: var(--muted); font-size: 12px; }
+.scatter .guide { stroke: #8b949e; stroke-dasharray: 4 4; stroke-width: 1; }
+.scatter .dot { stroke: rgba(15, 18, 22, 0.8); stroke-width: 0.6; cursor: pointer; }
+.scatter .dot.hidden-dot { pointer-events: none; }
+.scatter .ring { fill: none; stroke: #e6edf3; stroke-width: 2; pointer-events: none; }
+.scatter .region-mark {
+  fill: #e6edf3;
+  fill-opacity: 0.35;
+  font-size: 13px;
+  font-weight: 600;
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: var(--panel);
+  stroke-width: 3px;
+}
+.scatter .region-mark.active { fill-opacity: 0.95; }
+.scatter .brush .selection { fill: #58a6ff; fill-opacity: 0.12; stroke: #58a6ff; }
+.scatter-tooltip {
+  position: absolute;
+  z-index: 10;
+  max-width: 290px;
+  padding: 0.6rem 0.75rem;
+  background: rgba(13, 17, 23, 0.95);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+.scatter-side {
+  padding: 0.9rem 1rem;
+  border-left: 1px solid var(--border);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+@media (max-width: 900px) { .scatter-side { border-left: none; border-top: 1px solid var(--border); } }
+.scatter-side h3 { margin: 0 0 0.4rem; font-size: 1rem; }
+.scatter-side h4 { margin: 1rem 0 0.35rem; font-size: 0.84rem; }
+.scatter .side-muted { color: var(--muted); font-size: 0.78rem; }
+.side-year { color: var(--muted); font-weight: 400; font-size: 0.8rem; }
+.side-back {
+  margin-bottom: 0.5rem;
+  padding: 0;
+  background: none;
+  border: none;
+  color: #58a6ff;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+.scatter .side-regions,
+.scatter .side-list { margin: 0.5rem 0 0; padding: 0; list-style: none; }
+/* The homepage's .viz-section p/li rules would otherwise enlarge the side panel. */
+.scatter .scatter-side p,
+.scatter .scatter-side li { max-width: none; font-size: inherit; line-height: inherit; }
+.side-regions button,
+.side-list button {
+  display: flex;
+  width: 100%;
+  padding: 0.4rem 0.45rem;
+  background: none;
+  border: none;
+  border-radius: 5px;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.side-regions button { flex-direction: column; }
+.side-regions button span { color: var(--muted); font-size: 0.76rem; }
+.side-list button { align-items: center; gap: 0.45rem; }
+.side-regions button:hover,
+.side-list button:hover { background: #21262d; }
+.side-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.side-facts { display: grid; grid-template-columns: auto 1fr; gap: 0.2rem 0.7rem; margin: 0.7rem 0 0; }
+.side-facts dt { color: var(--muted); }
+.side-facts dd { margin: 0; }
+.side-link { display: inline-block; margin-top: 1rem; color: #58a6ff; font-weight: 600; text-decoration: none; }
+.side-link:hover { text-decoration: underline; }

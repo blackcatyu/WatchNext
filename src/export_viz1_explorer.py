@@ -210,6 +210,7 @@ def main() -> None:
     for i, row in audience.iterrows():
         rec = base_record(row)
         rec["id"] = int(row["movieId"])
+        rec["tmdbId"] = int(row["tmdbId"])
         rec["track"] = row["source"]
         rec["fans"] = int(fans[i])
         rec["ratingCount"] = int(row["rating_count"])
