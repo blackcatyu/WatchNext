@@ -22,6 +22,9 @@
       margin: 0;
     }
     .inline-chart--collaboration, .inline-chart--heatmap { background: var(--bg); }
+    .inline-universe { margin: 1rem 0; }
+    .inline-universe .universe-stage { height: 620px; }
+    @media (max-width: 900px) { .inline-universe .universe-stage { height: 460px; } }
     .inline-community-key { margin: 1rem 0; }
     .inline-community-key h4 { margin: 0 0 0.5rem; font-size: 0.9rem; }
     .inline-community-key p { color: var(--muted); font-size: 0.82rem; }
@@ -170,19 +173,41 @@
     <h3>Visualization 1 — Audience Similarity Network</h3>
 
     <p class="viz-caption">
-      80 most-rated candidate movies, connected when a large number of MovieLens users
-      rated both highly (≥4/5). Node size = number of connections; edge thickness =
-      strength of the shared-audience overlap; color = primary genre. Layout is a
-      force-directed simulation run once to a resting position (static — no interaction yet).
+      Every movie in the dataset as a star. The 2,759 movies MovieLens users rated are placed by
+      audience overlap (UMAP on 1 − Jaccard of their ≥4/5 fan bases), so movies liked by the same
+      people sit close together. The 155 newest releases have no MovieLens data and appear as
+      four-point stars placed beside the movies they most resemble in content. Brightness = TMDB
+      vote count. Scroll to zoom, drag to pan, hover for nearest neighbors, click a star to zoom
+      in (click it again to zoom back out). Try <em>Color by: Decade</em>: shared audiences follow
+      release era more than genre.
     </p>
 
-    <div class="inline-chart" aria-label="Audience similarity network">
-      <svg id="viz2-svg" width="1000" height="800" viewBox="0 0 1000 800"></svg>
+    <div id="universe" class="inline-universe">
+      <div class="universe-bar">
+        <div class="color-mode" role="group" aria-label="Color stars by">
+          <span>Color by</span>
+          <button type="button" data-color="genre">Genre</button>
+          <button type="button" data-color="decade">Decade</button>
+        </div>
+        <div class="star-key">
+          <span><i class="star-dot"></i>audience data (MovieLens)</span>
+          <span><i class="star-dot star-recent"></i>no MovieLens data, placed by content</span>
+        </div>
+      </div>
+      <div class="universe-legend legend-bar" aria-label="Highlight a group"></div>
+      <div class="universe-stage">
+        <canvas aria-label="Every movie as a star, positioned by audience similarity"></canvas>
+        <div class="universe-tooltip"></div>
+        <div class="universe-card hidden" aria-live="polite"></div>
+      </div>
     </div>
 
     <p>
       <a class="viz-link" href="viz1.html">
-        View Static Visualization 1 →
+        ✦ Open the Movie Universe (all 2,914 movies) →
+      </a>
+      <a class="viz-link" href="viz1.html#audience">
+        Open the Audience Network →
       </a>
     </p>
 
@@ -483,7 +508,7 @@
 
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
-  <script src="js/viz2_similarity_network.js"></script>
+  <script src="js/viz1_universe.js"></script>
   <script src="js/viz3_collaboration_network.js"></script>
   <script src="js/viz4_heatmap.js"></script>
 </body>

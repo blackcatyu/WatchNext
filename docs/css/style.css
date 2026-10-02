@@ -248,3 +248,138 @@ svg {
   border-color: var(--muted);
   text-decoration: none;
 }
+
+/* ============================================================
+   Visualization 1 universe (viz1.html and the homepage)
+   Shared by docs/js/viz1_universe.js wherever it is embedded.
+============================================================ */
+
+.legend-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+.legend-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+.legend-btn:hover { border-color: var(--border); color: var(--text); }
+.legend-btn.active { border-color: var(--text); color: var(--text); }
+.legend-btn.muted { opacity: 0.45; }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.tt-title { font-weight: 600; font-size: 0.86rem; }
+.tt-sub, .tt-hint { color: var(--muted); }
+.tt-section { margin-top: 0.4rem; color: var(--muted); }
+.tt-hint { margin-top: 0.4rem; font-style: italic; }
+
+#universe.hidden { display: none; }
+#universe {
+  background: #05070c;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.universe-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.color-mode { display: inline-flex; align-items: center; gap: 0.35rem; }
+.color-mode button {
+  padding: 0.25rem 0.6rem;
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  cursor: pointer;
+}
+.color-mode button.active { border-color: var(--text); color: var(--text); }
+.star-key { display: inline-flex; flex-wrap: wrap; gap: 0.9rem; }
+.star-key span { display: inline-flex; align-items: center; gap: 0.35rem; }
+.star-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.55);
+}
+.star-dot.star-recent {
+  width: 12px;
+  height: 12px;
+  border-radius: 0;
+  background:
+    linear-gradient(90deg, transparent 45%, #fff 45%, #fff 55%, transparent 55%),
+    linear-gradient(0deg, transparent 45%, #fff 45%, #fff 55%, transparent 55%);
+  box-shadow: none;
+}
+.universe-stage { position: relative; height: 760px; }
+@media (max-width: 900px) { .universe-stage { height: 520px; } }
+.universe-stage canvas { display: block; margin: 0; touch-action: none; cursor: grab; }
+.universe-tooltip {
+  position: absolute;
+  z-index: 10;
+  max-width: 280px;
+  padding: 0.6rem 0.75rem;
+  background: rgba(13, 17, 23, 0.94);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+
+/* Compact info card used when the universe runs without a side panel (homepage). */
+.universe-card {
+  position: absolute;
+  z-index: 5;
+  top: 12px;
+  right: 12px;
+  width: 270px;
+  max-height: calc(100% - 24px);
+  overflow-y: auto;
+  padding: 0.75rem 0.85rem;
+  background: rgba(13, 17, 23, 0.92);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+.universe-card.hidden { display: none; }
+.universe-card h4 { margin: 0 0 0.2rem; font-size: 0.95rem; }
+.universe-card .card-sub { color: var(--muted); font-size: 0.76rem; }
+.universe-card ol { margin: 0.4rem 0 0.6rem; padding-left: 1.2rem; }
+.universe-card li button {
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.universe-card li button:hover { color: #58a6ff; }
+.universe-card .card-num { color: var(--muted); font-size: 0.74rem; }
+.universe-card a { color: #58a6ff; font-weight: 600; text-decoration: none; }
+.universe-card a:hover { text-decoration: underline; }
+@media (max-width: 640px) {
+  .universe-card { top: auto; bottom: 8px; left: 8px; right: 8px; width: auto; max-height: 45%; }
+}
