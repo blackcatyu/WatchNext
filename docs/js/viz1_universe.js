@@ -28,6 +28,7 @@
   let loading = null;
   let frame = null;
   let zoom;
+  let bounds; // [[minX, minY], [maxX, maxY]] of all stars
 
   const num = d3.format(",");
   const pct = d3.format(".1%");
@@ -131,6 +132,10 @@
     stars.sort((a, b) => d3.ascending(a.pop, b.pop)); // bright stars drawn last, on top
     byKey = new Map(stars.map((s) => [s.key, s]));
     quadtree = d3.quadtree(stars, (s) => s.x, (s) => s.y);
+    bounds = [
+      [d3.min(stars, (s) => s.x), d3.min(stars, (s) => s.y)],
+      [d3.max(stars, (s) => s.x), d3.max(stars, (s) => s.y)],
+    ];
 
     zoom = d3
       .zoom()
@@ -172,8 +177,10 @@
     canvasEl.height = h * dpr;
     canvasEl.style.width = `${w}px`;
     canvasEl.style.height = `${h}px`;
-    const k = (Math.min(w, h) / 1000) * 0.92;
-    base = d3.zoomIdentity.translate((w - 1000 * k) / 2, (h - 1000 * k) / 2).scale(k);
+    // Fit the stars' actual extent (the layout is much wider than tall), not the 1000×1000 canvas.
+    const [[x0, y0], [x1, y1]] = bounds;
+    const k = Math.min(w / (x1 - x0), h / (y1 - y0)) * 0.92;
+    base = d3.zoomIdentity.translate(w / 2 - (k * (x0 + x1)) / 2, h / 2 - (k * (y0 + y1)) / 2).scale(k);
     zoom.scaleExtent([k * 0.7, k * 40]).extent([[0, 0], [w, h]]);
     d3.select(canvasEl).call(zoom.transform, selected ? focusTransform(selected, transform.k) : base);
   }

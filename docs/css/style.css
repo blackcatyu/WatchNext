@@ -329,8 +329,10 @@ svg {
     linear-gradient(0deg, transparent 45%, #fff 45%, #fff 55%, transparent 55%);
   box-shadow: none;
 }
-.universe-stage { position: relative; height: 760px; }
-@media (max-width: 900px) { .universe-stage { height: 520px; } }
+/* The star layout is about 2.3:1, so size the stage by aspect ratio rather than a fixed height. */
+.universe-stage { position: relative; aspect-ratio: 2 / 1; }
+/* On narrow screens 2:1 would be too short to use; a fixed height keeps the width intact. */
+@media (max-width: 900px) { .universe-stage { aspect-ratio: auto; height: 420px; } }
 .universe-stage canvas { display: block; margin: 0; touch-action: none; cursor: grab; }
 .universe-tooltip {
   position: absolute;
