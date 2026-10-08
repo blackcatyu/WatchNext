@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WatchNext — Final Project</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/style.css?v=20261009a" />
   <style>
     .viz-gallery { max-width: 1180px; }
     .inline-chart {
@@ -23,30 +23,6 @@
     }
     .inline-chart--collaboration, .inline-chart--heatmap { background: var(--bg); }
     .inline-universe { margin: 1rem 0; }
-    .inline-community-key { margin: 1rem 0; }
-    .inline-community-key h4 { margin: 0 0 0.5rem; font-size: 0.9rem; }
-    .inline-community-key p { color: var(--muted); font-size: 0.82rem; }
-    .inline-community-key #community-legend {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-      gap: 0.9rem 1.5rem;
-      list-style: none;
-      padding: 0;
-    }
-    .inline-community-key .community-legend-item {
-      display: flex;
-      gap: 0.6rem;
-      align-items: flex-start;
-      font-size: 0.78rem;
-    }
-    .community-swatch {
-      flex: 0 0 12px;
-      height: 12px;
-      margin-top: 3px;
-      border: 1px solid #e6edf3;
-      border-radius: 3px;
-    }
-    .community-members { display: block; color: var(--muted); overflow-wrap: anywhere; }
   </style>
 </head>
 
@@ -328,27 +304,68 @@
       Actors and directors connected by repeated collaborations in our movie dataset.
       Circles represent actors and diamonds represent directors; node size = overall
       collaboration strength; edge thickness = number of shared movies; color =
-      collaboration community. The current static view focuses on people with at least
-      five movies and collaborations with at least three shared movies.
+      collaboration community. The interactive view starts with people who have at least
+      five movies and collaborations with at least three shared movies, then supports search,
+      genre recomputation, stronger thresholds, and an individual career view.
     </p>
 
-    <div class="inline-chart inline-chart--collaboration" aria-label="Actor and director collaboration network">
-      <div id="network"></div>
-    </div>
+    <section class="viz-card viz-card--network viz-card--embedded" aria-label="Actor and director collaboration explorer">
+      <section id="viz3-controls" class="viz-toolbar viz-toolbar--network viz-card-toolbar" aria-label="Collaboration network controls">
+        <div class="control-group control-group--search">
+          <label for="person-search">Find a person</label>
+          <div class="search-combobox">
+            <input id="person-search" type="search" autocomplete="off" placeholder="Search actor or director…" aria-controls="person-results" aria-expanded="false" />
+            <ul id="person-results" class="search-results" role="listbox"></ul>
+          </div>
+        </div>
+        <div class="control-group">
+          <label for="genre-filter">Movie genre</label>
+          <select id="genre-filter"><option value="All">All genres</option></select>
+        </div>
+        <div class="control-group control-group--range">
+          <label for="shared-movies">Minimum shared movies <output id="threshold-output">3</output></label>
+          <input id="shared-movies" type="range" min="3" max="6" step="1" value="3" />
+          <div class="range-labels" aria-hidden="true"><span>3</span><span>4</span><span>5</span><span>6+</span></div>
+        </div>
+        <button id="network-reset" class="tool-btn tool-btn--accent" type="button">Reset view</button>
+      </section>
 
-    <div class="inline-community-key">
-      <h4>Collaboration communities</h4>
-      <p>
-        Each color represents a collaboration community detected from repeated
-        actor–director collaborations. The examples below illustrate how community
-        colors group frequently connected people.
-      </p>
-      <ul id="community-legend" aria-label="Example collaboration communities"></ul>
-    </div>
+      <div class="summary-row viz-card-status" aria-live="polite">
+        <div class="summary-item"><strong id="person-count">318</strong> people shown</div>
+        <div class="summary-item"><strong id="collaboration-count">278</strong> collaborations shown</div>
+        <div class="summary-item">Genre: <strong id="genre-state">All</strong></div>
+        <div class="summary-item">Shared movies: <strong id="threshold-state">3+</strong></div>
+      </div>
+
+      <div class="encoding-row viz-card-encoding" aria-label="Network encodings">
+        <div class="encoding-item"><span class="actor-symbol"></span>Actor</div>
+        <div class="encoding-item"><span class="director-symbol"></span>Director</div>
+        <div class="encoding-item">Color = Collaboration community</div>
+        <div class="encoding-item">Node size = Current collaboration strength</div>
+        <div class="encoding-item">Edge width = Shared movies</div>
+      </div>
+
+      <section class="network-panel chart-shell viz-card-canvas" aria-label="Interactive actor and director collaboration network">
+        <div id="network"></div>
+        <div id="network-tooltip" class="chart-tooltip" role="tooltip"></div>
+        <p class="chart-hint">Scroll to zoom · drag the background to pan · drag a person to reposition</p>
+      </section>
+
+      <section id="career-panel" class="career-panel career-panel--embedded" aria-labelledby="career-title">
+        <div class="career-heading">
+          <div><p class="eyebrow">Individual detail</p><h4 id="career-title">Select a person to explore their career</h4></div>
+          <p id="career-subtitle">Click a circle or diamond in the network above.</p>
+        </div>
+        <div id="career-empty" class="chart-empty"><span class="chart-empty-icon" aria-hidden="true">✦</span>Network overview → individual career view</div>
+        <div id="career-chart" class="career-chart" hidden></div>
+        <div id="career-tooltip" class="chart-tooltip" role="tooltip"></div>
+        <div id="career-legend" class="career-legend" aria-label="Career primary genre colors"></div>
+      </section>
+    </section>
 
     <p>
       <a class="viz-link" href="viz3.html">
-        View Static Visualization 3 →
+        View Interactive Visualization 3 →
       </a>
     </p>
 
@@ -356,9 +373,8 @@
     <h3>Interaction / Animation Plan</h3>
 
     <p>
-      For the interactive version, I plan to add several interactions that allow users
-      to move from the overall collaboration network to more detailed information about
-      one actor or director.
+      The interactive version lets users move from the overall collaboration network to
+      detailed information about one actor or director.
     </p>
 
     <ul>
@@ -440,13 +456,42 @@
       contribute to more than one row, and 2026 is marked as a partial year.
     </p>
 
-    <div class="inline-chart inline-chart--heatmap" aria-label="Genre ratings over time">
-      <div id="heatmap"></div>
-    </div>
+    <section class="viz-card viz-card--heatmap viz-card--embedded" aria-label="Genre ratings explorer">
+      <section id="viz4-controls" class="viz-toolbar viz-card-toolbar" aria-label="Heatmap controls">
+        <div class="control-group">
+          <label>Color metric</label>
+          <div id="metric-buttons" class="metric-switch" role="group" aria-label="Color metric">
+            <button type="button" data-metric="weighted_rating" aria-pressed="true">Rating</button>
+            <button type="button" data-metric="total_votes" aria-pressed="false">Votes</button>
+            <button type="button" data-metric="movie_count" aria-pressed="false">Movies</button>
+          </div>
+          <select id="metric-select" class="visually-hidden" tabindex="-1" aria-hidden="true">
+            <option value="weighted_rating">Weighted Average Rating</option>
+            <option value="total_votes">Total Vote Count</option>
+            <option value="movie_count">Number of Movies</option>
+          </select>
+        </div>
+        <p id="metric-description" class="toolbar-explainer">Vote-count-weighted average of TMDB movie ratings</p>
+      </section>
+
+      <div class="summary-row viz-card-status">
+        <div class="summary-item">Years: <strong>2016–2026*</strong></div>
+        <div class="summary-item">Genres: <strong id="genre-count">13</strong></div>
+        <div class="summary-item">Metric: <strong id="metric-state">Weighted Average Rating</strong></div>
+        <div class="summary-item">Source: <strong>TMDB</strong></div>
+      </div>
+
+      <section class="heatmap-panel chart-shell viz-card-canvas" aria-label="Interactive genre ratings heatmap">
+        <div id="heatmap"></div>
+        <div id="heatmap-tooltip" class="chart-tooltip" role="tooltip"></div>
+        <p class="chart-hint">Hover a cell to compare its genre row and release-year column</p>
+      </section>
+      <p class="heatmap-note viz-card-note"><strong>2026* is partial-year data.</strong> Lower counts do not represent a complete annual decline.</p>
+    </section>
 
     <p>
       <a class="viz-link" href="viz4.html">
-        View Static Visualization 4 →
+        View Interactive Visualization 4 →
       </a>
     </p>
 
@@ -454,9 +499,8 @@
     <h3>Interaction / Animation Plan</h3>
 
     <p>
-      For the interactive version, I plan to add interactions that allow users to compare
-      different aspects of genre performance while keeping the same genre-by-year heatmap
-      structure.
+      The interactive version compares different aspects of genre performance while keeping
+      the same genre-by-year heatmap structure.
     </p>
 
     <ul>
@@ -522,8 +566,8 @@
       We will conduct informal think-aloud sessions with a small group of classmates or
       friends who were not involved in the project. Participants will complete several
       simple tasks using the visualizations while explaining what they are looking at
-      and how they reach their answers. We will first test the current static versions
-      and repeat similar tasks after the interactive features are implemented.
+      and how they reach their answers. We will test the implemented interactive versions
+      and use the same tasks again after any revisions.
     </p>
 
 
@@ -540,8 +584,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
   <script src="js/viz1_universe.js"></script>
   <script src="js/viz2_scatter.js"></script>
-  <script src="js/viz3_collaboration_network.js"></script>
-  <script src="js/viz4_heatmap.js"></script>
+  <script src="js/viz_interactions.js?v=20261009a"></script>
+  <script src="js/viz3_collaboration_network.js?v=20261009a"></script>
+  <script src="js/viz4_heatmap.js?v=20261007b"></script>
 </body>
 
 </html>

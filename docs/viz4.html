@@ -1,239 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>
-        Visualization 4 — Genre Ratings Over Time
-    </title>
-
-    <link
-        rel="stylesheet"
-        href="css/style.css"
-    >
-
-
-    <style>
-
-        .viz-page {
-            max-width: 1180px;
-            margin: 0 auto;
-        }
-
-
-        .viz-page-header {
-            margin-bottom: 1.5rem;
-        }
-
-
-        .viz-page-header h1 {
-            margin-bottom: 0.5rem;
-        }
-
-
-        .viz-page-header p {
-            max-width: 780px;
-
-            color: var(--muted);
-
-            font-size: 0.9rem;
-
-            line-height: 1.6;
-        }
-
-
-        .summary-row {
-            display: flex;
-
-            flex-wrap: wrap;
-
-            gap: 0.75rem;
-
-            margin: 1rem 0;
-        }
-
-
-        .summary-item {
-            padding: 0.45rem 0.75rem;
-
-            background: #0d1117;
-
-            border: 1px solid var(--border);
-
-            border-radius: 6px;
-
-            color: var(--muted);
-
-            font-size: 0.82rem;
-        }
-
-
-        .summary-item strong {
-            color: var(--text);
-        }
-
-
-        .heatmap-panel {
-            width: 100%;
-
-            overflow-x: auto;
-
-            margin-top: 1rem;
-
-            padding: 0.5rem;
-
-            background: #0f1216;
-
-            border: 1px solid var(--border);
-
-            border-radius: 8px;
-        }
-
-
-        #heatmap svg {
-            margin: 0 auto;
-        }
-
-
-        .heatmap-note {
-            max-width: 820px;
-
-            margin-top: 1rem;
-
-            color: var(--muted);
-
-            font-size: 0.82rem;
-
-            line-height: 1.55;
-        }
-
-
-        .back-link {
-            display: inline-block;
-
-            margin-top: 1.25rem;
-
-            color: #58a6ff;
-
-            text-decoration: none;
-
-            font-size: 0.85rem;
-        }
-
-
-        .back-link:hover {
-            text-decoration: underline;
-        }
-
-    </style>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visualization 4 — Genre Ratings Over Time</title>
+  <link rel="stylesheet" href="css/style.css?v=20261007a" />
 </head>
-
-
 <body>
+  <main class="viz-page viz-page--wide">
+    <header class="viz-page-header">
+      <p class="eyebrow">Visualization 4</p>
+      <h1>Genre Ratings Over Time</h1>
+      <p>Compare how 13 major genres are rated, how many TMDB votes they receive, and how many movies appear in the dataset from 2016 through the partial 2026 release year.</p>
+    </header>
 
-    <main class="viz-page">
-
-
-        <div class="viz-page-header">
-
-            <h1>
-                Genre Ratings Over Time
-            </h1>
-
-
-            <p>
-                This heatmap compares major movie genres across
-                release years from 2016 through 2026.
-                The static view uses TMDB ratings to show how
-                rating patterns differ across genres and years.
-            </p>
-
+    <section class="viz-card viz-card--heatmap" aria-label="Genre ratings explorer">
+    <section id="viz4-controls" class="viz-toolbar viz-card-toolbar" aria-label="Heatmap controls">
+      <div class="control-group">
+        <label>Color metric</label>
+        <div id="metric-buttons" class="metric-switch" role="group" aria-label="Color metric">
+          <button type="button" data-metric="weighted_rating" aria-pressed="true">Rating</button>
+          <button type="button" data-metric="total_votes" aria-pressed="false">Votes</button>
+          <button type="button" data-metric="movie_count" aria-pressed="false">Movies</button>
         </div>
+        <select id="metric-select" class="visually-hidden" tabindex="-1" aria-hidden="true">
+          <option value="weighted_rating">Weighted Average Rating</option>
+          <option value="total_votes">Total Vote Count</option>
+          <option value="movie_count">Number of Movies</option>
+        </select>
+      </div>
+      <p id="metric-description" class="toolbar-explainer">Vote-count-weighted average of TMDB movie ratings</p>
+    </section>
 
+    <div class="summary-row viz-card-status">
+      <div class="summary-item">Years: <strong>2016–2026*</strong></div>
+      <div class="summary-item">Genres: <strong id="genre-count">13</strong></div>
+      <div class="summary-item">Metric: <strong id="metric-state">Weighted Average Rating</strong></div>
+      <div class="summary-item">Source: <strong>TMDB</strong></div>
+    </div>
 
-        <!-- Static summary -->
+    <section class="heatmap-panel chart-shell viz-card-canvas" aria-label="Interactive genre ratings heatmap">
+      <div id="heatmap"></div>
+      <div id="heatmap-tooltip" class="chart-tooltip" role="tooltip"></div>
+      <p class="chart-hint">Hover a cell to compare its genre row and release-year column</p>
+    </section>
+    </section>
 
-        <div class="summary-row">
+    <p class="heatmap-note">Each cell is one genre–year combination. The default color is the <strong>vote-count-weighted average of TMDB movie ratings</strong>, not a pooled set of raw user-level ratings. Movies with multiple genres contribute to every relevant row. <strong>2026* contains partial-year data</strong>, so its counts should not be interpreted as a complete annual decline.</p>
 
-            <div class="summary-item">
-                Years:
-                <strong>2016–2026</strong>
-            </div>
-
-
-            <div class="summary-item">
-                Genres:
-                <strong id="genre-count">13</strong>
-            </div>
-
-
-            <div class="summary-item">
-                Metric:
-                <strong>
-                    Weighted Average Rating
-                </strong>
-            </div>
-
-
-            <div class="summary-item">
-                Source:
-                <strong>TMDB</strong>
-            </div>
-
-        </div>
-
-
-        <!-- Static heatmap -->
-
-        <div class="heatmap-panel">
-
-            <div id="heatmap"></div>
-
-        </div>
-
-
-        <p class="heatmap-note">
-
-            Each cell represents one genre–year combination.
-            Color represents the vote-count-weighted average
-            TMDB rating.
-
-            Movies with multiple genres contribute to each
-            relevant genre.
-
-            The 2026 column is marked with an asterisk because
-            it contains partial-year data.
-
-        </p>
-
-
-        <a
-            class="back-link"
-            href="index.html"
-        >
-            ← Back to Project Overview
-        </a>
-
-    </main>
-
-
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"
-    ></script>
-
-
-    <script
-        src="js/viz4_heatmap.js"
-    ></script>
-
+    <a class="back-link" href="index.html">← Back to Project Overview</a>
+  </main>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+  <script src="js/viz_interactions.js?v=20261007a"></script>
+  <script src="js/viz4_heatmap.js?v=20261007b"></script>
 </body>
-
 </html>
