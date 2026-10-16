@@ -12,6 +12,7 @@ const {
   placeLabels,
   restoreNodePositions,
   networkLinkStyle,
+  networkNodeStyle,
   heatmapTransitionDelay,
   motionDuration,
   networkEdgeWidth,
@@ -118,33 +119,58 @@ test("reset restores every dragged node to its default layout position", () => {
   assert.deepEqual(nodes.map(({ vx, vy, fx, fy }) => [vx, vy, fx, fy]), [[0, 0, null, null], [0, 0, null, null]]);
 });
 
-test("network links use a visible blue hierarchy for overview, hover, and selection", () => {
+test("network links use a neutral overview and a warm focus accent distinct from node colors", () => {
   const link = { source: "actor_a", target: "director_x" };
   assert.deepEqual(networkLinkStyle(link, { visible: true }), {
-    color: "#4da3ff",
-    opacity: 0.52,
+    color: "#b8afa0",
+    opacity: 0.46,
   });
   assert.deepEqual(networkLinkStyle(link, { visible: true, hoveredId: "actor_a" }), {
-    color: "#8ed8ff",
-    opacity: 0.96,
+    color: "#e8c47d",
+    opacity: 0.9,
   });
   assert.deepEqual(networkLinkStyle(link, { visible: true, selectedId: "director_x" }), {
-    color: "#b5e5ff",
+    color: "#f2cf7a",
     opacity: 1,
   });
   assert.deepEqual(networkLinkStyle(link, { visible: true, selectedId: "someone_else" }), {
-    color: "#29445b",
-    opacity: 0.08,
+    color: "#555c60",
+    opacity: 0.06,
   });
   assert.deepEqual(networkLinkStyle(link, { visible: false }), {
-    color: "#29445b",
+    color: "#555c60",
     opacity: 0,
   });
 });
 
+test("network nodes use restrained matte focus states without cartoon glow", () => {
+  assert.deepEqual(networkNodeStyle({ visible: true }), {
+    fillOpacity: 0.9,
+    stroke: "#ddd7cc",
+    strokeWidth: 0.75,
+    insetOpacity: 0.34,
+    haloOpacity: 0,
+  });
+  assert.deepEqual(networkNodeStyle({ visible: true, related: false, focused: true }), {
+    fillOpacity: 0.1,
+    stroke: "#777a79",
+    strokeWidth: 0.65,
+    insetOpacity: 0.05,
+    haloOpacity: 0,
+  });
+  assert.deepEqual(networkNodeStyle({ visible: true, selected: true, related: true, focused: true }), {
+    fillOpacity: 1,
+    stroke: "#f2cf7a",
+    strokeWidth: 2.1,
+    insetOpacity: 0.46,
+    haloOpacity: 0.88,
+  });
+  assert.equal(networkNodeStyle({ visible: false }).fillOpacity, 0);
+});
+
 test("network edge widths remain legible after responsive SVG scaling", () => {
-  assert.equal(networkEdgeWidth(3, 12), 1.2);
-  assert.equal(networkEdgeWidth(12, 12), 5.2);
+  assert.equal(networkEdgeWidth(3, 12), 1.35);
+  assert.equal(networkEdgeWidth(12, 12), 5.3);
 });
 
 test("heatmap transitions ripple briefly from left to right", () => {
@@ -237,6 +263,14 @@ test("actor and director symbols use distinct polished paths", () => {
   assert.notEqual(actor, director);
 });
 
+test("V3 renders matte inset marks and shape-matched focus rings", () => {
+  const source = fs.readFileSync(path.join(__dirname, "../docs/js/viz3_collaboration_network.js"), "utf8");
+  assert.match(source, /attr\("class", "network-node-inset"\)/);
+  assert.match(source, /haloLayer\.selectAll\("path"\)/);
+  assert.match(source, /logic\.networkNodeStyle/);
+  assert.doesNotMatch(source, /network-focus-glow/);
+});
+
 test("network zoom ignores node drag targets but keeps normal pan and wheel zoom", () => {
   assert.equal(networkZoomAllowed({ isNodeHit: true, type: "mousedown", button: 0 }), false);
   assert.equal(networkZoomAllowed({ isNodeHit: false, type: "mousedown", button: 0 }), true);
@@ -254,8 +288,14 @@ test("stronger collaborations pull connected people closer without collapsing th
 
 test("larger visible networks receive stronger bounded repulsion", () => {
   assert.ok(collaborationChargeStrength(120) < collaborationChargeStrength(20));
-  assert.ok(collaborationChargeStrength(500) >= -34);
-  assert.ok(collaborationChargeStrength(1) <= -18);
+  assert.ok(collaborationChargeStrength(500) >= -48);
+  assert.ok(collaborationChargeStrength(1) <= -22);
+});
+
+test("V3 force tuning gives weak ties breathing room and a perceptible local repulsion", () => {
+  assert.equal(collaborationLinkDistance(3), 70);
+  assert.ok(collaborationLinkDistance(8) >= 40);
+  assert.ok(collaborationChargeStrength(120) <= -35);
 });
 
 test("heatmap movie details show six vote-leading titles before expanding", () => {

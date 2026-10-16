@@ -89,8 +89,9 @@
     const layoutLinks = rawLinks.map((link) => ({ ...link }));
     settle(d3.forceSimulation(nodes)
       .force("link", d3.forceLink(layoutLinks).id((node) => node.id)
-        .distance((link) => Math.max(32, 58 - (link.collaboration_count - 3) * 4)).strength(0.65))
-      .force("charge", d3.forceManyBody().strength(-35))
+        .distance((link) => logic.collaborationLinkDistance(link.collaboration_count))
+        .strength((link) => logic.collaborationLinkStrength(link.collaboration_count)))
+      .force("charge", d3.forceManyBody().strength(logic.collaborationChargeStrength(nodes.length)))
       .force("communityX", d3.forceX((node) => communityById.get(node.community).x).strength(0.16))
       .force("communityY", d3.forceY((node) => communityById.get(node.community).y).strength(0.16))
       .force("collision", d3.forceCollide((node) => symbolRadius(node) + 3).iterations(3)));
@@ -122,18 +123,11 @@
       .attr("viewBox", `0 0 ${WIDTH} ${HEIGHT}`)
       .attr("role", "img")
       .attr("aria-label", "Interactive actor and director collaboration network");
-    const defs = svg.append("defs");
-    const glow = defs.append("filter").attr("id", "network-focus-glow")
-      .attr("x", "-80%").attr("y", "-80%").attr("width", "260%").attr("height", "260%");
-    glow.append("feGaussianBlur").attr("stdDeviation", 4).attr("result", "blur");
-    const glowMerge = glow.append("feMerge");
-    glowMerge.append("feMergeNode").attr("in", "blur");
-    glowMerge.append("feMergeNode").attr("in", "SourceGraphic");
     const viewport = svg.append("g");
     const haloLayer = viewport.append("g").attr("class", "network-halos");
     const linkLayer = viewport.append("g").attr("class", "network-links");
     const nodeLayer = viewport.append("g").attr("class", "network-nodes");
-    const sheenLayer = viewport.append("g").attr("class", "network-node-sheens");
+    const insetLayer = viewport.append("g").attr("class", "network-node-insets");
     const labelLayer = viewport.append("g").attr("class", "network-labels");
     const hitLayer = viewport.append("g").attr("class", "network-node-hits");
 
@@ -153,10 +147,10 @@
       .attr("class", "network-link")
       .attr("x1", (link) => link.sourceNode.x).attr("y1", (link) => link.sourceNode.y)
       .attr("x2", (link) => link.targetNode.x).attr("y2", (link) => link.targetNode.y)
-      .attr("stroke", "#4f9bd8").attr("stroke-linecap", "round")
+      .attr("stroke", "#b8afa0").attr("stroke-linecap", "round")
       .on("mouseenter", function (event, link) {
         d3.select(this).interrupt("edge-hover").transition("edge-hover").duration(120)
-          .attr("stroke", "#9bddff").attr("stroke-opacity", 1);
+          .attr("stroke", "#e8c47d").attr("stroke-opacity", 0.92);
         showEdgeTooltip(event, link);
       })
       .on("mousemove", moveNetworkTooltip)
@@ -170,33 +164,37 @@
       .attr("transform", (node) => `translate(${node.x},${node.y})`)
       .attr("d", (node) => nodeSymbol(node, baseRadius(node.weighted_degree)))
       .attr("fill", (node) => communityColor(node.community))
-      .attr("stroke", "rgba(255,255,255,0.76)").attr("stroke-width", 0.65)
+      .attr("fill-opacity", 0.9)
+      .attr("stroke", "#ddd7cc").attr("stroke-width", 0.75)
       .attr("pointer-events", "none");
 
-    const sheenSelection = sheenLayer.selectAll("path").data(nodes, (node) => node.id).join("path")
-      .attr("class", "network-node-sheen")
+    const insetSelection = insetLayer.selectAll("path").data(nodes, (node) => node.id).join("path")
+      .attr("class", "network-node-inset")
       .attr("transform", (node) => `translate(${node.x},${node.y})`)
-      .attr("d", (node) => nodeSymbol(node, baseRadius(node.weighted_degree) * 0.46))
-      .attr("fill", "none").attr("stroke", "rgba(255,255,255,0.24)").attr("stroke-width", 0.55)
+      .attr("d", (node) => nodeSymbol(node, baseRadius(node.weighted_degree) * 0.54))
+      .attr("fill", "rgba(8,11,14,0.22)")
+      .attr("stroke", "rgba(255,248,235,0.26)").attr("stroke-width", 0.5)
+      .attr("opacity", 0.34)
       .attr("pointer-events", "none");
 
     const defaultLabelIds = new Set(nodes.slice().sort((a, b) => b.weighted_degree - a.weighted_degree).slice(0, 18).map((node) => node.id));
     let activeLabelIds = new Set(defaultLabelIds);
     const labelSelection = labelLayer.selectAll("text").data(nodes, (node) => node.id).join("text")
       .attr("x", (node) => node.x + symbolRadius(node) + 5).attr("y", (node) => node.y - 5)
-      .attr("fill", "#e6edf3").attr("font-size", 9.5).attr("font-weight", 550)
-      .attr("paint-order", "stroke").attr("stroke", "#0f1216").attr("stroke-width", 3)
+      .attr("fill", "#e9e3d9").attr("font-size", 9.5).attr("font-weight", 560)
+      .attr("paint-order", "stroke").attr("stroke", "rgba(7,9,12,0.92)").attr("stroke-width", 2.2)
       .attr("pointer-events", "none").text((node) => node.name);
 
     svg.on("click", (event) => {
       if (event.target === svg.node()) selectPerson(null);
     });
 
-    const haloSelection = haloLayer.selectAll("circle").data(nodes, (node) => node.id).join("circle")
+    const haloSelection = haloLayer.selectAll("path").data(nodes, (node) => node.id).join("path")
       .attr("class", "network-halo")
-      .attr("cx", (node) => node.x).attr("cy", (node) => node.y)
-      .attr("r", 0).attr("fill", "none").attr("stroke", "#ffd166")
-      .attr("stroke-width", 1.8).attr("opacity", 0).attr("pointer-events", "none");
+      .attr("transform", (node) => `translate(${node.x},${node.y})`)
+      .attr("d", (node) => nodeSymbol(node, 1))
+      .attr("fill", "none").attr("stroke", "#f2cf7a")
+      .attr("stroke-width", 1.2).attr("opacity", 0).attr("pointer-events", "none");
 
     let activeMouseDrag = null;
     let mouseDragOrigin = null;
@@ -294,7 +292,7 @@
     let currentStrength = new Map();
     let currentRadius = new Map(nodes.map((node) => [node.id, symbolRadius(node)]));
     const layoutSimulation = d3.forceSimulation().stop()
-      .alphaMin(0.018).alphaDecay(0.082).velocityDecay(0.42)
+      .alphaMin(0.015).alphaDecay(0.068).velocityDecay(0.48)
       .on("tick", () => {
         (currentFiltered ? nodes.filter((node) => currentFiltered.nodeIds.has(node.id)) : []).forEach((node) => {
           const radius = currentRadius.get(node.id) || 5;
@@ -315,8 +313,8 @@
       linkSelection.attr("x1", (link) => link.sourceNode.x).attr("y1", (link) => link.sourceNode.y)
         .attr("x2", (link) => link.targetNode.x).attr("y2", (link) => link.targetNode.y);
       nodeSelection.attr("transform", (node) => `translate(${node.x},${node.y})`);
-      sheenSelection.attr("transform", (node) => `translate(${node.x},${node.y})`);
-      haloSelection.attr("cx", (node) => node.x).attr("cy", (node) => node.y);
+      insetSelection.attr("transform", (node) => `translate(${node.x},${node.y})`);
+      haloSelection.attr("transform", (node) => `translate(${node.x},${node.y})`);
       nodeHitSelection.attr("cx", (node) => node.x).attr("cy", (node) => node.y);
       positionLabels(activeLabelIds);
     }
@@ -325,7 +323,7 @@
       const introLabels = labelSelection.filter((node) => defaultLabelIds.has(node.id));
       linkSelection.style("opacity", 0);
       nodeSelection.style("opacity", 0);
-      sheenSelection.style("opacity", 0);
+      insetSelection.style("opacity", 0);
       introLabels.style("opacity", 0);
       logic.runWhenVisible(root.node(), () => {
         const duration = logic.motionDuration(360, reducedMotion);
@@ -335,7 +333,7 @@
         nodeSelection.transition("intro").delay((node, index) => reducedMotion ? 0
           : (communityFamilies.get(String(node.community)) || 0) * 34 + (index % 5) * 8)
           .duration(duration).ease(d3.easeCubicOut).style("opacity", 1);
-        sheenSelection.transition("intro").delay((node, index) => reducedMotion ? 0
+        insetSelection.transition("intro").delay((node, index) => reducedMotion ? 0
           : (communityFamilies.get(String(node.community)) || 0) * 34 + (index % 5) * 8 + 70)
           .duration(duration).ease(d3.easeCubicOut).style("opacity", 1)
           .on("end", function () { d3.select(this).style("opacity", null); });
@@ -404,13 +402,25 @@
         .classed("is-selected", (node) => node.id === state.selectedId)
         .transition(transition)
         .attr("d", (node) => nodeSymbol(node, currentFiltered.nodeIds.has(node.id) ? activeRadius(Math.max(1, currentStrength.get(node.id))) : 3))
-        .attr("fill-opacity", (node) => currentFiltered.nodeIds.has(node.id) ? 0.96 : 0)
-        .attr("stroke-width", 0.72)
-        .attr("stroke", "rgba(255,255,255,0.78)");
+        .attr("fill-opacity", (node) => logic.networkNodeStyle({
+          visible: currentFiltered.nodeIds.has(node.id),
+          selected: node.id === state.selectedId,
+        }).fillOpacity)
+        .attr("stroke-width", (node) => logic.networkNodeStyle({
+          visible: currentFiltered.nodeIds.has(node.id),
+          selected: node.id === state.selectedId,
+        }).strokeWidth)
+        .attr("stroke", (node) => logic.networkNodeStyle({
+          visible: currentFiltered.nodeIds.has(node.id),
+          selected: node.id === state.selectedId,
+        }).stroke);
 
-      sheenSelection.transition(transition)
-        .attr("d", (node) => nodeSymbol(node, currentFiltered.nodeIds.has(node.id) ? activeRadius(Math.max(1, currentStrength.get(node.id))) * 0.46 : 2))
-        .attr("opacity", (node) => currentFiltered.nodeIds.has(node.id) ? 0.48 : 0);
+      insetSelection.transition(transition)
+        .attr("d", (node) => nodeSymbol(node, currentFiltered.nodeIds.has(node.id) ? activeRadius(Math.max(1, currentStrength.get(node.id))) * 0.54 : 2))
+        .attr("opacity", (node) => logic.networkNodeStyle({
+          visible: currentFiltered.nodeIds.has(node.id),
+          selected: node.id === state.selectedId,
+        }).insetOpacity);
 
       nodeHitSelection
         .style("pointer-events", (node) => currentFiltered.nodeIds.has(node.id) ? "all" : "none")
@@ -445,12 +455,12 @@
         .force("link", d3.forceLink(forceLinks).id((node) => node.id)
           .distance((link) => logic.collaborationLinkDistance(link.filtered_count))
           .strength((link) => logic.collaborationLinkStrength(link.filtered_count)))
-        .force("charge", d3.forceManyBody().strength(logic.collaborationChargeStrength(visibleNodes.length)).distanceMax(150))
-        .force("collision", d3.forceCollide((node) => (currentRadius.get(node.id) || 5) + 5).iterations(2))
-        .force("anchorX", d3.forceX((node) => node.defaultX).strength(0.12))
-        .force("anchorY", d3.forceY((node) => node.defaultY).strength(0.12))
-        .force("communityX", d3.forceX((node) => communityCenters.get(node.community)?.x ?? WIDTH / 2).strength(0.006))
-        .force("communityY", d3.forceY((node) => communityCenters.get(node.community)?.y ?? HEIGHT / 2).strength(0.006));
+        .force("charge", d3.forceManyBody().strength(logic.collaborationChargeStrength(visibleNodes.length)).distanceMax(210))
+        .force("collision", d3.forceCollide((node) => (currentRadius.get(node.id) || 5) + 6).iterations(3))
+        .force("anchorX", d3.forceX((node) => node.defaultX).strength(0.075))
+        .force("anchorY", d3.forceY((node) => node.defaultY).strength(0.075))
+        .force("communityX", d3.forceX((node) => communityCenters.get(node.community)?.x ?? WIDTH / 2).strength(0.01))
+        .force("communityY", d3.forceY((node) => communityCenters.get(node.community)?.y ?? HEIGHT / 2).strength(0.01));
       if (!reheat || reducedMotion) {
         layoutSimulation.stop();
         return;
@@ -504,19 +514,28 @@
       nodeSelection
         .classed("is-hovered", (node) => node.id === state.hoveredId)
         .interrupt("focus").transition(transition)
-        .attr("fill-opacity", (node) => {
-          if (!currentFiltered.nodeIds.has(node.id)) return 0;
-          return focusId && !focusIds.has(node.id) ? 0.12 : 1;
-        })
-        .attr("stroke", (node) => node.id === state.selectedId ? "#fff3c4" : node.id === state.hoveredId ? "#fff8e7" : "#f2eadc")
-        .attr("stroke-width", (node) => node.id === state.selectedId ? 2.8 : node.id === state.hoveredId ? 1.8 : 0.8)
-        .style("filter", (node) => focusIds.has(node.id) ? "url(#network-focus-glow)" : null);
+        .attr("fill-opacity", (node) => logic.networkNodeStyle({
+          visible: currentFiltered.nodeIds.has(node.id), focused: Boolean(focusId),
+          related: !focusId || focusIds.has(node.id), selected: node.id === state.selectedId,
+          hovered: node.id === state.hoveredId,
+        }).fillOpacity)
+        .attr("stroke", (node) => logic.networkNodeStyle({
+          visible: currentFiltered.nodeIds.has(node.id), focused: Boolean(focusId),
+          related: !focusId || focusIds.has(node.id), selected: node.id === state.selectedId,
+          hovered: node.id === state.hoveredId,
+        }).stroke)
+        .attr("stroke-width", (node) => logic.networkNodeStyle({
+          visible: currentFiltered.nodeIds.has(node.id), focused: Boolean(focusId),
+          related: !focusId || focusIds.has(node.id), selected: node.id === state.selectedId,
+          hovered: node.id === state.hoveredId,
+        }).strokeWidth);
 
-      sheenSelection.interrupt("focus").transition(transition)
-        .attr("opacity", (node) => {
-          if (!currentFiltered.nodeIds.has(node.id)) return 0;
-          return focusId && !focusIds.has(node.id) ? 0.03 : 0.48;
-        });
+      insetSelection.interrupt("focus").transition(transition)
+        .attr("opacity", (node) => logic.networkNodeStyle({
+          visible: currentFiltered.nodeIds.has(node.id), focused: Boolean(focusId),
+          related: !focusId || focusIds.has(node.id), selected: node.id === state.selectedId,
+          hovered: node.id === state.hoveredId,
+        }).insetOpacity);
 
       labelSelection.interrupt("focus").transition(transition).attr("opacity", (node) => {
         if (!currentFiltered.nodeIds.has(node.id)) return 0;
@@ -524,10 +543,16 @@
       });
 
       haloSelection.interrupt("focus").transition(transition)
-        .attr("r", (node) => node.id === focusId ? (currentRadius.get(node.id) || symbolRadius(node)) + (state.selectedId ? 9 : 6) : 0)
-        .attr("opacity", (node) => node.id === focusId ? (state.selectedId ? 0.9 : 0.55) : 0)
-        .attr("stroke", (node) => node.id === state.selectedId ? "#ffd166" : "#fff8e7")
-        .attr("stroke-width", (node) => node.id === state.selectedId ? 2.2 : 1.4);
+        .attr("d", (node) => nodeSymbol(node, node.id === focusId
+          ? (currentRadius.get(node.id) || symbolRadius(node)) + (state.selectedId ? 8 : 5)
+          : 1))
+        .attr("opacity", (node) => logic.networkNodeStyle({
+          visible: currentFiltered.nodeIds.has(node.id), focused: Boolean(focusId),
+          related: !focusId || focusIds.has(node.id), selected: node.id === state.selectedId,
+          hovered: node.id === state.hoveredId,
+        }).haloOpacity)
+        .attr("stroke", (node) => node.id === state.selectedId ? "#f2cf7a" : "#e9e3d9")
+        .attr("stroke-width", (node) => node.id === state.selectedId ? 1.6 : 1.05);
     }
 
     function tweenNumber(selector, nextValue, animate) {

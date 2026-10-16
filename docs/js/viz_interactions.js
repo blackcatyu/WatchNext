@@ -129,34 +129,50 @@
   }
 
   function networkLinkStyle(link, state = {}) {
-    if (!state.visible) return { color: "#29445b", opacity: 0 };
+    if (!state.visible) return { color: "#555c60", opacity: 0 };
     const touches = (personId) => personId && (
       endpointId(link.source) === personId || endpointId(link.target) === personId
     );
-    if (touches(state.selectedId)) return { color: "#b5e5ff", opacity: 1 };
-    if (state.selectedId) return { color: "#29445b", opacity: 0.08 };
-    if (touches(state.hoveredId)) return { color: "#8ed8ff", opacity: 0.96 };
-    return { color: "#4da3ff", opacity: 0.52 };
+    if (touches(state.selectedId)) return { color: "#f2cf7a", opacity: 1 };
+    if (state.selectedId) return { color: "#555c60", opacity: 0.06 };
+    if (touches(state.hoveredId)) return { color: "#e8c47d", opacity: 0.9 };
+    return { color: "#b8afa0", opacity: 0.46 };
+  }
+
+  function networkNodeStyle(state = {}) {
+    if (!state.visible) {
+      return { fillOpacity: 0, stroke: "#777a79", strokeWidth: 0.65, insetOpacity: 0, haloOpacity: 0 };
+    }
+    if (state.focused && state.related === false) {
+      return { fillOpacity: 0.1, stroke: "#777a79", strokeWidth: 0.65, insetOpacity: 0.05, haloOpacity: 0 };
+    }
+    if (state.selected) {
+      return { fillOpacity: 1, stroke: "#f2cf7a", strokeWidth: 2.1, insetOpacity: 0.46, haloOpacity: 0.88 };
+    }
+    if (state.hovered) {
+      return { fillOpacity: 1, stroke: "#f3eadb", strokeWidth: 1.45, insetOpacity: 0.42, haloOpacity: 0.48 };
+    }
+    return { fillOpacity: 0.9, stroke: "#ddd7cc", strokeWidth: 0.75, insetOpacity: 0.34, haloOpacity: 0 };
   }
 
   function networkEdgeWidth(sharedMovies, maximumSharedMovies) {
-    const minimum = 1.2;
-    const maximum = 5.2;
+    const minimum = 1.35;
+    const maximum = 5.3;
     if (+maximumSharedMovies <= 3) return minimum;
     const ratio = Math.max(0, Math.min(1, (+sharedMovies - 3) / (+maximumSharedMovies - 3)));
     return minimum + ratio * (maximum - minimum);
   }
 
   function collaborationLinkDistance(sharedMovies) {
-    return Math.max(28, 62 - Math.max(0, (+sharedMovies || 0) - 3) * 4.2);
+    return Math.max(34, 70 - Math.max(0, (+sharedMovies || 0) - 3) * 5.2);
   }
 
   function collaborationLinkStrength(sharedMovies) {
-    return Math.min(0.9, 0.42 + Math.max(0, (+sharedMovies || 0) - 3) * 0.06);
+    return Math.min(0.82, 0.34 + Math.max(0, (+sharedMovies || 0) - 3) * 0.065);
   }
 
   function collaborationChargeStrength(visibleNodeCount) {
-    return Math.max(-34, -18 - Math.sqrt(Math.max(1, +visibleNodeCount || 1)) * 0.9);
+    return Math.max(-48, -22 - Math.sqrt(Math.max(1, +visibleNodeCount || 1)) * 1.25);
   }
 
   function visibleMoviesForCell(movies, expanded, limit = 6) {
@@ -237,7 +253,9 @@
   }
 
   function communityNodeColor(index, familyIndex = null) {
-    const distinctFamilies = [5, 95, 25, 150, 60, 345, 125];
+    // Order the families by perceptual distance so neighboring network
+    // communities reach a contrasting family before a related hue.
+    const distinctFamilies = [5, 150, 45, 345, 95, 25, 125];
     const colorIndex = Math.max(0, Math.floor(+index || 0));
     const resolvedFamily = familyIndex == null
       ? colorIndex % distinctFamilies.length
@@ -280,6 +298,7 @@
     placeLabels,
     restoreNodePositions,
     networkLinkStyle,
+    networkNodeStyle,
     networkEdgeWidth,
     collaborationLinkDistance,
     collaborationLinkStrength,
