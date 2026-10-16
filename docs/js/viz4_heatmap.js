@@ -16,6 +16,9 @@
     const years = data.metadata?.years || [...new Set(cells.map((cell) => +cell.year))].sort(d3.ascending);
     const genres = data.metadata?.genres || [...new Set(cells.map((cell) => cell.genre))];
     let metric = data.metadata?.default_metric || "weighted_rating";
+    let pinnedCell = null;
+    let moviesExpanded = false;
+    let detailCloseTimer = null;
 
     d3.select("#genre-count").text(genres.length);
 
@@ -53,7 +56,20 @@
       .attr("x", (cell) => x(+cell.year)).attr("y", (cell) => y(cell.genre))
       .attr("width", x.bandwidth()).attr("height", y.bandwidth()).attr("rx", 3).attr("ry", 3)
       .attr("stroke", "#f0f6fc").attr("stroke-width", 0)
-      .on("mouseenter", highlightCell).on("mousemove", moveTooltip).on("mouseleave", clearHighlight);
+      .attr("tabindex", 0).attr("role", "button")
+      .attr("aria-label", (cell) => `${cell.genre}, ${cell.year}. Select to view ${cell.movie_count} movies.`)
+      .on("mouseenter", highlightCell).on("mousemove", moveTooltip).on("mouseleave", handleCellLeave)
+      .on("click", (event, cell) => {
+        event.stopPropagation();
+        if (pinnedCell && cellKey(pinnedCell) === cellKey(cell)) clearPinnedCell();
+        else pinCell(cell);
+      })
+      .on("keydown", (event, cell) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        if (pinnedCell && cellKey(pinnedCell) === cellKey(cell)) clearPinnedCell();
+        else pinCell(cell);
+      });
 
     const legendX = margin.left;
     const legendY = 38;
@@ -89,6 +105,15 @@
       });
     }
     metricButtons.on("click", function () { chooseMetric(this.dataset.metric); });
+    d3.select("#heatmap-clear").on("click", clearPinnedCell);
+    d3.select("#heatmap-show-all").on("click", () => {
+      if (!pinnedCell) return;
+      moviesExpanded = true;
+      renderMovieDetail(pinnedCell);
+    });
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && pinnedCell) clearPinnedCell();
+    });
     syncMetricControls();
 
     function chooseMetric(nextMetric) {
@@ -161,7 +186,8 @@
       d3.select("#metric-state").text(config.label);
       d3.select("#metric-description").text(config.description);
       syncMetricControls();
-      clearHighlight();
+      if (pinnedCell) applyCellFocus(pinnedCell, true);
+      else clearVisualFocus();
     }
 
     function tooltipSelection() {
@@ -171,16 +197,26 @@
     }
 
     function highlightCell(event, cell) {
+      applyCellFocus(cell, Boolean(pinnedCell && cellKey(pinnedCell) === cellKey(cell)));
+      showCellTooltip(event, cell);
+    }
+
+    function applyCellFocus(cell, isPinned = false) {
       cellSelection.interrupt("highlight").transition("highlight").duration(130)
         .attr("opacity", (other) => other.genre === cell.genre || +other.year === +cell.year ? 1 : 0.34)
         .attr("stroke-width", (other) => other === cell ? 2.2 : 0)
-        .attr("transform", (other) => other === cell ? "translate(0,-2)" : null);
-      columnBand.interrupt("band").attr("x", x(+cell.year) - 4).attr("width", x.bandwidth() + 8)
-        .transition("band").duration(130).attr("opacity", 1);
-      rowBand.interrupt("band").attr("y", y(cell.genre) - 4).attr("height", y.bandwidth() + 8)
-        .transition("band").duration(130).attr("opacity", 1);
+        .attr("transform", (other) => other === cell ? "translate(0,-2) scale(1.018)" : null);
+      columnBand.interrupt("band").transition("band").duration(logic.motionDuration(170, reducedMotion))
+        .ease(d3.easeCubicOut).attr("x", x(+cell.year) - 4).attr("width", x.bandwidth() + 8).attr("opacity", 1);
+      rowBand.interrupt("band").transition("band").duration(logic.motionDuration(170, reducedMotion))
+        .ease(d3.easeCubicOut).attr("y", y(cell.genre) - 4).attr("height", y.bandwidth() + 8).attr("opacity", 1);
       xAxisGroup.selectAll(".tick text").classed("is-highlighted", (year) => +year === +cell.year);
       yAxisGroup.selectAll(".tick text").classed("is-highlighted", (genre) => genre === cell.genre);
+      cellSelection.classed("is-active", (other) => cellKey(other) === cellKey(cell))
+        .classed("is-pinned", (other) => Boolean(isPinned && cellKey(other) === cellKey(cell)));
+    }
+
+    function showCellTooltip(event, cell) {
       tooltipSelection().html(`<div class="tooltip-title">${escapeHtml(cell.genre)} · ${cell.year}${+cell.year === 2026 ? "*" : ""}</div>
         <div class="tooltip-muted">All values for this genre–year cell</div>
         <div class="tooltip-rule"></div>
@@ -191,14 +227,84 @@
       moveTooltip(event);
     }
 
-    function clearHighlight() {
+    function handleCellLeave() {
+      tooltipSelection().classed("is-visible", false);
+      if (pinnedCell) applyCellFocus(pinnedCell, true);
+      else clearVisualFocus();
+    }
+
+    function clearVisualFocus() {
       cellSelection.interrupt("highlight").transition("highlight").duration(logic.motionDuration(150, reducedMotion))
         .attr("opacity", 1).attr("stroke-width", 0).attr("transform", null);
+      cellSelection.classed("is-active", false).classed("is-pinned", false);
       columnBand.interrupt("band").transition("band").duration(logic.motionDuration(150, reducedMotion)).attr("opacity", 0);
       rowBand.interrupt("band").transition("band").duration(logic.motionDuration(150, reducedMotion)).attr("opacity", 0);
       xAxisGroup.selectAll(".tick text").classed("is-highlighted", false);
       yAxisGroup.selectAll(".tick text").classed("is-highlighted", false);
       tooltipSelection().classed("is-visible", false);
+    }
+
+    function cellKey(cell) {
+      return `${cell.genre}|${cell.year}`;
+    }
+
+    function pinCell(cell) {
+      pinnedCell = cell;
+      moviesExpanded = false;
+      tooltipSelection().classed("is-visible", false);
+      applyCellFocus(cell, true);
+      renderMovieDetail(cell);
+    }
+
+    function clearPinnedCell() {
+      pinnedCell = null;
+      moviesExpanded = false;
+      clearVisualFocus();
+      const panel = d3.select("#heatmap-detail");
+      panel.classed("is-open", false);
+      window.clearTimeout(detailCloseTimer);
+      detailCloseTimer = window.setTimeout(() => {
+        if (!pinnedCell) panel.attr("hidden", true);
+      }, logic.motionDuration(230, reducedMotion));
+    }
+
+    function renderMovieDetail(cell) {
+      const panel = d3.select("#heatmap-detail");
+      window.clearTimeout(detailCloseTimer);
+      panel.attr("hidden", null);
+      window.requestAnimationFrame(() => panel.classed("is-open", true));
+      d3.select("#heatmap-detail-title").text(`${cell.genre} · ${cell.year}${+cell.year === 2026 ? "*" : ""}`);
+      d3.select("#heatmap-detail-subtitle").text(+cell.year === 2026
+        ? "Partial-year coverage. Movies are ranked by TMDB vote count, which shows their influence on the weighted rating."
+        : "Movies are ranked by TMDB vote count, which shows their influence on the weighted rating.");
+      d3.select("#heatmap-detail-rating").text(`${logic.formatMetricValue("weighted_rating", cell.weighted_rating)} / 10`);
+      d3.select("#heatmap-detail-votes").text(logic.formatMetricValue("total_votes", cell.total_votes));
+      d3.select("#heatmap-detail-count").text(logic.formatMetricValue("movie_count", cell.movie_count));
+
+      const allMovies = logic.visibleMoviesForCell(cell.movies, true);
+      const visibleMovies = logic.visibleMoviesForCell(cell.movies, moviesExpanded);
+      const rows = d3.select("#heatmap-movie-list").selectAll("li")
+        .data(visibleMovies, (movie) => movie.tmdb_id).join(
+          (enter) => enter.append("li").attr("class", "heatmap-movie-card").style("opacity", 0)
+            .style("transform", "translateY(7px)"),
+          (update) => update,
+          (exit) => exit.remove()
+        );
+      rows.html("");
+      rows.append("span").attr("class", "heatmap-movie-rank")
+        .text((movie) => allMovies.findIndex((item) => item.tmdb_id === movie.tmdb_id) + 1);
+      const copy = rows.append("div").attr("class", "heatmap-movie-copy");
+      copy.append("h3").text((movie) => movie.title);
+      copy.append("p").text((movie) => `TMDB rating ${(+movie.vote_average).toFixed(2)} / 10`);
+      rows.append("strong").attr("class", "heatmap-movie-votes")
+        .text((movie) => `${logic.formatMetricValue("total_votes", movie.vote_count)} votes`);
+      rows.transition("detail-list").delay((movie, index) => reducedMotion ? 0 : index * 34)
+        .duration(logic.motionDuration(240, reducedMotion)).ease(d3.easeCubicOut)
+        .style("opacity", 1).style("transform", "translateY(0)");
+
+      d3.select("#heatmap-show-all")
+        .attr("hidden", allMovies.length > 6 && !moviesExpanded ? null : true)
+        .text(`Show all ${allMovies.length} movies`);
     }
 
     function moveTooltip(event) {

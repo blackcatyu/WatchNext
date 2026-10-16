@@ -121,26 +121,51 @@
     nodes.forEach((node) => {
       node.x = node.defaultX;
       node.y = node.defaultY;
+      node.vx = 0;
+      node.vy = 0;
+      node.fx = null;
+      node.fy = null;
     });
   }
 
   function networkLinkStyle(link, state = {}) {
-    if (!state.visible) return { color: "#31506a", opacity: 0 };
+    if (!state.visible) return { color: "#29445b", opacity: 0 };
     const touches = (personId) => personId && (
       endpointId(link.source) === personId || endpointId(link.target) === personId
     );
-    if (touches(state.selectedId)) return { color: "#58c7f3", opacity: 1 };
-    if (state.selectedId) return { color: "#31506a", opacity: 0.1 };
-    if (touches(state.hoveredId)) return { color: "#79cfff", opacity: 0.96 };
-    return { color: "#58a6ff", opacity: 0.78 };
+    if (touches(state.selectedId)) return { color: "#b5e5ff", opacity: 1 };
+    if (state.selectedId) return { color: "#29445b", opacity: 0.08 };
+    if (touches(state.hoveredId)) return { color: "#8ed8ff", opacity: 0.96 };
+    return { color: "#4da3ff", opacity: 0.52 };
   }
 
   function networkEdgeWidth(sharedMovies, maximumSharedMovies) {
-    const minimum = 1.8;
-    const maximum = 6.8;
+    const minimum = 1.2;
+    const maximum = 5.2;
     if (+maximumSharedMovies <= 3) return minimum;
     const ratio = Math.max(0, Math.min(1, (+sharedMovies - 3) / (+maximumSharedMovies - 3)));
     return minimum + ratio * (maximum - minimum);
+  }
+
+  function collaborationLinkDistance(sharedMovies) {
+    return Math.max(28, 62 - Math.max(0, (+sharedMovies || 0) - 3) * 4.2);
+  }
+
+  function collaborationLinkStrength(sharedMovies) {
+    return Math.min(0.9, 0.42 + Math.max(0, (+sharedMovies || 0) - 3) * 0.06);
+  }
+
+  function collaborationChargeStrength(visibleNodeCount) {
+    return Math.max(-34, -18 - Math.sqrt(Math.max(1, +visibleNodeCount || 1)) * 0.9);
+  }
+
+  function visibleMoviesForCell(movies, expanded, limit = 6) {
+    const sorted = [...(movies || [])].sort((a, b) =>
+      (+b.vote_count || 0) - (+a.vote_count || 0)
+      || (+b.vote_average || 0) - (+a.vote_average || 0)
+      || String(a.title || "").localeCompare(String(b.title || ""))
+    );
+    return expanded ? sorted : sorted.slice(0, Math.max(0, +limit || 0));
   }
 
   function heatmapTransitionDelay(year, genreIndex) {
@@ -256,6 +281,10 @@
     restoreNodePositions,
     networkLinkStyle,
     networkEdgeWidth,
+    collaborationLinkDistance,
+    collaborationLinkStrength,
+    collaborationChargeStrength,
+    visibleMoviesForCell,
     heatmapTransitionDelay,
     motionDuration,
     runWhenVisible,

@@ -149,6 +149,31 @@ summary["weighted_rating"] = (
 )
 
 
+# Keep a compact, vote-ranked movie list for the interactive cell detail view.
+# The aggregate statistics above remain unchanged; these records only expose
+# the movies that already contributed to each Genre x Year cell.
+cell_movies = {}
+
+for (year, genre), group in genre_movies.groupby(["year", "genre"]):
+    ranked = (
+        group
+        .drop_duplicates(subset=["tmdbId"])
+        .sort_values(
+            ["vote_count", "vote_average", "title"],
+            ascending=[False, False, True],
+        )
+    )
+    cell_movies[(int(year), genre)] = [
+        {
+            "tmdb_id": int(movie["tmdbId"]),
+            "title": movie["title"],
+            "vote_average": round(float(movie["vote_average"]), 3),
+            "vote_count": int(movie["vote_count"]),
+        }
+        for _, movie in ranked.iterrows()
+    ]
+
+
 # ============================================================
 # Create complete Genre × Year grid
 #
@@ -211,6 +236,7 @@ for _, row in summary.iterrows():
         "mean_rating": mean_rating,
         "total_votes": int(row["total_votes"]),
         "movie_count": int(row["movie_count"]),
+        "movies": cell_movies.get((int(row["year"]), row["genre"]), []),
     })
 
 

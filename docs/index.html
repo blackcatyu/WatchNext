@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WatchNext — Final Project</title>
-  <link rel="stylesheet" href="css/style.css?v=20261009a" />
+  <link rel="stylesheet" href="css/style.css?v=20261016d" />
   <style>
     .viz-gallery { max-width: 1180px; }
     .inline-chart {
@@ -348,7 +348,7 @@
       <section class="network-panel chart-shell viz-card-canvas" aria-label="Interactive actor and director collaboration network">
         <div id="network"></div>
         <div id="network-tooltip" class="chart-tooltip" role="tooltip"></div>
-        <p class="chart-hint">Scroll to zoom · drag the background to pan · drag a person to reposition</p>
+        <p class="chart-hint">Scroll to zoom · drag to pan · move a person and watch the network settle</p>
       </section>
 
       <section id="career-panel" class="career-panel career-panel--embedded" aria-labelledby="career-title">
@@ -429,10 +429,10 @@
         When users change the genre or collaboration threshold, filtered-out edges and
         nodes with no remaining links will fade out, and returning elements will fade in.
         Node sizes and edge widths will transition to the updated collaboration counts;
-        retained nodes will stay near their previous positions, and community colors will
-        remain consistent. Selecting a person will fade unrelated elements while emphasizing
-        their collaborators. These changes will help users follow the same people and
-        relationships across views without having to locate them again.
+        retained nodes will respond to link attraction, node repulsion, collision, and a
+        gentle community pull before settling near their previous positions. Dragging one
+        person briefly reactivates those same forces, while community colors remain consistent.
+        Selecting a person will fade unrelated elements while emphasizing their collaborators.
       </li>
     </ul>
 
@@ -484,7 +484,24 @@
       <section class="heatmap-panel chart-shell viz-card-canvas" aria-label="Interactive genre ratings heatmap">
         <div id="heatmap"></div>
         <div id="heatmap-tooltip" class="chart-tooltip" role="tooltip"></div>
-        <p class="chart-hint">Hover a cell to compare its genre row and release-year column</p>
+        <p class="chart-hint">Hover to compare · click or tap a cell to explore its movies</p>
+      </section>
+      <section id="heatmap-detail" class="heatmap-detail heatmap-detail--embedded" aria-labelledby="heatmap-detail-title" hidden>
+        <div class="heatmap-detail-heading">
+          <div>
+            <p class="eyebrow">Selected genre and year</p>
+            <h4 id="heatmap-detail-title">Choose a heatmap cell</h4>
+            <p id="heatmap-detail-subtitle">Movies are ranked by TMDB vote count to show which titles most influence the weighted rating.</p>
+          </div>
+          <button id="heatmap-clear" class="tool-btn heatmap-clear" type="button">Clear selection</button>
+        </div>
+        <div class="heatmap-detail-stats" aria-live="polite">
+          <div><span>Weighted rating</span><strong id="heatmap-detail-rating">—</strong></div>
+          <div><span>Total votes</span><strong id="heatmap-detail-votes">—</strong></div>
+          <div><span>Movies</span><strong id="heatmap-detail-count">—</strong></div>
+        </div>
+        <ol id="heatmap-movie-list" class="heatmap-movie-list"></ol>
+        <button id="heatmap-show-all" class="heatmap-show-all" type="button" hidden></button>
       </section>
       <p class="heatmap-note viz-card-note"><strong>2026* is partial-year data.</strong> Lower counts do not represent a complete annual decline.</p>
     </section>
@@ -524,6 +541,14 @@
         Hovering over a cell will emphasize its genre row and year column while dimming
         unrelated cells. Moving the pointer away will restore the full heatmap. This will
         help users follow one genre across years or compare genres within the same year.
+      </li>
+
+      <li>
+        <strong>Select a cell to inspect its movies.</strong>
+        Clicking or tapping a cell pins its row and column and opens a detail panel with the
+        weighted rating, vote total, movie count, and the contributing titles ranked by TMDB
+        vote count. The first six titles keep the overview compact, with an option to reveal
+        the full list and clarify which movies most influence the weighted average.
       </li>
 
       <li>
@@ -584,9 +609,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
   <script src="js/viz1_universe.js"></script>
   <script src="js/viz2_scatter.js"></script>
-  <script src="js/viz_interactions.js?v=20261009a"></script>
-  <script src="js/viz3_collaboration_network.js?v=20261009a"></script>
-  <script src="js/viz4_heatmap.js?v=20261007b"></script>
+  <script src="js/viz_interactions.js?v=20261016d"></script>
+  <script src="js/viz3_collaboration_network.js?v=20261016e"></script>
+  <script src="js/viz4_heatmap.js?v=20261016d"></script>
 </body>
 
 </html>

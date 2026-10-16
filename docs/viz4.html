@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Visualization 4 — Genre Ratings Over Time</title>
-  <link rel="stylesheet" href="css/style.css?v=20261007a" />
+  <link rel="stylesheet" href="css/style.css?v=20261016d" />
 </head>
 <body>
   <main class="viz-page viz-page--wide">
@@ -42,7 +42,24 @@
     <section class="heatmap-panel chart-shell viz-card-canvas" aria-label="Interactive genre ratings heatmap">
       <div id="heatmap"></div>
       <div id="heatmap-tooltip" class="chart-tooltip" role="tooltip"></div>
-      <p class="chart-hint">Hover a cell to compare its genre row and release-year column</p>
+      <p class="chart-hint">Hover to compare · click or tap a cell to explore its movies</p>
+    </section>
+    <section id="heatmap-detail" class="heatmap-detail" aria-labelledby="heatmap-detail-title" hidden>
+      <div class="heatmap-detail-heading">
+        <div>
+          <p class="eyebrow">Selected genre and year</p>
+          <h2 id="heatmap-detail-title">Choose a heatmap cell</h2>
+          <p id="heatmap-detail-subtitle">Movies are ranked by TMDB vote count to show which titles most influence the weighted rating.</p>
+        </div>
+        <button id="heatmap-clear" class="tool-btn heatmap-clear" type="button">Clear selection</button>
+      </div>
+      <div class="heatmap-detail-stats" aria-live="polite">
+        <div><span>Weighted rating</span><strong id="heatmap-detail-rating">—</strong></div>
+        <div><span>Total votes</span><strong id="heatmap-detail-votes">—</strong></div>
+        <div><span>Movies</span><strong id="heatmap-detail-count">—</strong></div>
+      </div>
+      <ol id="heatmap-movie-list" class="heatmap-movie-list"></ol>
+      <button id="heatmap-show-all" class="heatmap-show-all" type="button" hidden></button>
     </section>
     </section>
 
@@ -51,7 +68,7 @@
     <a class="back-link" href="index.html">← Back to Project Overview</a>
   </main>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
-  <script src="js/viz_interactions.js?v=20261007a"></script>
-  <script src="js/viz4_heatmap.js?v=20261007b"></script>
+  <script src="js/viz_interactions.js?v=20261016d"></script>
+  <script src="js/viz4_heatmap.js?v=20261016d"></script>
 </body>
 </html>

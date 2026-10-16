@@ -107,6 +107,10 @@
       node.defaultX = node.x;
       node.defaultY = node.y;
     });
+    const communityCenters = d3.rollup(nodes, (members) => ({
+      x: d3.mean(members, (node) => node.defaultX),
+      y: d3.mean(members, (node) => node.defaultY),
+    }), (node) => node.community);
 
     rawLinks.forEach((link) => {
       link.sourceNode = nodeById.get(link.source);
@@ -166,14 +170,14 @@
       .attr("transform", (node) => `translate(${node.x},${node.y})`)
       .attr("d", (node) => nodeSymbol(node, baseRadius(node.weighted_degree)))
       .attr("fill", (node) => communityColor(node.community))
-      .attr("stroke", "#e6edf3").attr("stroke-width", 0.8)
+      .attr("stroke", "rgba(255,255,255,0.76)").attr("stroke-width", 0.65)
       .attr("pointer-events", "none");
 
     const sheenSelection = sheenLayer.selectAll("path").data(nodes, (node) => node.id).join("path")
       .attr("class", "network-node-sheen")
       .attr("transform", (node) => `translate(${node.x},${node.y})`)
-      .attr("d", (node) => nodeSymbol(node, baseRadius(node.weighted_degree) * 0.62))
-      .attr("fill", "none").attr("stroke", "rgba(255,255,255,0.42)").attr("stroke-width", 0.8)
+      .attr("d", (node) => nodeSymbol(node, baseRadius(node.weighted_degree) * 0.46))
+      .attr("fill", "none").attr("stroke", "rgba(255,255,255,0.24)").attr("stroke-width", 0.55)
       .attr("pointer-events", "none");
 
     const defaultLabelIds = new Set(nodes.slice().sort((a, b) => b.weighted_degree - a.weighted_degree).slice(0, 18).map((node) => node.id));
@@ -203,39 +207,45 @@
       .attr("cx", (node) => node.x).attr("cy", (node) => node.y)
       .attr("r", (node) => logic.nodeHitRadius(baseRadius(node.weighted_degree)))
       .attr("fill", "transparent")
-      .on("pointerdown.node-drag", function (event, node) {
+      .on("pointerdown.touch-drag", function (event, node) {
+        if (event.pointerType === "mouse") return;
         event.stopPropagation();
         node.dragPointerId = event.pointerId;
-        node.dragOrigin = [event.clientX, event.clientY];
         node.wasDragged = false;
+        node.fx = node.x;
+        node.fy = node.y;
+        configureLiveForces(false, node.id);
+        reheatLayout(0.18, 0.025);
         this.setPointerCapture?.(event.pointerId);
         d3.select(this).classed("is-dragging", true);
       })
-      .on("pointermove.node-drag", function (event, node) {
-        if (node.dragPointerId !== event.pointerId) return;
+      .on("pointermove.touch-drag", function (event, node) {
+        if (event.pointerType === "mouse" || node.dragPointerId !== event.pointerId) return;
         event.stopPropagation();
-        if (node.dragOrigin && Math.hypot(event.clientX - node.dragOrigin[0], event.clientY - node.dragOrigin[1]) > 3) {
-          node.wasDragged = true;
-        }
+        node.wasDragged = true;
         const [x, y] = d3.pointer(event, viewport.node());
-        node.x = Math.max(10, Math.min(WIDTH - 10, x));
-        node.y = Math.max(10, Math.min(HEIGHT - 10, y));
+        node.fx = node.x = Math.max(10, Math.min(WIDTH - 10, x));
+        node.fy = node.y = Math.max(10, Math.min(HEIGHT - 10, y));
         refreshPositions();
       })
-      .on("pointerup.node-drag pointercancel.node-drag", function (event, node) {
-        if (node.dragPointerId !== event.pointerId) return;
+      .on("pointerup.touch-drag pointercancel.touch-drag", function (event, node) {
+        if (event.pointerType === "mouse" || node.dragPointerId !== event.pointerId) return;
         event.stopPropagation();
         this.releasePointerCapture?.(event.pointerId);
         node.dragPointerId = null;
-        node.dragOrigin = null;
+        releaseLayout();
         d3.select(this).classed("is-dragging", false);
       })
-      .on("mousedown.node-drag", function (event, node) {
+      .on("mousedown.mouse-drag", function (event, node) {
         event.stopPropagation();
         if (event.button !== 0) return;
         activeMouseDrag = { node, element: this };
         mouseDragOrigin = [event.clientX, event.clientY];
         node.wasDragged = false;
+        node.fx = node.x;
+        node.fy = node.y;
+        configureLiveForces(false, node.id);
+        reheatLayout(0.18, 0.025);
         d3.select(this).classed("is-dragging", true);
       })
       .on("mouseenter", (event, node) => {
@@ -266,13 +276,14 @@
         node.wasDragged = true;
       }
       const [x, y] = d3.pointer(event, viewport.node());
-      node.x = Math.max(10, Math.min(WIDTH - 10, x));
-      node.y = Math.max(10, Math.min(HEIGHT - 10, y));
+      node.fx = node.x = Math.max(10, Math.min(WIDTH - 10, x));
+      node.fy = node.y = Math.max(10, Math.min(HEIGHT - 10, y));
       refreshPositions();
     }, { passive: false });
 
     window.addEventListener("mouseup", () => {
       if (!activeMouseDrag) return;
+      releaseLayout();
       d3.select(activeMouseDrag.element).classed("is-dragging", false);
       activeMouseDrag = null;
       mouseDragOrigin = null;
@@ -281,6 +292,17 @@
     const state = { genre: "All", threshold: DEFAULT_THRESHOLD, selectedId: null, hoveredId: null };
     let currentFiltered = null;
     let currentStrength = new Map();
+    let currentRadius = new Map(nodes.map((node) => [node.id, symbolRadius(node)]));
+    const layoutSimulation = d3.forceSimulation().stop()
+      .alphaMin(0.018).alphaDecay(0.082).velocityDecay(0.42)
+      .on("tick", () => {
+        (currentFiltered ? nodes.filter((node) => currentFiltered.nodeIds.has(node.id)) : []).forEach((node) => {
+          const radius = currentRadius.get(node.id) || 5;
+          node.x = Math.max(radius + 8, Math.min(WIDTH - radius - 8, node.x));
+          node.y = Math.max(radius + 8, Math.min(HEIGHT - radius - 8, node.y));
+        });
+        refreshPositions();
+      });
     setupControls();
     updateGraph(false);
     scheduleNetworkIntro();
@@ -339,7 +361,7 @@
         .attr("y", (node) => placements.get(node.id).y + placements.get(node.id).height - 2);
     }
 
-    function updateGraph(animate = true) {
+    function updateGraph(animate = true, reheat = animate) {
       currentFiltered = logic.filterCollaborationGraph(rawLinks, state.genre, state.threshold, allMovies);
       const filteredByKey = new Map(currentFiltered.links.map((link) => [`${link.source}|${link.target}`, link]));
       currentStrength = new Map(nodes.map((node) => [node.id, 0]));
@@ -354,6 +376,12 @@
 
       const maxStrength = d3.max([...currentStrength.values()]) || 1;
       const activeRadius = d3.scaleSqrt().domain([1, maxStrength]).range([5, 14]);
+      currentRadius = new Map(nodes.map((node) => [
+        node.id,
+        currentFiltered.nodeIds.has(node.id)
+          ? activeRadius(Math.max(1, currentStrength.get(node.id))) * (isDirector(node) ? 1.08 : 1)
+          : 3,
+      ]));
       const transition = svg.transition("graph").duration(animate ? DURATION : 0).ease(d3.easeCubicInOut);
 
       linkSelection
@@ -377,12 +405,12 @@
         .transition(transition)
         .attr("d", (node) => nodeSymbol(node, currentFiltered.nodeIds.has(node.id) ? activeRadius(Math.max(1, currentStrength.get(node.id))) : 3))
         .attr("fill-opacity", (node) => currentFiltered.nodeIds.has(node.id) ? 0.96 : 0)
-        .attr("stroke-width", 1.05)
-        .attr("stroke", "#fff8e7");
+        .attr("stroke-width", 0.72)
+        .attr("stroke", "rgba(255,255,255,0.78)");
 
       sheenSelection.transition(transition)
-        .attr("d", (node) => nodeSymbol(node, currentFiltered.nodeIds.has(node.id) ? activeRadius(Math.max(1, currentStrength.get(node.id))) * 0.62 : 2))
-        .attr("opacity", (node) => currentFiltered.nodeIds.has(node.id) ? 0.72 : 0);
+        .attr("d", (node) => nodeSymbol(node, currentFiltered.nodeIds.has(node.id) ? activeRadius(Math.max(1, currentStrength.get(node.id))) * 0.46 : 2))
+        .attr("opacity", (node) => currentFiltered.nodeIds.has(node.id) ? 0.48 : 0);
 
       nodeHitSelection
         .style("pointer-events", (node) => currentFiltered.nodeIds.has(node.id) ? "all" : "none")
@@ -397,6 +425,47 @@
       d3.select("#threshold-output").text(state.threshold === 6 ? "6+" : state.threshold);
       window.setTimeout(() => updateFocusState(false), animate ? DURATION : 0);
       updateCareer();
+      configureLiveForces(reheat);
+    }
+
+    function configureLiveForces(reheat = true, focusedId = null) {
+      if (!currentFiltered) return;
+      const activeIds = new Set(focusedId ? [focusedId] : currentFiltered.nodeIds);
+      if (focusedId) currentFiltered.links.forEach((link) => {
+        if (link.source === focusedId) activeIds.add(link.target);
+        if (link.target === focusedId) activeIds.add(link.source);
+      });
+      const visibleNodes = nodes.filter((node) => activeIds.has(node.id));
+      const forceLinks = currentFiltered.links.filter((link) => activeIds.has(link.source) && activeIds.has(link.target)).map((link) => ({
+        source: link.source,
+        target: link.target,
+        filtered_count: link.filtered_count,
+      }));
+      layoutSimulation.nodes(visibleNodes)
+        .force("link", d3.forceLink(forceLinks).id((node) => node.id)
+          .distance((link) => logic.collaborationLinkDistance(link.filtered_count))
+          .strength((link) => logic.collaborationLinkStrength(link.filtered_count)))
+        .force("charge", d3.forceManyBody().strength(logic.collaborationChargeStrength(visibleNodes.length)).distanceMax(150))
+        .force("collision", d3.forceCollide((node) => (currentRadius.get(node.id) || 5) + 5).iterations(2))
+        .force("anchorX", d3.forceX((node) => node.defaultX).strength(0.12))
+        .force("anchorY", d3.forceY((node) => node.defaultY).strength(0.12))
+        .force("communityX", d3.forceX((node) => communityCenters.get(node.community)?.x ?? WIDTH / 2).strength(0.006))
+        .force("communityY", d3.forceY((node) => communityCenters.get(node.community)?.y ?? HEIGHT / 2).strength(0.006));
+      if (!reheat || reducedMotion) {
+        layoutSimulation.stop();
+        return;
+      }
+      layoutSimulation.alphaTarget(0).alpha(0.38).restart();
+    }
+
+    function reheatLayout(alpha = 0.3, target = 0.08) {
+      if (reducedMotion || !currentFiltered) return;
+      layoutSimulation.alphaTarget(target).alpha(Math.max(layoutSimulation.alpha(), alpha)).restart();
+    }
+
+    function releaseLayout() {
+      if (reducedMotion) return;
+      layoutSimulation.alphaTarget(0).alpha(Math.max(layoutSimulation.alpha(), 0.12)).restart();
     }
 
     function relatedIds(personId) {
@@ -446,7 +515,7 @@
       sheenSelection.interrupt("focus").transition(transition)
         .attr("opacity", (node) => {
           if (!currentFiltered.nodeIds.has(node.id)) return 0;
-          return focusId && !focusIds.has(node.id) ? 0.04 : 0.78;
+          return focusId && !focusIds.has(node.id) ? 0.03 : 0.48;
         });
 
       labelSelection.interrupt("focus").transition(transition).attr("opacity", (node) => {
@@ -455,7 +524,7 @@
       });
 
       haloSelection.interrupt("focus").transition(transition)
-        .attr("r", (node) => node.id === focusId ? symbolRadius(node) + (state.selectedId ? 9 : 6) : 0)
+        .attr("r", (node) => node.id === focusId ? (currentRadius.get(node.id) || symbolRadius(node)) + (state.selectedId ? 9 : 6) : 0)
         .attr("opacity", (node) => node.id === focusId ? (state.selectedId ? 0.9 : 0.55) : 0)
         .attr("stroke", (node) => node.id === state.selectedId ? "#ffd166" : "#fff8e7")
         .attr("stroke-width", (node) => node.id === state.selectedId ? 2.2 : 1.4);
@@ -477,7 +546,7 @@
       state.selectedId = personId;
       state.hoveredId = null;
       hideNetworkTooltip();
-      updateGraph(true);
+      updateGraph(true, false);
       if (!personId) return;
       const node = nodeById.get(personId);
       d3.select("#person-search").property("value", node.name);
@@ -533,11 +602,13 @@
         d3.select("#shared-movies").property("value", DEFAULT_THRESHOLD);
         d3.select("#person-search").property("value", "");
         closeSearchResults();
+        layoutSimulation.stop().alphaTarget(0);
+        nodes.forEach((node) => { node.fx = null; node.fy = null; });
         logic.restoreNodePositions(nodes);
         refreshPositions();
         svg.transition("zoom").duration(logic.motionDuration(480, reducedMotion)).ease(d3.easeCubicInOut)
           .call(zoom.transform, d3.zoomIdentity);
-        updateGraph(true);
+        updateGraph(true, false);
       });
 
       setupSearch();

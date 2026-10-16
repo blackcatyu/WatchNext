@@ -21,6 +21,10 @@ const {
   nodeHitRadius,
   nodeSymbolPath,
   networkZoomAllowed,
+  collaborationLinkDistance,
+  collaborationLinkStrength,
+  collaborationChargeStrength,
+  visibleMoviesForCell,
 } = require("../docs/js/viz_interactions.js");
 
 const moviesById = new Map([
@@ -106,40 +110,41 @@ test("places crowded network labels inside the chart without overlapping", () =>
 
 test("reset restores every dragged node to its default layout position", () => {
   const nodes = [
-    { id: "a", x: 91, y: 82, defaultX: 12, defaultY: 24 },
-    { id: "b", x: 77, y: 66, defaultX: 30, defaultY: 42 },
+    { id: "a", x: 91, y: 82, vx: 4, vy: -3, fx: 91, fy: 82, defaultX: 12, defaultY: 24 },
+    { id: "b", x: 77, y: 66, vx: -2, vy: 5, fx: 77, fy: 66, defaultX: 30, defaultY: 42 },
   ];
   restoreNodePositions(nodes);
   assert.deepEqual(nodes.map(({ x, y }) => [x, y]), [[12, 24], [30, 42]]);
+  assert.deepEqual(nodes.map(({ vx, vy, fx, fy }) => [vx, vy, fx, fy]), [[0, 0, null, null], [0, 0, null, null]]);
 });
 
 test("network links use a visible blue hierarchy for overview, hover, and selection", () => {
   const link = { source: "actor_a", target: "director_x" };
   assert.deepEqual(networkLinkStyle(link, { visible: true }), {
-    color: "#58a6ff",
-    opacity: 0.78,
+    color: "#4da3ff",
+    opacity: 0.52,
   });
   assert.deepEqual(networkLinkStyle(link, { visible: true, hoveredId: "actor_a" }), {
-    color: "#79cfff",
+    color: "#8ed8ff",
     opacity: 0.96,
   });
   assert.deepEqual(networkLinkStyle(link, { visible: true, selectedId: "director_x" }), {
-    color: "#58c7f3",
+    color: "#b5e5ff",
     opacity: 1,
   });
   assert.deepEqual(networkLinkStyle(link, { visible: true, selectedId: "someone_else" }), {
-    color: "#31506a",
-    opacity: 0.1,
+    color: "#29445b",
+    opacity: 0.08,
   });
   assert.deepEqual(networkLinkStyle(link, { visible: false }), {
-    color: "#31506a",
+    color: "#29445b",
     opacity: 0,
   });
 });
 
 test("network edge widths remain legible after responsive SVG scaling", () => {
-  assert.equal(networkEdgeWidth(3, 12), 1.8);
-  assert.equal(networkEdgeWidth(12, 12), 6.8);
+  assert.equal(networkEdgeWidth(3, 12), 1.2);
+  assert.equal(networkEdgeWidth(12, 12), 5.2);
 });
 
 test("heatmap transitions ripple briefly from left to right", () => {
@@ -240,9 +245,28 @@ test("network zoom ignores node drag targets but keeps normal pan and wheel zoom
   assert.equal(networkZoomAllowed({ isNodeHit: false, type: "mousedown", button: 1 }), false);
 });
 
-test("node drag targets capture pointer movement in network coordinates", () => {
-  const source = fs.readFileSync(path.join(__dirname, "../docs/js/viz3_collaboration_network.js"), "utf8");
-  assert.match(source, /setPointerCapture\?\.\(event\.pointerId\)/);
-  assert.match(source, /d3\.pointer\(event, viewport\.node\(\)\)/);
-  assert.match(source, /releasePointerCapture\?\.\(event\.pointerId\)/);
+test("stronger collaborations pull connected people closer without collapsing the network", () => {
+  assert.ok(collaborationLinkDistance(8) < collaborationLinkDistance(3));
+  assert.ok(collaborationLinkDistance(100) >= 28);
+  assert.ok(collaborationLinkStrength(8) > collaborationLinkStrength(3));
+  assert.ok(collaborationLinkStrength(100) <= 0.9);
+});
+
+test("larger visible networks receive stronger bounded repulsion", () => {
+  assert.ok(collaborationChargeStrength(120) < collaborationChargeStrength(20));
+  assert.ok(collaborationChargeStrength(500) >= -34);
+  assert.ok(collaborationChargeStrength(1) <= -18);
+});
+
+test("heatmap movie details show six vote-leading titles before expanding", () => {
+  const movies = Array.from({ length: 9 }, (_, index) => ({
+    title: `Movie ${index + 1}`,
+    vote_count: 900 - index * 50,
+  }));
+  assert.deepEqual(
+    visibleMoviesForCell(movies, false).map((movie) => movie.title),
+    ["Movie 1", "Movie 2", "Movie 3", "Movie 4", "Movie 5", "Movie 6"]
+  );
+  assert.equal(visibleMoviesForCell(movies, true).length, 9);
+  assert.deepEqual(visibleMoviesForCell([], false), []);
 });
