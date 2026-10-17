@@ -25,143 +25,244 @@
     .inline-universe { margin: 1rem 0; }
   </style>
   <link rel="stylesheet" href="css/cinematic.css?v=20261017a" />
+  <link rel="stylesheet" href="css/story.css?v=20261017b" />
 </head>
 
 <body>
 
+  <!-- =========================================================
+       Opening
+  ========================================================== -->
+
   <h1>WatchNext</h1>
 
   <p class="subtitle subtitle--with-actions">
-    The Movie Universe: Exploring Movies, People, and Audience Preferences
+    What makes audiences love a movie — and if people love one movie, what else might they love?
   </p>
 
-  <div class="project-actions" aria-label="Project resources">
-    <a class="project-report-link" href="report.html">
-      <span>Read the Final Report</span>
-      <span aria-hidden="true">→</span>
-    </a>
+  <div class="story-hero">
+    <p class="story-hook">
+      A movie can earn a high rating without attracting much attention. Two films from different
+      genres can appeal to the same audience, while familiar actor–director partnerships connect
+      entire groups of movies. WatchNext combines MovieLens audience ratings with TMDB metadata and
+      reviews to explore what a single rating leaves out.
+    </p>
+
+    <dl class="story-stats" aria-label="Dataset at a glance">
+      <div><dt>2,914</dt><dd>movies, released 1922–2026</dd></div>
+      <div><dt>32M</dt><dd>MovieLens audience ratings</dd></div>
+      <div><dt>11,481</dt><dd>written TMDB reviews</dd></div>
+      <div><dt>318</dt><dd>actors and directors with repeat collaborations</dd></div>
+    </dl>
+
+    <div class="project-actions" aria-label="Project resources">
+      <a class="project-report-link" href="#genres">
+        <span>Start the story</span>
+        <span aria-hidden="true">↓</span>
+      </a>
+      <a class="story-secondary-link" href="report.html">Read the final report →</a>
+    </div>
+
+    <nav class="story-map" aria-label="Story chapters">
+      <ol>
+        <li>
+          <a href="#genres">
+            <span class="story-map-stage">1 · Context</span>
+            <span class="story-map-title">Genres over time</span>
+          </a>
+        </li>
+        <li>
+          <a href="#neighborhoods">
+            <span class="story-map-stage">2 · Overview</span>
+            <span class="story-map-title">The movie universe</span>
+          </a>
+        </li>
+        <li>
+          <a href="#discussion">
+            <span class="story-map-stage">3 · Key difference</span>
+            <span class="story-map-title">Rated, discussed, reviewed</span>
+          </a>
+        </li>
+        <li>
+          <a href="#collaboration">
+            <span class="story-map-stage">4 · People</span>
+            <span class="story-map-title">Who makes movies together</span>
+          </a>
+        </li>
+        <li>
+          <a href="#conclusion">
+            <span class="story-map-stage">Insight</span>
+            <span class="story-map-title">What we learned</span>
+          </a>
+        </li>
+        <li>
+          <a href="#data">
+            <span class="story-map-stage">Appendix</span>
+            <span class="story-map-title">Data and methods</span>
+          </a>
+        </li>
+      </ol>
+    </nav>
+
+    <p class="story-case story-case--intro">
+      <span class="story-case-label">One movie, four views</span>
+      We follow <em>Oppenheimer</em> (2023) through every chapter: its genre, its audience
+      neighborhood, its ratings and attention, and the director behind it.
+    </p>
   </div>
 
 
   <!-- =========================================================
-       Dataset
+       Chapter 1 — Genres over time (Visualization 4)
   ========================================================== -->
 
-  <section class="viz-section">
+  <section id="genres" class="viz-section story-chapter">
 
-    <h2>Dataset</h2>
+    <p class="story-stage">Chapter 1 · Context — when and where</p>
+    <h2>Animation leads in ratings; Action draws the most votes</h2>
 
-    <h3>Raw datasets</h3>
-
-    <ul>
-      <li>
-        <strong>MovieLens 32M</strong> — 32,000,204 ratings and 2,000,072 free-text tags from
-        200,948 users, across 87,585 movies (Jan 1995–Oct 2023).
-        <a href="https://grouplens.org/datasets/movielens/32m/">grouplens.org</a>
-      </li>
-
-      <li>
-        <strong>TMDB API</strong> — movie metadata (genres, budget, revenue, ratings), cast/crew
-        credits, keywords, and user reviews, pulled per-movie via the TMDB API.
-        <a href="https://developer.themoviedb.org/docs/getting-started">developer.themoviedb.org</a>
-      </li>
-    </ul>
-
-
-    <h3>Processed dataset</h3>
-
-    <p>
-      <strong>2,914 candidate movies</strong>, built in two tracks and merged:
+    <p class="story-lede">
+      Before looking at individual movies, start with the broadest view: how do genres compare
+      across release years? The same grid tells a different story depending on what we measure:
+      how highly a genre is rated, how many people vote on it, or how many movies it contains.
     </p>
 
-    <ul>
-      <li>
-        <strong>Historical (1,998 movies, 1922–2019)</strong> — selected from MovieLens by rating
-        count, so each one has real MovieLens user-rating data (needed for the audience-similarity
-        network below).
-      </li>
+    <dl class="story-evidence">
+      <div>
+        <dt>7.47</dt>
+        <dd>Animation's vote-weighted TMDB rating for 2016–2025, the highest of 13 genres</dd>
+      </div>
+      <div>
+        <dt>2.05M</dt>
+        <dd>TMDB votes on Action movies, the most of any genre, even though its rating is only 6.98</dd>
+      </div>
+      <div>
+        <dt>Acclaim ≠ attention</dt>
+        <dd>The genre audiences rate highest is not the one they vote on most</dd>
+      </div>
+    </dl>
 
-      <li>
-        <strong>Recent (916 movies, 2016–2026)</strong> — MovieLens's ratings stop in Oct 2023 and
-        thin out well before that for newer releases, so this track is discovered directly from
-        TMDB (by vote count) to cover the years MovieLens can't see.
-      </li>
-    </ul>
+    <section class="viz-card viz-card--heatmap viz-card--embedded" aria-label="Genre ratings explorer">
+      <section id="viz4-controls" class="viz-toolbar viz-card-toolbar" aria-label="Heatmap controls">
+        <div class="control-group">
+          <label>Color metric</label>
+          <div id="metric-buttons" class="metric-switch" role="group" aria-label="Color metric">
+            <button type="button" data-metric="weighted_rating" aria-pressed="true">Rating</button>
+            <button type="button" data-metric="total_votes" aria-pressed="false">Votes</button>
+            <button type="button" data-metric="movie_count" aria-pressed="false">Movies</button>
+          </div>
+          <select id="metric-select" class="visually-hidden" tabindex="-1" aria-hidden="true">
+            <option value="weighted_rating">Weighted Average Rating</option>
+            <option value="total_votes">Total Vote Count</option>
+            <option value="movie_count">Number of Movies</option>
+          </select>
+        </div>
+        <p id="metric-description" class="toolbar-explainer">Vote-count-weighted average of TMDB movie ratings</p>
+      </section>
 
+      <div class="summary-row viz-card-status">
+        <div class="summary-item">Years: <strong>2016–2026*</strong></div>
+        <div class="summary-item">Genres: <strong id="genre-count">13</strong></div>
+        <div class="summary-item">Metric: <strong id="metric-state">Weighted Average Rating</strong></div>
+        <div class="summary-item">Source: <strong>TMDB</strong></div>
+      </div>
 
-    <p>
-      Each movie carries TMDB metadata, top-10 billed cast, director(s), and TMDB keywords.
-      11,481 TMDB reviews (covering ~2,650 of the 2,914 movies) were cleaned, deduplicated, and
-      scored for sentiment.
-    </p>
-
-
-    <h3>Data cleaning / processing completed</h3>
-
-    <ul>
-      <li>
-        Parsed release year and genre list out of MovieLens's raw title/genre strings;
-        normalized IMDb IDs (zero-padded, since leading zeros are significant).
-      </li>
-
-      <li>
-        Validated and deduplicated MovieLens ratings; converted timestamps to real dates.
-      </li>
-
-      <li>
-        Selected the two-track candidate set described above and pulled matching TMDB records
-        for each movie.
-      </li>
-
-      <li>
-        Deduplicated movies that appeared in both tracks (kept the MovieLens-linked copy) and
-        clipped a handful of implausible TMDB budget/revenue values (crowd-edited fields
-        occasionally carry vandalized placeholder numbers).
-      </li>
-
-      <li>
-        Cleaned review text (stripped HTML/URLs, dropped near-empty/duplicate reviews), scored
-        sentiment with <code>siebert/sentiment-roberta-large-english</code> (chosen over a
-        tweet-tuned model since our reviews run ~170 words at the median, far past a tweet's
-        length), and extracted per-movie keywords via TF-IDF.
-      </li>
-    </ul>
-
+      <section class="heatmap-panel chart-shell viz-card-canvas" aria-label="Interactive genre ratings heatmap">
+        <div id="heatmap"></div>
+        <div id="heatmap-tooltip" class="chart-tooltip" role="tooltip"></div>
+        <p class="chart-hint">Hover to compare · click or tap a cell to explore its movies</p>
+      </section>
+      <section id="heatmap-detail" class="heatmap-detail heatmap-detail--embedded" aria-labelledby="heatmap-detail-title" hidden>
+        <div class="heatmap-detail-heading">
+          <div>
+            <p class="eyebrow">Selected genre and year</p>
+            <h4 id="heatmap-detail-title">Choose a heatmap cell</h4>
+            <p id="heatmap-detail-subtitle">Movies are ranked by TMDB vote count to show which titles most influence the weighted rating.</p>
+          </div>
+          <button id="heatmap-clear" class="tool-btn heatmap-clear" type="button">Clear selection</button>
+        </div>
+        <div class="heatmap-detail-stats" aria-live="polite">
+          <div><span>Weighted rating</span><strong id="heatmap-detail-rating">—</strong></div>
+          <div><span>Total votes</span><strong id="heatmap-detail-votes">—</strong></div>
+          <div><span>Movies</span><strong id="heatmap-detail-count">—</strong></div>
+        </div>
+        <ol id="heatmap-movie-list" class="heatmap-movie-list"></ol>
+        <button id="heatmap-show-all" class="heatmap-show-all" type="button" hidden></button>
+      </section>
+      <p class="heatmap-note viz-card-note"><strong>2026* is partial-year data.</strong> Lower counts do not represent a complete annual decline.</p>
+    </section>
 
     <p class="viz-caption">
-      Full pipeline detail:
-      <a href="https://github.com/blackcatyu/WatchNext/blob/main/data/README.md">
-        data/README.md
-      </a>.
+      <strong>How to read it.</strong> Rows are 13 major genres and columns are release years.
+      Color shows the vote-count-weighted average TMDB rating, so heavily voted movies count more.
+      The outlined row is the genre that leads the selected metric over the complete years 2016–2025.
     </p>
 
+    <div class="story-notes">
+      <div class="story-try">
+        <span class="story-note-label">Try this</span>
+        <p>
+          Switch the color from <strong>Rating</strong> to <strong>Votes</strong>. The outline moves
+          from Animation to Action: the same grid now answers which genres attract the most audience
+          activity, not which are rated highest.
+        </p>
+      </div>
+      <div class="story-caveat">
+        <span class="story-note-label">Keep in mind</span>
+        <p>
+          2026 contains only 28 movies so far, so it is not a complete year. A movie with several
+          genres counts in each of them. TMDB votes measure voting activity, not total audience size.
+        </p>
+      </div>
+    </div>
+
+    <p class="story-case">
+      <span class="story-case-label">Following <em>Oppenheimer</em></span>
+      Click the <strong>Drama · 2023</strong> cell. <em>Oppenheimer</em> is its most-voted movie,
+      so it has the most influence on that cell's weighted rating.
+    </p>
+
+    <p class="story-links">
+      <a class="viz-link" href="viz4.html">Open the full heatmap →</a>
+    </p>
+
+    <p class="story-transition">
+      Genre trends give context, but genres alone do not explain why two individual movies attract
+      the same audience. To see that, place every movie in the same universe.
+    </p>
   </section>
 
 
   <!-- =========================================================
-       Visualizations
+       Chapter 2 — The movie universe (Visualization 1)
   ========================================================== -->
 
-  <section class="viz-section viz-gallery">
+  <section id="neighborhoods" class="viz-section story-chapter">
 
-    <h2>Visualizations</h2>
+    <p class="story-stage">Chapter 2 · Overview and detail — what and where</p>
+    <h2>Audience taste creates neighborhoods shaped by both era and genre</h2>
 
-
-    <!-- =======================================================
-         Visualization 1
-    ======================================================== -->
-
-    <h3>Visualization 1 — Audience Similarity Network</h3>
-
-    <p class="viz-caption">
-      Every movie in the dataset as a star. The 2,759 movies MovieLens users rated are placed by
-      audience overlap (UMAP on 1 − Jaccard of their ≥4/5 fan bases), so movies liked by the same
-      people sit close together. The 155 newest releases have no MovieLens data and appear as
-      four-point stars placed beside the movies they most resemble in content. Brightness = TMDB
-      vote count. Scroll to zoom, drag to pan, hover for nearest neighbors, click a star to zoom
-      in (click it again to zoom back out). Try <em>Color by: Decade</em>: shared audiences follow
-      release era more than genre.
+    <p class="story-lede">
+      Every movie appears as a star. Movies liked by the same MovieLens users sit close together, so
+      distance means a shared audience rather than a shared label. The universe answers
+      <em>where does this movie belong?</em> The Audience Network then answers
+      <em>what else do its viewers love?</em>
     </p>
+
+    <dl class="story-evidence">
+      <div>
+        <dt>77.1%</dt>
+        <dd>of audience neighbors come from the same release decade, compared with 19.6% of random pairs</dd>
+      </div>
+      <div>
+        <dt>90.0%</dt>
+        <dd>share at least one genre, compared with 50.9% of random pairs</dd>
+      </div>
+      <div>
+        <dt>36.8%</dt>
+        <dd>share the same primary genre, three times the 12.4% of random pairs</dd>
+      </div>
+    </dl>
 
     <div id="universe" class="inline-universe">
       <div class="universe-bar">
@@ -183,66 +284,161 @@
       </div>
     </div>
 
-    <p>
-      <a class="viz-link" href="viz1.html">
-        ✦ Open the Movie Universe (all 2,914 movies) →
-      </a>
-      <a class="viz-link" href="viz1.html#audience">
-        Open the Audience Network →
-      </a>
-    </p>
-
-
-    <!-- =======================================================
-         Visualization 2
-    ======================================================== -->
-
-    <hr class="viz-divider">
-
-
-    <h3>Visualization 2 — Movie Performance and Audience Discussion</h3>
-
     <p class="viz-caption">
-      Each bubble is a movie with box-office data (2,745 movies; streaming-first releases with
-      no box office are left out). Size = box office, color = primary genre.
-      <strong>Rating vs. discussion</strong>: audience rating against how much the movie is
-      discussed (TMDB votes compared with movies released within ±2 years, so older movies'
-      extra decades of votes don't dominate); median lines split out <em>hidden gems</em>,
-      <em>acclaimed hits</em> and movies <em>talked about despite low ratings</em>.
-      <strong>Rating vs. review tone</strong>: rating percentile against the share of positive
-      written reviews (movies with ≥3 reviews); distance from the diagonal is disagreement.
-      Pick a region in the side panel to list its most typical movies; click a bubble for
-      director, cast and review keywords.
+      <strong>How to read it.</strong> The 2,759 movies with MovieLens ratings are placed by audience
+      overlap (UMAP on 1 − Jaccard similarity of the users who rated each movie at least 4 out of 5).
+      Brighter stars have more TMDB votes. The gold ring marks the eight Harry Potter films, which all share one audience neighborhood. Scroll to zoom, drag to pan, hover for nearest neighbors, and
+      click a star to zoom in.
     </p>
+
+    <div class="story-notes">
+      <div class="story-try">
+        <span class="story-note-label">Try this</span>
+        <p>
+          Click <strong>Color by: Decade</strong>. The colors run from older films on the left to
+          recent releases on the right. Switch back to <strong>Genre</strong> and the colors mix
+          within each era. Even one franchise splits by era: <em>Toy Story</em> and <em>Toy Story 2</em>
+          sit among 1990s films, while <em>Toy Story 4</em> sits among 2010s releases.
+        </p>
+      </div>
+      <div class="story-caveat">
+        <span class="story-note-label">Keep in mind</span>
+        <p>
+          MovieLens ratings end in October 2023. The 155 newer films without audience data appear as
+          four-point stars placed by content similarity, so their positions are approximate.
+        </p>
+      </div>
+    </div>
+
+    <p class="story-case">
+      <span class="story-case-label">Following <em>Oppenheimer</em></span>
+      It sits on the recent side of the universe.
+      <a href="viz1.html#movie=287699">Open its audience neighborhood</a> to see which films share
+      its viewers and what those connections have in common.
+    </p>
+
+    <p class="story-links">
+      <a class="viz-link" href="viz1.html">✦ Open the Movie Universe →</a>
+      <a class="viz-link" href="viz1.html#audience">Open the Audience Network →</a>
+    </p>
+
+    <p class="story-transition">
+      Audience neighborhoods show which movies are liked together. But being liked is not the same
+      as being widely discussed, and a numerical rating does not always match the tone of written
+      reviews.
+    </p>
+  </section>
+
+
+  <!-- =========================================================
+       Chapter 3 — Rated, discussed, reviewed (Visualization 2)
+  ========================================================== -->
+
+  <section id="discussion" class="viz-section story-chapter">
+
+    <p class="story-stage">Chapter 3 · Important difference — what relationships exist</p>
+    <h2>A movie can be loved, widely discussed, or warmly reviewed — these are not the same thing</h2>
+
+    <p class="story-lede">
+      Each bubble is a movie with box-office data. Further right means a higher rating; higher up
+      means more discussion than other movies released within two years. The median lines split the
+      chart into four groups, and the three labeled movies show one example of each contrast.
+    </p>
+
+    <dl class="story-evidence">
+      <div>
+        <dt><em>The Hunt</em> · 8.1</dt>
+        <dd>A highly rated film with more TMDB votes than only 10% of movies from its era</dd>
+      </div>
+      <div>
+        <dt><em>Oppenheimer</em> · 8.0</dt>
+        <dd>Acclaimed and more discussed than 98% of movies from its era</dd>
+      </div>
+      <div>
+        <dt><em>Suicide Squad</em> · 5.9</dt>
+        <dd>Rated below the median, yet more discussed than 97% of movies from its era</dd>
+      </div>
+    </dl>
 
     <div id="scatter" class="scatter"></div>
 
-    <p>
-      <a class="viz-link" href="viz2.html">
-        Open Visualization 2 →
-      </a>
-    </p>
-
-
-    <!-- =======================================================
-         Visualization 3
-    ======================================================== -->
-
-    <hr class="viz-divider">
-
-
-    <h3>
-      Visualization 3 — Actor &amp; Director Collaboration Network
-    </h3>
-
     <p class="viz-caption">
-      Actors and directors connected by repeated collaborations in our movie dataset.
-      Circles represent actors and diamonds represent directors; node size = overall
-      collaboration strength; edge thickness = number of shared movies; color =
-      collaboration community. The interactive view starts with people who have at least
-      five movies and collaborations with at least three shared movies, then supports search,
-      genre recomputation, stronger thresholds, and an individual career view.
+      <strong>How to read it.</strong> Bubble size is box office and color is primary genre
+      (2,745 movies; streaming-first releases without box office are left out).
+      <strong>Rating vs. discussion</strong> compares rating with TMDB votes relative to movies
+      released within ±2 years, so older movies' extra decades of votes do not dominate.
+      <strong>Rating vs. review tone</strong> compares the rating percentile with the share of
+      positive written reviews (movies with at least 3 reviews); distance from the diagonal is
+      disagreement. Click a bubble for its director, cast, and review keywords.
     </p>
+
+    <div class="story-notes">
+      <div class="story-try">
+        <span class="story-note-label">Try this</span>
+        <p>
+          Pick <strong>Hidden gems</strong> in the side panel to list highly rated movies few people
+          talk about. Then switch to <strong>Rating vs. review tone</strong>: the movies that stand
+          out change when written reactions replace voting activity.
+        </p>
+      </div>
+      <div class="story-caveat">
+        <span class="story-note-label">Keep in mind</span>
+        <p>
+          TMDB ratings for movies with few votes can be unstable; switch the rating source to
+          MovieLens to compare. Many movies have only a few written reviews, and the sentiment model
+          can read dark or violent subject matter as negative. These are descriptive patterns, not
+          causes.
+        </p>
+      </div>
+    </div>
+
+    <p class="story-case">
+      <span class="story-case-label">Following <em>Oppenheimer</em></span>
+      It is labeled in the top-right group: both highly rated and widely discussed. Click it to see
+      what reviewers wrote about most.
+    </p>
+
+    <p class="story-links">
+      <a class="viz-link" href="viz2.html">Open the full scatterplot →</a>
+    </p>
+
+    <p class="story-transition">
+      Audience response describes what happened around a movie. The last chapter asks who made these
+      films, and which actors and directors keep working together.
+    </p>
+  </section>
+
+
+  <!-- =========================================================
+       Chapter 4 — Creative partnerships (Visualization 3)
+  ========================================================== -->
+
+  <section id="collaboration" class="viz-section story-chapter">
+
+    <p class="story-stage">Chapter 4 · People and relationships — who is involved</p>
+    <h2>Repeated creative partnerships form durable movie communities</h2>
+
+    <p class="story-lede">
+      Actors (circles) and directors (diamonds) are linked when they made at least three movies
+      together. Colors mark communities the network detects on its own, and they turn out to be
+      recognizable working relationships rather than decorative clusters. Select a person to follow
+      their career below the network.
+    </p>
+
+    <dl class="story-evidence">
+      <div>
+        <dt>8 films</dt>
+        <dd>Bill Murray and Wes Anderson, the strongest repeat actor–director pair</dd>
+      </div>
+      <div>
+        <dt>7 films</dt>
+        <dd>Johnny Depp with Tim Burton, and Robert De Niro with Martin Scorsese</dd>
+      </div>
+      <div>
+        <dt>278 links</dt>
+        <dd>repeat collaborations among 318 actors and directors</dd>
+      </div>
+    </dl>
 
     <section class="viz-card viz-card--network viz-card--embedded" aria-label="Actor and director collaboration explorer">
       <section id="viz3-controls" class="viz-toolbar viz-toolbar--network viz-card-toolbar" aria-label="Collaboration network controls">
@@ -298,97 +494,214 @@
       </section>
     </section>
 
-    <p>
-      <a class="viz-link" href="viz3.html">
-        View Interactive Visualization 3 →
-      </a>
+    <p class="viz-caption">
+      <strong>How to read it.</strong> Node size is collaboration strength and edge width is the
+      number of shared movies. The genre filter recomputes every link from the shared movies in
+      that genre. In the career chart, each circle is one film: year on the x-axis, TMDB rating on
+      the y-axis, box office as size, and primary genre as color.
     </p>
 
+    <div class="story-notes">
+      <div class="story-try">
+        <span class="story-note-label">Try this</span>
+        <p>
+          Raise <strong>Minimum shared movies</strong> to 5 to keep only the strongest partnerships,
+          or pick a genre to see which relationships survive inside it.
+        </p>
+      </div>
+      <div class="story-caveat">
+        <span class="story-note-label">Keep in mind</span>
+        <p>
+          The network includes only people with at least five movies in this dataset and pairs with at
+          least three shared films. It describes repeated partnerships among popular movies, not
+          every credit in the film industry.
+        </p>
+      </div>
+    </div>
 
-    <!-- =======================================================
-         Visualization 4
-    ======================================================== -->
+    <p class="story-case">
+      <span class="story-case-label">Following <em>Oppenheimer</em></span>
+      Search for <strong>Christopher Nolan</strong>. The network shows his recurring collaborators,
+      and his career chart places <em>Oppenheimer</em> among 12 films from <em>Memento</em> (2000)
+      to <em>The Odyssey</em> (2026).
+    </p>
 
-    <hr class="viz-divider">
+    <p class="story-links">
+      <a class="viz-link" href="viz3.html">Open the full network →</a>
+    </p>
+
+    <p class="story-transition">
+      Genres, audience neighborhoods, attention, review tone, and creative partnerships each reveal
+      a different part of movie reception. Together they answer the question we started with.
+    </p>
+  </section>
 
 
-    <h3>
-      Visualization 4 — Genre Ratings Over Time
-    </h3>
+  <!-- =========================================================
+       Conclusion
+  ========================================================== -->
+
+  <section id="conclusion" class="viz-section story-chapter story-conclusion">
+
+    <p class="story-stage">Insight — why it matters</p>
+    <h2>Finding a meaningful next movie takes more than one score</h2>
+
+    <p class="story-lede">
+      WatchNext shows why one rating cannot fully describe a movie. Genre performance changes when
+      we compare ratings with voting activity. Movies liked by similar audiences form neighborhoods
+      shaped by both era and genre. Attention, numerical ratings, and written reactions often
+      disagree. Behind those patterns, repeated actor–director partnerships create recognizable
+      creative communities.
+    </p>
+
+    <ol class="story-takeaways">
+      <li>
+        <a href="#genres">
+          <span class="story-takeaway-number">1</span>
+          <strong>The metric changes the story.</strong>
+          Animation is the highest-rated genre, but Action draws the most votes.
+        </a>
+      </li>
+      <li>
+        <a href="#neighborhoods">
+          <span class="story-takeaway-number">2</span>
+          <strong>Audience similarity has structure.</strong>
+          Movies liked by the same people usually share a release decade and at least one genre.
+        </a>
+      </li>
+      <li>
+        <a href="#discussion">
+          <span class="story-takeaway-number">3</span>
+          <strong>Acclaim is not attention.</strong>
+          Ratings, discussion, and review tone capture different audience responses.
+        </a>
+      </li>
+      <li>
+        <a href="#collaboration">
+          <span class="story-takeaway-number">4</span>
+          <strong>Movies are also social products.</strong>
+          Recurring actor–director partnerships form visible creative communities.
+        </a>
+      </li>
+    </ol>
+
+    <h3>How to find your next movie</h3>
+    <ol class="story-steps">
+      <li><strong>Start with a movie you love</strong> and find it in the Movie Universe.</li>
+      <li><strong>Open its audience neighborhood</strong> to see what its viewers also liked.</li>
+      <li><strong>Check those neighbors in the scatterplot:</strong> are they acclaimed, or simply widely discussed?</li>
+      <li><strong>Follow the people behind it</strong> in the collaboration network and career view.</li>
+    </ol>
+    <p>
+      The result is not a single automatic recommendation, but a more transparent way to understand
+      why a movie may be worth watching.
+    </p>
+
+    <h3>Limitations</h3>
+    <ul class="story-limitations">
+      <li>The dataset favors popular titles with many MovieLens ratings or TMDB votes, so it does not represent every released film.</li>
+      <li>MovieLens ratings end in October 2023, so the newest movies have no audience-overlap data and are placed by content only.</li>
+      <li>TMDB vote count measures voting activity, not complete popularity or discussion.</li>
+      <li>Review samples are small for many movies (median 3 reviews), and the sentiment model may read dark subject matter as negative.</li>
+      <li>Box-office revenue is missing for many streaming-first releases, which therefore do not appear in the scatterplot.</li>
+      <li>The collaboration network only includes people with at least five movies and pairs with at least three shared films.</li>
+    </ul>
+  </section>
+
+
+  <!-- =========================================================
+       Data and methods
+  ========================================================== -->
+
+  <section id="data" class="viz-section story-methods">
+
+    <p class="story-stage">Appendix</p>
+    <h2>Data and methods</h2>
+
+    <h3>Raw datasets</h3>
+    <ul>
+      <li>
+        <strong>MovieLens 32M</strong> — 32,000,204 ratings and 2,000,072 free-text tags from
+        200,948 users, across 87,585 movies (January 1995 – 12 October 2023).
+        <a href="https://grouplens.org/datasets/movielens/32m/">grouplens.org</a>
+      </li>
+      <li>
+        <strong>TMDB API</strong> — movie metadata (genres, budget, revenue, ratings), cast and crew
+        credits, keywords, and user reviews, pulled per movie via the TMDB API.
+        <a href="https://developer.themoviedb.org/docs/getting-started">developer.themoviedb.org</a>
+      </li>
+    </ul>
+
+    <h3>Processed dataset</h3>
+    <p><strong>2,914 movies</strong>, built in two tracks and merged:</p>
+    <ul>
+      <li>
+        <strong>Historical (1,998 movies, 1922–2022)</strong> — MovieLens movies with a TMDB ID and at
+        least 50 ratings; the top 2,000 by rating count were selected, and two whose TMDB entries no
+        longer exist were dropped. Each has real MovieLens user-rating data, which the audience
+        similarity in Chapter 2 needs. This track leans toward the 1990s and 2000s, the era MovieLens
+        users rated most.
+      </li>
+      <li>
+        <strong>Recent (916 movies, 2016–2026)</strong> — MovieLens ratings stop in October 2023 and
+        thin out well before that for newer releases, so this track is discovered directly from TMDB,
+        sorted by vote count. Vote count is stable while paging; TMDB's popularity score changes
+        continuously and would produce duplicates and gaps.
+      </li>
+    </ul>
+    <p>
+      Each movie carries TMDB metadata, its top 10 billed cast, director(s), and TMDB keywords
+      (28,991 cast credits, 3,173 director credits, 47,201 keywords). 11,481 TMDB reviews covering
+      2,648 of the 2,914 movies were cleaned, deduplicated, and scored for sentiment.
+    </p>
+
+    <h3>Data cleaning and processing</h3>
+    <ul>
+      <li>
+        Parsed release year and genre list from MovieLens's raw title and genre strings, and
+        normalized IMDb IDs as zero-padded strings, since leading zeros are significant.
+      </li>
+      <li>
+        Validated MovieLens ratings (dropped values outside 0.5–5 or off the half-star scale, and
+        duplicate user–movie pairs) and converted timestamps to dates.
+      </li>
+      <li>
+        Removed movies that appeared in both tracks, keeping the MovieLens-linked copy, and treated
+        budget or revenue values of zero or above $3 billion as missing, since these crowd-edited
+        fields occasionally carry placeholder numbers.
+      </li>
+      <li>
+        Cleaned review text (stripped HTML and URLs, dropped reviews under 20 characters and exact
+        duplicates) and scored sentiment with <code>siebert/sentiment-roberta-large-english</code>.
+        We chose it over a tweet-tuned model because our reviews run about 170 words at the median.
+      </li>
+      <li>
+        Extracted the top 8 review keywords per movie with TF–IDF over unigrams and bigrams.
+      </li>
+    </ul>
+
+    <h3>Measures used in the charts</h3>
+    <ul>
+      <li><strong>Weighted rating</strong> (Chapter 1): the average TMDB rating of a genre–year cell, weighted by each movie's vote count.</li>
+      <li><strong>Audience similarity</strong> (Chapter 2): the Jaccard overlap between the sets of users who rated two movies at least 4 out of 5.</li>
+      <li><strong>Discussion</strong> (Chapter 3): a movie's TMDB vote-count percentile among movies released within ±2 years.</li>
+      <li><strong>Review tone</strong> (Chapter 3): the share of positive reviews, adjusted toward the overall average for movies with few reviews.</li>
+      <li><strong>Collaboration strength</strong> (Chapter 4): the number of movies an actor and a director made together.</li>
+    </ul>
 
     <p class="viz-caption">
-      13 major movie genres compared across release years from 2016 to 2026 using
-      TMDB voting data. Rows = genres; columns = release years; color =
-      vote-count-weighted average TMDB rating. Movies with multiple genres can
-      contribute to more than one row, and 2026 is marked as a partial year.
+      Full pipeline detail:
+      <a href="https://github.com/blackcatyu/WatchNext/blob/main/data/README.md">data/README.md</a>.
     </p>
-
-    <section class="viz-card viz-card--heatmap viz-card--embedded" aria-label="Genre ratings explorer">
-      <section id="viz4-controls" class="viz-toolbar viz-card-toolbar" aria-label="Heatmap controls">
-        <div class="control-group">
-          <label>Color metric</label>
-          <div id="metric-buttons" class="metric-switch" role="group" aria-label="Color metric">
-            <button type="button" data-metric="weighted_rating" aria-pressed="true">Rating</button>
-            <button type="button" data-metric="total_votes" aria-pressed="false">Votes</button>
-            <button type="button" data-metric="movie_count" aria-pressed="false">Movies</button>
-          </div>
-          <select id="metric-select" class="visually-hidden" tabindex="-1" aria-hidden="true">
-            <option value="weighted_rating">Weighted Average Rating</option>
-            <option value="total_votes">Total Vote Count</option>
-            <option value="movie_count">Number of Movies</option>
-          </select>
-        </div>
-        <p id="metric-description" class="toolbar-explainer">Vote-count-weighted average of TMDB movie ratings</p>
-      </section>
-
-      <div class="summary-row viz-card-status">
-        <div class="summary-item">Years: <strong>2016–2026*</strong></div>
-        <div class="summary-item">Genres: <strong id="genre-count">13</strong></div>
-        <div class="summary-item">Metric: <strong id="metric-state">Weighted Average Rating</strong></div>
-        <div class="summary-item">Source: <strong>TMDB</strong></div>
-      </div>
-
-      <section class="heatmap-panel chart-shell viz-card-canvas" aria-label="Interactive genre ratings heatmap">
-        <div id="heatmap"></div>
-        <div id="heatmap-tooltip" class="chart-tooltip" role="tooltip"></div>
-        <p class="chart-hint">Hover to compare · click or tap a cell to explore its movies</p>
-      </section>
-      <section id="heatmap-detail" class="heatmap-detail heatmap-detail--embedded" aria-labelledby="heatmap-detail-title" hidden>
-        <div class="heatmap-detail-heading">
-          <div>
-            <p class="eyebrow">Selected genre and year</p>
-            <h4 id="heatmap-detail-title">Choose a heatmap cell</h4>
-            <p id="heatmap-detail-subtitle">Movies are ranked by TMDB vote count to show which titles most influence the weighted rating.</p>
-          </div>
-          <button id="heatmap-clear" class="tool-btn heatmap-clear" type="button">Clear selection</button>
-        </div>
-        <div class="heatmap-detail-stats" aria-live="polite">
-          <div><span>Weighted rating</span><strong id="heatmap-detail-rating">—</strong></div>
-          <div><span>Total votes</span><strong id="heatmap-detail-votes">—</strong></div>
-          <div><span>Movies</span><strong id="heatmap-detail-count">—</strong></div>
-        </div>
-        <ol id="heatmap-movie-list" class="heatmap-movie-list"></ol>
-        <button id="heatmap-show-all" class="heatmap-show-all" type="button" hidden></button>
-      </section>
-      <p class="heatmap-note viz-card-note"><strong>2026* is partial-year data.</strong> Lower counts do not represent a complete annual decline.</p>
-    </section>
-
-    <p>
-      <a class="viz-link" href="viz4.html">
-        View Interactive Visualization 4 →
-      </a>
-    </p>
-
-
   </section>
 
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
-  <script src="js/viz1_universe.js"></script>
-  <script src="js/viz2_scatter.js"></script>
+  <script src="js/viz1_universe.js?v=20261017c"></script>
+  <script src="js/viz2_scatter.js?v=20261017a"></script>
   <script src="js/viz_interactions.js?v=20261016f"></script>
-  <script src="js/viz3_collaboration_network.js?v=20261017a"></script>
-  <script src="js/viz4_heatmap.js?v=20261016d"></script>
+  <script src="js/viz3_collaboration_network.js?v=20261017b"></script>
+  <script src="js/viz4_heatmap.js?v=20261017a"></script>
 </body>
 
 </html>
