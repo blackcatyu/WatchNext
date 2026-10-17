@@ -11,6 +11,7 @@
   const DURATION = logic.motionDuration(360, reducedMotion);
   const FOCUS_DURATION = logic.motionDuration(520, reducedMotion);
   const DEFAULT_THRESHOLD = 3;
+  const GUIDE_PERSON_ID = "director_525"; // Christopher Nolan, the story's case-study director
   const formatInteger = d3.format(",");
 
   const escapeHtml = (value) => String(value ?? "")
@@ -302,6 +303,7 @@
         refreshPositions();
       });
     setupControls();
+    setupGuide();
     updateGraph(false);
     scheduleNetworkIntro();
 
@@ -573,6 +575,7 @@
       hideNetworkTooltip();
       updateGraph(true, false);
       if (!personId) return;
+      hideGuide();
       const node = nodeById.get(personId);
       d3.select("#person-search").property("value", node.name);
       window.setTimeout(traceSelectedLinks, DURATION);
@@ -664,16 +667,8 @@
       }
 
       function pickSearchResult(node) {
-        if (!currentFiltered.nodeIds.has(node.id)) {
-          state.genre = "All";
-          state.threshold = DEFAULT_THRESHOLD;
-          d3.select("#genre-filter").property("value", "All");
-          d3.select("#shared-movies").property("value", DEFAULT_THRESHOLD);
-          updateGraph(false);
-        }
-        input.property("value", node.name);
         closeSearchResults();
-        selectPerson(node.id, true);
+        revealPerson(node);
       }
 
       input.on("input", showResults).on("focus", showResults)
@@ -683,6 +678,38 @@
           if (event.key === "Escape") closeSearchResults();
         });
 
+    }
+
+    function revealPerson(node) {
+      if (!currentFiltered.nodeIds.has(node.id)) {
+        state.genre = "All";
+        state.threshold = DEFAULT_THRESHOLD;
+        d3.select("#genre-filter").property("value", "All");
+        d3.select("#shared-movies").property("value", DEFAULT_THRESHOLD);
+        updateGraph(false);
+      }
+      d3.select("#person-search").property("value", node.name);
+      selectPerson(node.id, true);
+    }
+
+    function setupGuide() {
+      const guide = d3.select("#viz3-guide");
+      if (guide.empty()) return;
+      const guidePerson = nodeById.get(GUIDE_PERSON_ID);
+      if (guidePerson) {
+        d3.select("#viz3-guide-try").on("click", () => revealPerson(guidePerson));
+      } else {
+        d3.select("#viz3-guide-try").remove();
+      }
+      d3.select("#viz3-guide-close").on("click", hideGuide);
+      d3.select(window).on("keydown.viz3-guide", (event) => { if (event.key === "Escape") hideGuide(); });
+    }
+
+    function hideGuide() {
+      const guide = d3.select("#viz3-guide");
+      if (guide.empty() || guide.classed("is-hidden")) return;
+      guide.classed("is-hidden", true);
+      d3.select(window).on("keydown.viz3-guide", null);
     }
 
     function closeSearchResults() {

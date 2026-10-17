@@ -599,6 +599,72 @@ a:focus-visible,
   letter-spacing: 0.02em;
 }
 
+.network-guide {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(6, 7, 9, 0.62);
+  transition: opacity 0.25s ease, visibility 0.25s;
+}
+
+.network-guide.is-hidden {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.network-guide-card {
+  max-width: 460px;
+  padding: 1.4rem 1.5rem;
+  border: 1px solid rgba(217, 170, 98, 0.4);
+  border-radius: var(--cinema-radius);
+  background: var(--cinema-surface-raised);
+  box-shadow: var(--cinema-shadow);
+}
+
+.network-guide-card h2 {
+  margin: 0.35rem 0 0.9rem;
+  font-family: var(--cinema-serif);
+  font-size: 1.3rem;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.network-guide-steps {
+  margin: 0 0 1.2rem;
+  padding-left: 1.2rem;
+  color: #d4cec5;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.network-guide-steps li + li {
+  margin-top: 0.45rem;
+}
+
+.network-guide-steps strong {
+  color: var(--cinema-ivory);
+}
+
+.network-guide-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.network-guide-actions .tool-btn {
+  padding: 0.5rem 0.9rem;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .network-guide { transition: none; }
+}
+
 .network-note,
 .heatmap-note {
   max-width: 980px;
