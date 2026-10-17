@@ -29,7 +29,7 @@ Across 2016–2025, excluding the partial 2026 column, **Animation has the highe
 Across 33,108 stored top-neighbor relationships in the audience-similarity data:
 
 - 77.1% connect movies from the same release decade, compared with 19.6% for random movie pairs;
-- 36.8% share the same primary genre, compared with 12.4% for random pairs;
+- 36.8% share the same primary genre, compared with 12.2% for random pairs;
 - 90.0% share at least one genre, compared with 50.9% for random pairs.
 
 The accurate claim is not that era simply replaces genre. Audience similarity is structured by **both release era and genre**, with release decade providing an especially strong organizing pattern.

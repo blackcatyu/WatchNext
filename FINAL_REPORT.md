@@ -1,107 +1,108 @@
 # WatchNext: Understanding Movies Beyond a Single Rating
 
-## Executive Summary
+## Introduction
 
-WatchNext is an interactive website that asks: **What makes audiences love a movie, and if they love one movie, what else might they love?** A rating alone cannot explain whether a movie attracted attention, appealed to a particular audience, or belonged to a recurring creative partnership. We therefore created four connected visualization topics covering genre trends, audience similarity, rating versus discussion, and actor–director collaboration.
+Movie websites often reduce a title to a rating, genre, cast list, and popularity score. These values are useful for lookup, but they do not explain why two movies appeal to the same viewers, why a highly rated film may receive little attention, or how repeated creative partnerships connect groups of movies. WatchNext addresses this gap through an interactive website built around one question: **What makes audiences love a movie, and if they love one movie, what else might they love?**
 
-The project combines MovieLens 32M with metadata and reviews collected from TMDB. After cleaning and merging both sources, the final dataset contains 2,914 movies. We found that the answer changes with the metric: Animation has the highest vote-count-weighted TMDB rating in the 2016–2025 data, while Action receives the most votes. Audience-similar movies strongly share both release era and genre, but rating, voting attention, and written-review tone do not always agree. These results show why movie discovery benefits from several forms of evidence rather than one score. The website presents the four topics as a story in four chapters, moving from genre context to audience neighborhoods, acclaim versus attention, and creative partnerships, and follows one movie, *Oppenheimer*, through every chapter.
+The intended audience is general moviegoers who want to discover films and understand the relationships behind ratings and recommendations. Our research questions ask how genre reception changes over time, which movies attract similar audiences, how rating differs from voting activity and review tone, and which actor–director partnerships recur across films and careers. Visualization is important because these questions involve spatial neighborhoods, multivariate comparisons, temporal patterns, and networks that are difficult to understand from a table or a single score. Five interactive views let users move from an overview to exact details while retaining the context needed to interpret each result.
 
-## 1. Motivation, Questions, and Intended Audience
+## Method
 
-Movie websites usually present each title as an independent page with a rating, genre, cast list, and popularity information. This is useful for looking up one movie, but it does not clearly show relationships between movies, audiences, or filmmakers. Our intended audience is general moviegoers who want to discover films and understand why certain titles stand out.
+### Data sources and acquisition
 
-The project addresses four questions:
+The project combines **MovieLens 32M** with data collected from the **TMDB API**. MovieLens contains 32,000,204 ratings and 2,000,072 tags from 200,948 users across 87,585 movies. TMDB provides genres, release dates, ratings, vote counts, budget, revenue, cast, directors, keywords, and available written reviews. The historical track began with high-rating-count MovieLens titles matched to TMDB IDs. A second track was collected directly from TMDB to improve recent coverage because MovieLens ends in October 2023 and becomes thinner for newer releases. After duplicate TMDB IDs were removed, the processed dataset contained 2,914 movies: 1,998 historical titles and 916 recent titles.
 
-1. How do genre ratings and audience voting activity change over time?
-2. Which movies appeal to similar audiences, and what do those relationships share?
-3. How are audience rating, discussion level, and written-review tone different?
-4. What repeated actor–director partnerships appear, and how do careers change over time?
+### Cleaning, transformation, and analysis
 
-Visualization is appropriate because these questions involve spatial relationships, multivariate comparisons, networks, and time. Interactive views make it possible to recognize clusters and outliers, compare groups, and move from an overview to exact details.
+We parsed release years and genres, normalized external IDs, validated MovieLens ratings, removed duplicate user–movie pairs, and treated zero or clearly unrealistic budget and revenue values as missing. We collected each movie's top billed cast, directors, keywords, and reviews from TMDB. In total, 11,481 reviews covering 2,648 movies were cleaned and deduplicated. Review sentiment was estimated with `siebert/sentiment-roberta-large-english`, and review keywords were extracted with TF–IDF.
 
-## 2. Data Acquisition and Processing
+Visualization-specific transformations were created in Python. Audience similarity uses Jaccard overlap between users who rated both movies at least 4 out of 5; UMAP places those distances in the Movie Universe. Discussion is measured as TMDB vote-count percentile among movies released within ±2 years. Collaboration strength counts shared actor–director films, and network communities are detected from the collaboration structure. Genre–year ratings are weighted by each movie's TMDB vote count. Exported JSON files keep browser loading focused and reproducible.
 
-**MovieLens 32M** contains 32,000,204 ratings and 2,000,072 tags from 200,948 users across 87,585 movies. It provides the user-level behavior required for audience similarity. The **TMDB API** supplies genres, release dates, ratings, vote counts, budget, revenue, cast, directors, keywords, and available reviews.
+### Visualization technologies and implementation
 
-We created the final dataset through two tracks. The historical track began with high-activity MovieLens titles selected by rating count and matched to TMDB IDs. The recent track was collected directly from TMDB to improve coverage after 2016 because MovieLens ratings end in October 2023 and become thinner for newer releases. After duplicate TMDB IDs were removed, the tracks produced 2,914 movies: 1,998 historical (released 1922–2022) and 916 recent (2016–2026).
+The data pipeline uses Python, pandas, NumPy, scikit-learn, UMAP, NetworkX, Transformers, and TF–IDF. The website uses HTML, CSS, JavaScript, and D3.js. Canvas supports the dense Movie Universe, while SVG supports the scatterplot, networks, heatmap, axes, and transitions. Shared styling creates a consistent cinematic interface. Search, filters, tooltips, zooming, dragging, selection, reset behavior, and responsive layouts were tested in the browser.
 
-MovieLens titles, years, genres, ratings, timestamps, and external IDs were cleaned and validated before audience overlap was calculated. From TMDB, we collected movie records, top cast, directors, keywords, and reviews. Zero or clearly unrealistic budget and revenue values were treated as missing. We cleaned and deduplicated 11,481 reviews covering about 2,650 movies, estimated sentiment with `siebert/sentiment-roberta-large-english`, and extracted review keywords using TF–IDF. Visualization-specific JSON files allow each browser view to load only the fields it needs. The complete Python pipeline is documented in `data/README.md`.
+## Results
 
-## 3. Visualization Design, Interactions, and Findings
+The final website contains **five visualization views** organized into four connected story topics. The Movie Universe and Audience Network are separate views but work together as Visualization 1 on the website: the first provides an overview and the second provides details for one selected movie. The homepage presents the heatmap first to establish context, then follows *Oppenheimer* through audience, response, and collaboration views.
 
-### How the website tells the story
+**Jump to a view:** [Movie Universe](#visualization-1-movie-universe) · [Audience Network](#visualization-2-audience-network) · [Scatterplot](#visualization-3-performance-and-discussion-scatterplot) · [Collaboration Network](#visualization-4-actordirector-collaboration-network) · [Genre Heatmap](#visualization-5-genre-ratings-heatmap)
 
-The homepage presents the four topics as chapters in story order rather than in visualization-number order. The standalone pages keep their original numbers.
+### Visualization 1: Movie Universe
 
-| Chapter | Story stage | Visualization | Finding-style headline |
-|---|---|---|---|
-| 1 | Context: when and where | Visualization 4, Genre Heatmap | Animation leads in ratings; Action draws the most votes |
-| 2 | Overview and detail: what and where | Visualization 1, Movie Universe and Audience Network | Audience taste creates neighborhoods shaped by both era and genre |
-| 3 | Important difference: what relationships exist | Visualization 2, Performance and Discussion Scatterplot | A movie can be loved, widely discussed, or warmly reviewed — these are not the same thing |
-| 4 | People and relationships: who is involved | Visualization 3, Collaboration Network and Career View | Repeated creative partnerships form durable movie communities |
-| — | Insight: why it matters | Conclusion, no new chart | Finding a meaningful next movie takes more than one score |
+**What and goal.** The Movie Universe places all 2,914 movies as stars. The 2,759 movies with MovieLens data are positioned by audience overlap; 155 newer movies without audience data use content-based placement and a four-point shape. The view asks where a movie belongs among titles liked by similar audiences.
 
-Every chapter follows the same structure. A finding-style headline states the result, and three evidence cards give the supporting numbers before the viewer interacts. The chart carries an annotation that marks the same finding, so it is visible without hovering. Below the chart, a “How to read it” note explains the encodings, a “Try this” prompt suggests one interaction that extends the finding, and a “Keep in mind” note places caveats beside the claim they qualify. A transition sentence then turns the finding into the next chapter's question. One movie, *Oppenheimer* (2023), is followed through all four chapters because it appears in every topic. The conclusion lists four takeaways that link back to their chapters, and the full data and methods material sits in an appendix after the story.
+**Interactions and finding.** Users can search, hover, zoom, pan, click a movie, and switch color between genre and decade. The layout reveals that audience neighborhoods are shaped by both era and genre: 77.1% of stored neighbors share a release decade and 90.0% share at least one genre. A ring marks the eight *Harry Potter* films as one recognizable neighborhood.
 
-### Chapter 1 — Visualization 4: Genre Ratings Over Time
+[Open the Movie Universe →](https://blackcatyu.github.io/WatchNext/viz1.html)
 
-**What.** This heatmap compares 13 major genres across 2016–2026. Rows are genres, columns are years, and the default color is the vote-count-weighted average TMDB rating. Users can recolor the same grid by total votes or number of movies. Multi-genre movies can contribute to more than one row.
+![The Movie Universe places films by shared audience and marks the Harry Potter neighborhood.](docs/report-assets/viz1.png)
 
-**Why and how.** A fixed grid makes evaluation, voting activity, and dataset coverage directly comparable. Hovering emphasizes a genre row and year column and shows all three measures. Clicking a cell pins it and opens its contributing movies. Metric changes animate briefly and update the legend, units, and labels together. Excluding partial 2026, Animation has the highest 2016–2025 weighted rating at 7.47, while Action receives about 2.05 million votes despite a weighted rating of 6.98. A visible note explains that the 28 movies in 2026 are partial-year coverage, not a complete annual decline.
+### Visualization 2: Audience Network
 
-**Annotation.** A dashed outline marks the genre that leads the selected metric over the complete years 2016–2025, with its value beside the row. The outline moves when the metric changes, from Animation for rating to Action for votes, which makes the chapter's point directly on the chart. *Oppenheimer* is the most-voted movie in the 2023 Drama cell.
+**What and goal.** The Audience Network turns the universe overview into details for one selected movie. Links represent audience overlap between movies, while side panels explain shared genres, people, keywords, and content-based suggestions for recent titles. It addresses the question: what else do viewers of this movie also like?
 
-![Chapter 1 states its finding first; the outline marks the genre that leads the active metric.](docs/report-assets/viz4.png)
+**Interactions and finding.** Users can search for a title, recenter the network, drag nodes, highlight a genre, inspect exact similarity values, and move between connected movies. Across 33,108 stored neighbor relationships, 36.8% share the same primary genre compared with 12.2% of all movie pairs. The result shows that audience similarity adds evidence beyond a simple genre label while still reflecting genre and release era.
 
-### Chapter 2 — Visualization 1: Movie Universe and Audience Similarity Network
+[Open the Audience Network →](https://blackcatyu.github.io/WatchNext/viz1.html#audience)
 
-**What.** Visualization 1 contains two coordinated views of one audience-similarity topic. The Movie Universe shows all 2,914 movies as stars. The 2,759 films with MovieLens data are positioned using UMAP on audience-overlap distances. Another 155 newer films are placed by content similarity and use a different star shape. The Audience Network shows a smaller neighborhood connected through shared users who rated both movies at least 4 out of 5.
+### Visualization 3: Performance and Discussion Scatterplot
 
-**Why and how.** The universe answers “where does this movie belong?”, while the network answers “what else do its viewers like?” Users can zoom, pan, search, switch between genre and decade colors, select a movie, and open its network neighborhood. Network interactions include recentering, dragging, genre highlighting, shared-attribute details, and recent content-based suggestions. Across 33,108 stored neighbor relationships, 77.1% connect movies from the same decade, compared with 19.6% for random pairs. In addition, 90.0% share at least one genre, compared with 50.9% for random pairs, and 36.8% share the same primary genre, compared with 12.4%. Audience neighborhoods therefore reflect both era and genre.
+**What and goal.** Each bubble represents a movie with box-office data. The default view compares rating with discussion relative to movies released within ±2 years; a second view compares rating with positive written-review tone. Bubble size represents revenue and color represents primary genre. The goal is to distinguish acclaim, attention, and written response.
 
-**Annotation.** A dashed ring marks the eight Harry Potter films, which all sit in one audience neighborhood. The chapter text adds that a franchise can still split by era: *Toy Story* and *Toy Story 2* sit among 1990s films, while *Toy Story 4* sits among 2010s releases. The “Try this” prompt asks viewers to switch to decade colors, where the map runs from older films on the left to recent releases on the right, and a link opens *Oppenheimer*'s audience neighborhood.
+**Interactions and finding.** Users can search, filter by genre or decade, switch rating sources, select a quadrant, brush to zoom, and open movie details. *The Hunt* is rated 8.1 but has more votes than only 10% of movies from its era. *Oppenheimer* is rated 8.0 and is more discussed than 98%, while *Suicide Squad* is rated 5.9 but is more discussed than 97%. High ratings and high attention are therefore not equivalent.
 
-![Chapter 2 places every movie by shared audience; the ring marks one franchise neighborhood.](docs/report-assets/viz1.png)
+[Open the Performance and Discussion Scatterplot →](https://blackcatyu.github.io/WatchNext/viz2.html)
 
-### Chapter 3 — Visualization 2: Movie Performance and Audience Discussion
+![The scatterplot labels three contrasting relationships between rating and discussion.](docs/report-assets/viz2.png)
 
-**What.** This scatterplot compares ratings with two forms of audience response. In the default view, the x-axis is rating and the y-axis is discussion, measured by TMDB vote count relative to movies released within plus or minus two years. The second view compares rating with positive written-review share. Bubble size represents revenue and color represents primary genre.
+### Visualization 4: Actor–Director Collaboration Network
 
-**Why and how.** The chart separates acclaim from attention and reveals “hidden gems,” widely discussed lower-rated movies, and disagreement between ratings and written reviews. Users can select a region, search, filter by genre or decade, switch rating sources, brush to zoom, and click a bubble for movie details. Animated transitions preserve point relationships when the view changes. These are descriptive patterns, not causal conclusions.
+**What and goal.** This network contains 318 actors and directors connected by 278 repeat-collaboration links. Circles are actors, diamonds are directors, node size is current collaboration strength, edge width is shared movies, and color is a detected collaboration community. A linked career chart maps year, TMDB rating, revenue, and primary genre for the selected person.
 
-**Annotation.** Three movies are labeled directly on the chart, one for each contrast. *The Hunt* (2012) is rated 8.1 but has more votes than only 10% of movies from its era. *Oppenheimer* is rated 8.0 and is more discussed than 98% of its era. *Suicide Squad* is rated 5.9 yet is more discussed than 97% of its era. The labels hide in the review-tone view and while a movie is selected, so they do not compete with the viewer's own exploration.
+**Interactions and finding.** Users can search, filter by the genres of shared movies, change the minimum collaboration threshold, zoom, pan, drag individual nodes, select a collaborator, and reset the view. The genre filter recomputes every link from shared movie IDs. Bill Murray and Wes Anderson form the strongest displayed pair with eight shared films; Johnny Depp–Tim Burton and Robert De Niro–Martin Scorsese each share seven. Repeated partnerships form interpretable creative communities.
 
-![Chapter 3 labels one movie for each contrast between rating and discussion.](docs/report-assets/viz2.png)
+[Open the Collaboration Network →](https://blackcatyu.github.io/WatchNext/viz3.html)
 
-### Chapter 4 — Visualization 3: Actor–Director Collaboration and Career View
+![The collaboration network calls out its strongest repeat actor–director pair.](docs/report-assets/viz3.png)
 
-**What.** The network contains 318 actors and directors connected by 278 repeated-collaboration links. Circles represent actors, diamonds represent directors, node size represents collaboration strength, edge width represents shared movies, and color represents a community detected from the network. Selecting a person opens a career chart where year is mapped to the x-axis, TMDB rating to the y-axis, revenue to circle size, and genre to color.
+### Visualization 5: Genre Ratings Heatmap
 
-**Why and how.** The network reveals recurring creative relationships, while the career chart connects the overview to one person's work. Users can search, select a genre, change the shared-movie threshold, zoom, pan, drag individual nodes, select collaborators, and reset the state. The genre filter recomputes collaboration counts from shared movie IDs rather than only hiding nodes. Short force-based transitions use attraction, repulsion, collision, and community forces to preserve the viewer's mental map. Bill Murray and Wes Anderson form the strongest displayed collaboration with eight shared movies; Johnny Depp and Tim Burton, and Robert De Niro and Martin Scorsese, each share seven.
+**What and goal.** The heatmap compares 13 major genres across 2016–2026. Rows are genres, columns are years, and color can represent vote-count-weighted rating, total vote count, or number of movies. It asks how the story changes when acclaim, voting activity, or dataset coverage becomes the metric.
 
-**Annotation and guidance.** A callout rings Bill Murray and Wes Anderson and labels them as the strongest repeat pair; it disappears while a person is focused. On the standalone page, a short guide card explains how to read the network and offers a “Try Christopher Nolan” button. Nolan's career chart places *Oppenheimer* among his 12 films in the dataset, which completes the case study.
+**Interactions and finding.** Hovering highlights a genre row and year column and shows all three measures. Clicking a cell opens the movies behind its value, while metric changes update the legend and leading-genre annotation with a short transition. Across complete years 2016–2025, Animation has the highest weighted rating at 7.47, while Action has about 2.05 million votes despite a 6.98 rating. The 2026 column is explicitly marked as partial-year data.
 
-![Chapter 4 calls out the strongest repeat actor–director pair in the network.](docs/report-assets/viz3.png)
+[Open the Genre Ratings Heatmap →](https://blackcatyu.github.io/WatchNext/viz4.html)
 
-## 4. Design Evaluation
+![The heatmap marks the genre that leads the active metric.](docs/report-assets/viz4.png)
 
-The project's main strength is that each interaction supports a clear task. Search locates a known movie or person, filters support comparison, zooming reveals dense areas, and selection connects overview with detail. Consistent typography, controls, dark cinematic styling, movie-inspired elements, and restrained transitions make the four topics feel like one website.
+## Discussion
 
-Important limitations remain. The dataset favors titles with more MovieLens ratings or TMDB votes and is not representative of every released film. The newest movies do not have equivalent audience-overlap data. TMDB vote count measures voting activity, not complete popularity or discussion. Review samples are small for many movies, and the sentiment model may read dark subject matter as negative tone. Revenue is also missing for many streaming-first releases. Finally, Visualization 3 intentionally emphasizes people with at least five movies and collaborations with at least three shared films.
+### What–Why–How evaluation
 
-During development, we tested loading, search, filtering, metric switching, selection, reset behavior, zooming, dragging, tooltips, responsive layout, and console errors in the browser. We prepared a task-based think-aloud plan, but a larger formal user study has not yet been completed. Since the first version, the homepage has replaced plan-style descriptions with a guided story: finding headlines, evidence cards, on-chart annotations, caveats placed beside their claims, and a recurring case study. Future improvements include collecting structured user feedback and carrying a selected movie or person between views automatically; the *Oppenheimer* thread is currently guided by prompts rather than linked selection.
+**What.** WatchNext combines quantitative attributes—ratings, votes, revenue, years, similarity, and collaboration counts—with categorical attributes such as genre, role, and community. It also uses review text through sentiment and keywords. **Why.** The main tasks are to locate a known item, discover related items, compare groups, identify outliers, inspect trends, and move from overview to detail. **How.** Position shows similarity or quantitative value; color distinguishes genre, decade, community, or heatmap magnitude; size represents votes, revenue, or collaboration strength; shape separates data coverage and actor/director roles; links represent audience or collaboration relationships. Search, filtering, selection, zoom, drag, and animated transitions support exploration without permanently adding labels.
 
-## 5. Conclusion
+### Strengths and interaction effectiveness
 
-WatchNext shows that movie reception is multidimensional. The genre with the highest rating is not necessarily the one with the most voting activity. Audience-similar films form neighborhoods shaped by era and genre, while ratings, attention, and written reactions can disagree. Repeated actor–director partnerships add another structural view of how movies are connected.
+The strongest design decision is that each interaction serves a specific question. Search supports known-item lookup, filters make comparisons, zooming reveals dense regions, and selection opens exact details. The Universe and Audience Network create a clear overview-to-detail sequence, while the collaboration network and career view connect structure with time. Finding-style headlines, evidence cards, on-chart annotations, and a recurring *Oppenheimer* example make important results visible before interaction. Consistent typography, controls, dark cinematic styling, and restrained animation make five views feel like one project.
 
-Instead of producing one automatic recommendation, WatchNext offers a transparent exploration process. A viewer can begin with a familiar movie, inspect its audience neighborhood, compare acclaim with attention, and follow the people behind it. This answers our original question by showing not only which movies audiences value, but also how those movies connect to other titles, audience behavior, and filmmakers.
+### Weaknesses, limitations, and improvements
 
-## 6. Team Contributions
+The dataset favors popular titles with many MovieLens ratings or TMDB votes. MovieLens ends in October 2023, so the newest movies use content placement rather than equivalent audience overlap. TMDB vote count measures activity on one platform, not total popularity. Review samples are small for many films, sentiment may misread dark subject matter, and missing revenue excludes many streaming-first releases from the scatterplot. The collaboration network also focuses only on people with at least five movies and pairs with at least three shared films.
 
-**Jiaxuan** was responsible for TMDB data acquisition and processing, including movie metadata, cast, directors, keywords, and reviews. Jiaxuan developed Visualizations 3 and 4, including their data exports, filters, animations, and linked detail views. Jiaxuan also build the overall website layout, cinematic visual design, interaction polish, and cross-page consistency.
+Dense views still require effort on small screens, and the five views do not share a persistent selection. The homepage guides users through *Oppenheimer*, but it does not automatically carry that selection between charts. Future work should add cross-view state, improve mobile detail panels, compare alternative similarity thresholds, and conduct a formal task-based user study. Current browser testing covers loading, search, filters, metric switching, selection consistency, reset, zoom, drag, tooltips, responsive layout, and console errors, but it does not replace evaluation with representative users.
 
-**Muyu** built the data pipeline, collecting and cleaning MovieLens and TMDB data and merging them into the final 2,914-movie dataset. Muyu also scored review sentiment, extracted review keywords, and computed the MovieLens audience similarity used in Visualization 1. Muyu developed Visualizations 1 and 2, including the Movie Universe, Audience Network, and performance/discussion scatterplot with their search, filtering, selection, and detail interactions. Muyu built the homepage story and its on-chart annotations.
+## Conclusion
+
+WatchNext shows that movie reception is multidimensional. The highest-rated genre is not the genre with the most voting activity. Movies liked by similar audiences form neighborhoods shaped by both release era and genre. Ratings, attention, and written-review tone can disagree, while repeated actor–director partnerships reveal another structure behind the films.
+
+For viewers, the complete visualization provides a transparent discovery process rather than a single automatic recommendation. A user can begin with a familiar movie, inspect its audience neighborhood, compare whether related titles are acclaimed or simply widely discussed, and follow the people behind them. Combining several forms of evidence supports better understanding, exploration, and communication about why a movie may be worth watching.
+
+## Team Contributions
+
+**Jiaxuan** was responsible for TMDB data acquisition and processing, including metadata, cast, directors, keywords, and reviews. Jiaxuan developed the Collaboration Network and Genre Heatmap, including their exports, filters, animations, and linked details, and built the overall website layout, cinematic visual design, interaction polish, and cross-page consistency.
+
+**Muyu** was responsible for the remaining data processing, including MovieLens cleaning, validation, and audience-similarity calculations. Muyu developed the Movie Universe, Audience Network, and Performance and Discussion Scatterplot with their search, filtering, selection, and detail interactions.
 
 Both team members contributed to project framing, integration, debugging, interpretation, documentation, and presentation preparation.
 
