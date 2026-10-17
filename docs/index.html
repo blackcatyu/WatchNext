@@ -138,7 +138,6 @@
   </section>
 
 
-
   <!-- =========================================================
        Visualizations
   ========================================================== -->
@@ -194,77 +193,6 @@
     </p>
 
 
-    <h3>Interaction / Animation Plan</h3>
-
-    <p>
-      2,914 movies cleaned, but a node-link diagram is only readable up to roughly a hundred
-      nodes shown at once — no amount of animation fixes a 2,000-node hairball. So instead of
-      trying to render everything simultaneously, the plan is <strong>focus + search</strong>:
-      keep the rendered view small at all times, and use interaction to make the full dataset
-      <em>reachable</em> rather than all visible at once.
-    </p>
-
-    <ul>
-      <li>
-        <strong>Expand the backing similarity data</strong> from today's 80 most-rated movies
-        to all ~1,998 historical-track movies (the ones with real MovieLens ratings — the 916
-        "recent" movies still can't appear here, same MovieLens-coverage limit noted in the
-        Dataset section). This is just a bigger co-rating computation, not a bigger picture.
-      </li>
-
-      <li>
-        <strong>Click a node</strong> to re-center the view on that movie, show only its top
-        neighbors (fading/removing the rest), and open a <strong>detail panel</strong> with its
-        director, top review keywords (TF-IDF, already computed in
-        <code>review_keywords.jsonl</code>), and review sentiment (% positive, review count,
-        from the sentiment model already run over all reviews in
-        <code>review_sentiment_summary.csv</code>) — answers "what else do people who liked
-        this movie also like, and why," which is the proposal's stated goal of checking whether
-        audience similarity tracks shared genres/keywords/people, not just genre alone.
-        Whatever the total dataset size, the screen only ever shows one movie's neighborhood.
-      </li>
-
-      <li>
-        <strong>Search/jump to any movie</strong> by title, not just the 80 shown by default —
-        this is how the other ~1,900 movies stay useful: reachable on demand, not rendered up
-        front.
-      </li>
-
-      <li>
-        <strong>"Recent movies like this" sidebar</strong>, shown alongside the detail panel
-        when a node is clicked — surfaces the 916 "recent" movies (2016–2026), which have no
-        MovieLens ratings and so can never appear as a graph node/edge here. These are ranked
-        by <em>content</em> similarity instead (shared genre, shared cast/director,
-        review-keyword overlap) rather than audience co-rating, and are deliberately kept in
-        a separate sidebar rather than drawn as graph edges — mixing an audience-behavior edge
-        with a content-similarity edge in the same graph would blur two different,
-        differently-trustworthy claims ("people who liked this also liked that" vs.
-        "this looks similar to that").
-      </li>
-
-      <li>
-        <strong>Hover tooltip</strong> (lighter than the click panel) on a node showing title,
-        genre, and its exact overlap counts with connected movies.
-      </li>
-
-      <li>
-        <strong>Drag</strong> nodes to manually untangle a crowded area.
-      </li>
-
-      <li>
-        <strong>Genre filter</strong>: clicking a legend entry dims nodes outside that genre,
-        to check whether strong connections tend to stay within a genre or cross genre lines.
-      </li>
-
-      <li>
-        <strong>Transition animation</strong> when re-centering or jumping to a search result
-        (nodes animate to new positions rather than snapping) so the "who's connected to whom"
-        relationship stays legible across the change.
-      </li>
-    </ul>
-
-
-
     <!-- =======================================================
          Visualization 2
     ======================================================== -->
@@ -294,7 +222,6 @@
         Open Visualization 2 →
       </a>
     </p>
-
 
 
     <!-- =======================================================
@@ -378,74 +305,6 @@
     </p>
 
 
-    <h3>Interaction / Animation Plan</h3>
-
-    <p>
-      The interactive version lets users move from the overall collaboration network to
-      detailed information about one actor or director.
-    </p>
-
-    <ul>
-      <li>
-        <strong>Search for an actor or director.</strong>
-        Users will be able to enter a person's name and directly locate them in the network.
-        The selected person and their direct collaborators will be highlighted while unrelated
-        nodes are dimmed. This is useful because finding one person manually becomes difficult
-        when the network contains hundreds of nodes.
-      </li>
-
-      <li>
-        <strong>Filter by movie genre.</strong>
-        Users will be able to select a genre such as Action, Drama, Comedy, or Science Fiction.
-        The network will then recalculate collaboration relationships using only movies from
-        that genre. This can help users compare whether collaboration patterns change across
-        different types of movies.
-      </li>
-
-      <li>
-        <strong>Change the minimum number of shared movies.</strong>
-        A slider will allow users to increase the collaboration threshold from three shared
-        movies to four, five, or six or more. Increasing the threshold removes weaker
-        relationships and makes stronger repeated collaborations easier to see.
-      </li>
-
-      <li>
-        <strong>Select one actor or director.</strong>
-        Clicking a person will highlight their direct collaborators and connect the
-        collaboration network to an individual career view.
-      </li>
-
-      <li>
-        <strong>Explore the career view.</strong>
-        In the career view, the x-axis will represent release year and the y-axis will
-        represent TMDB rating. Circle size will represent movie revenue, while color will
-        represent the movie's primary genre. This allows users to move from the overall
-        collaboration structure to the career of one person.
-      </li>
-
-      <li>
-        <strong>Use hover tooltips for details.</strong>
-        Hovering over a person will show their name, role, movie count, and collaboration
-        strength. Hovering over an edge will show the two collaborators, their shared-movie
-        count, and movie titles. In the career view, movie tooltips will show title, year,
-        rating, genre, and revenue. This lets users check exact values behind the visual
-        encodings without permanently crowding the charts with labels.
-      </li>
-
-      <li>
-        <strong>Use transitions when the view changes.</strong>
-        When users change the genre or collaboration threshold, filtered-out edges and
-        nodes with no remaining links will fade out, and returning elements will fade in.
-        Node sizes and edge widths will transition to the updated collaboration counts;
-        retained nodes will respond to link attraction, node repulsion, collision, and a
-        gentle community pull before settling near their previous positions. Dragging one
-        person briefly reactivates those same forces, while community colors remain consistent.
-        Selecting a person will fade unrelated elements while emphasizing their collaborators.
-      </li>
-    </ul>
-
-
-
     <!-- =======================================================
          Visualization 4
     ======================================================== -->
@@ -521,96 +380,6 @@
     </p>
 
 
-    <h3>Interaction / Animation Plan</h3>
-
-    <p>
-      The interactive version compares different aspects of genre performance while keeping
-      the same genre-by-year heatmap structure.
-    </p>
-
-    <ul>
-      <li>
-        <strong>Switch between different metrics.</strong>
-        A dropdown will let users recolor the same genre–year grid by Weighted Average
-        Rating, Total Vote Count, or Number of Movies. These measures show rating levels,
-        voting activity, and dataset coverage, respectively. For example, users could check
-        whether a highly rated genre–year also has many votes or contains only a few movies.
-      </li>
-
-      <li>
-        <strong>Hover over a cell for exact values.</strong>
-        A tooltip will show the genre, year, weighted rating, total votes, and movie count.
-        Showing all three measures together will help users interpret a cell's color in
-        context, especially when a high rating is based on limited coverage.
-      </li>
-
-      <li>
-        <strong>Highlight the corresponding row and column.</strong>
-        Hovering over a cell will emphasize its genre row and year column while dimming
-        unrelated cells. Moving the pointer away will restore the full heatmap. This will
-        help users follow one genre across years or compare genres within the same year.
-      </li>
-
-      <li>
-        <strong>Select a cell to inspect its movies.</strong>
-        Clicking or tapping a cell pins its row and column and opens a detail panel with the
-        weighted rating, vote total, movie count, and the contributing titles ranked by TMDB
-        vote count. The first six titles keep the overview compact, with an option to reveal
-        the full list and clarify which movies most influence the weighted average.
-      </li>
-
-      <li>
-        <strong>Animate metric changes with a synchronized legend.</strong>
-        When users select a different metric, the rows and columns will stay in the same
-        positions while cell colors transition to the new values. The metric label, legend
-        range, units, and displayed values will update with the selection, so a color is
-        always interpreted using the active metric. Keeping cell positions fixed will help
-        users track the same genre–year across rating, voting activity, and movie count;
-        the transition represents a change of measure, not a change over time.
-      </li>
-    </ul>
-
-  </section>
-
-
-
-  <!-- =========================================================
-       Evaluation Plan
-  ========================================================== -->
-
-  <section class="viz-section">
-
-    <h2>Evaluation Plan</h2>
-
-
-    <p>
-      <strong>What we will evaluate.</strong><br>
-      We will evaluate whether users can correctly understand the visual encodings and
-      use each visualization to answer its intended questions. For example, in the
-      collaboration network, users should be able to identify actors and directors and
-      find strong repeated collaborations. In the genre heatmap, users should be able
-      to compare rating patterns across genres and years. After interactions are
-      implemented, we will also evaluate whether they make these tasks easier.
-    </p>
-
-
-    <p>
-      <strong>How we will evaluate it.</strong><br>
-      We will conduct informal think-aloud sessions with a small group of classmates or
-      friends who were not involved in the project. Participants will complete several
-      simple tasks using the visualizations while explaining what they are looking at
-      and how they reach their answers. We will test the implemented interactive versions
-      and use the same tasks again after any revisions.
-    </p>
-
-
-    <p>
-      <strong>What data / feedback we will collect.</strong><br>
-      We will record task success or failure, approximate completion time, and specific
-      points of confusion or misunderstanding. We will also collect short participant
-      feedback on the clarity and usefulness of each visualization and its interactions.
-    </p>
-
   </section>
 
 
@@ -618,7 +387,7 @@
   <script src="js/viz1_universe.js"></script>
   <script src="js/viz2_scatter.js"></script>
   <script src="js/viz_interactions.js?v=20261016f"></script>
-  <script src="js/viz3_collaboration_network.js?v=20261016f"></script>
+  <script src="js/viz3_collaboration_network.js?v=20261017a"></script>
   <script src="js/viz4_heatmap.js?v=20261016d"></script>
 </body>
 
