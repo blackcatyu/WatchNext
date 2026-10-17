@@ -158,6 +158,7 @@
   const dotLayer = plot.append("g");
   const regionLayer = svg.append("g");
   const ringLayer = plot.append("g");
+  const noteLayer = plot.append("g").attr("class", "scatter-notes").attr("pointer-events", "none");
   const tooltip = root.select(".scatter-tooltip");
 
   const x = d3.scaleLinear();
@@ -249,6 +250,7 @@
 
     renderRegions(visible);
     renderRing();
+    renderNotes(animate);
     renderSide(visible);
     renderControls(visible);
   }
@@ -271,6 +273,7 @@
     const regionTest = activeRegion();
     dotLayer.selectAll("circle").transition().duration(200).style("opacity", (m) => dotOpacity(m, regionTest));
     renderRing();
+    renderNotes(false);
   }
 
   // Faint region names in the plot corners (orientation only; they don't block the
@@ -300,6 +303,47 @@
       .join("circle").attr("class", "ring")
       .attr("cx", (d) => x(xOf(d))).attr("cy", (d) => Y(yOf(d)))
       .attr("r", (d) => (state.sizeByRevenue ? radius(d.revenue) : 3) + 5);
+  }
+
+  // Story annotations: one labeled example per contrast in the discussion view, so the
+  // chapter's point is visible before any interaction. dx/dy place the label (in px)
+  // away from the bubble, toward open space.
+  const FEATURED = [
+    { id: 103663, note: "high rating, little discussion", dx: -34, dy: -46 },
+    { id: 872585, note: "acclaimed and widely discussed", dx: -36, dy: 58 },
+    { id: 297761, note: "discussed despite a low rating", dx: -30, dy: 54 },
+  ]
+    .map((f) => ({ ...f, m: movies.find((m) => m.id === f.id) }))
+    .filter((f) => f.m);
+
+  function renderNotes(animate = true) {
+    const show = state.mode === "discussion" && !state.selected;
+    const notes = FEATURED.filter((f) => show && inScope(f.m));
+    const t = noteLayer.transition().duration(animate ? DURATION : 0).ease(d3.easeCubicInOut);
+    const r = (m) => (state.sizeByRevenue ? radius(m.revenue) : 3) + 4;
+    const anchor = (f) => (f.dx < 0 ? "end" : "start");
+    noteLayer.selectAll("g.scatter-note").data(notes, (f) => f.id)
+      .join((e) => {
+        const g = e.append("g").attr("class", "scatter-note").style("opacity", 0);
+        g.append("circle").attr("fill", "none").attr("stroke", "#f2cf7a").attr("stroke-width", 1.5);
+        g.append("line").attr("stroke", "#f2cf7a").attr("stroke-width", 1);
+        g.append("text").attr("class", "note-title").attr("fill", "#f3eee4").attr("font-size", 13).attr("font-weight", 700)
+          .attr("paint-order", "stroke").attr("stroke", "rgba(7,9,12,0.9)").attr("stroke-width", 3);
+        g.append("text").attr("class", "note-sub").attr("fill", "#f2cf7a").attr("font-size", 11.5)
+          .attr("paint-order", "stroke").attr("stroke", "rgba(7,9,12,0.9)").attr("stroke-width", 3);
+        return g;
+      })
+      .call((g) => g.select("text.note-title").attr("text-anchor", anchor).text((f) => titleYear(f.m)))
+      .call((g) => g.select("text.note-sub").attr("text-anchor", anchor).text((f) => f.note))
+      .transition(t)
+      .style("opacity", 1)
+      .attr("transform", (f) => `translate(${x(xOf(f.m))},${Y(yOf(f.m))})`)
+      .call((g) => g.select("circle").attr("r", (f) => r(f.m)))
+      .call((g) => g.select("line")
+        .attr("x1", (f) => Math.sign(f.dx) * r(f.m) * 0.7).attr("y1", (f) => Math.sign(f.dy) * r(f.m) * 0.7)
+        .attr("x2", (f) => f.dx).attr("y2", (f) => f.dy + (f.dy < 0 ? 4 : -12)))
+      .call((g) => g.select("text.note-title").attr("x", (f) => f.dx).attr("y", (f) => f.dy))
+      .call((g) => g.select("text.note-sub").attr("x", (f) => f.dx).attr("y", (f) => f.dy + 15));
   }
 
   // --------------------------------------------------------------

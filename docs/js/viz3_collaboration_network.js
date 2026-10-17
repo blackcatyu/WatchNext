@@ -130,6 +130,7 @@
     const nodeLayer = viewport.append("g").attr("class", "network-nodes");
     const insetLayer = viewport.append("g").attr("class", "network-node-insets");
     const labelLayer = viewport.append("g").attr("class", "network-labels");
+    const annotationLayer = viewport.append("g").attr("class", "network-annotation").attr("pointer-events", "none");
     const hitLayer = viewport.append("g").attr("class", "network-node-hits");
 
     const zoom = d3.zoom()
@@ -185,6 +186,26 @@
       .attr("fill", "#e9e3d9").attr("font-size", 9.5).attr("font-weight", 560)
       .attr("paint-order", "stroke").attr("stroke", "rgba(7,9,12,0.92)").attr("stroke-width", 2.2)
       .attr("pointer-events", "none").text((node) => node.name);
+
+    // Story annotation: call out the strongest repeat collaboration while nothing is focused.
+    const featuredLink = d3.greatest(rawLinks, (link) => link.collaboration_count);
+    const annotationLine = annotationLayer.append("line").attr("stroke", "#f2cf7a").attr("stroke-width", 2)
+      .attr("stroke-dasharray", "5 3").attr("stroke-linecap", "round");
+    const annotationRings = annotationLayer.selectAll("path.annotation-ring")
+      .data([featuredLink.sourceNode, featuredLink.targetNode]).join("path").attr("class", "annotation-ring")
+      .attr("fill", "none").attr("stroke", "#f2cf7a").attr("stroke-width", 1.4).attr("stroke-dasharray", "3 2")
+      .attr("d", (node) => nodeSymbol(node, symbolRadius(node) + 6));
+    const annotationPlate = annotationLayer.append("rect").attr("rx", 4)
+      .attr("fill", "rgba(7,9,12,0.86)").attr("stroke", "rgba(242,207,122,0.45)");
+    const annotationText = annotationLayer.append("text").attr("text-anchor", "middle")
+      .attr("paint-order", "stroke").attr("stroke", "rgba(7,9,12,0.94)").attr("stroke-width", 3);
+    annotationText.append("tspan").attr("class", "annotation-kicker").attr("x", 0).attr("dy", 0)
+      .attr("fill", "#f2cf7a").attr("font-size", 9.5).attr("font-weight", 700).attr("letter-spacing", "0.08em")
+      .text("STRONGEST REPEAT PAIR");
+    annotationText.append("tspan").attr("x", 0).attr("dy", 13)
+      .attr("fill", "#f3eee4").attr("font-size", 11).attr("font-weight", 650)
+      .text(`${featuredLink.sourceNode.name} × ${featuredLink.targetNode.name} · ${featuredLink.collaboration_count} films`);
+    positionAnnotation();
 
     svg.on("click", (event) => {
       if (event.target === svg.node()) selectPerson(null);
@@ -319,10 +340,33 @@
       haloSelection.attr("transform", (node) => `translate(${node.x},${node.y})`);
       nodeHitSelection.attr("cx", (node) => node.x).attr("cy", (node) => node.y);
       positionLabels(activeLabelIds);
+      positionAnnotation();
+    }
+
+    function positionAnnotation() {
+      const { sourceNode: a, targetNode: b } = featuredLink;
+      annotationLine.attr("x1", a.x).attr("y1", a.y).attr("x2", b.x).attr("y2", b.y);
+      annotationRings.attr("transform", (node) => `translate(${node.x},${node.y})`);
+      const midX = Math.max(90, Math.min(WIDTH - 90, (a.x + b.x) / 2));
+      const topY = Math.min(a.y, b.y) - 34;
+      const textY = topY < 20 ? Math.max(a.y, b.y) + 26 : topY;
+      annotationText.attr("transform", `translate(${midX},${textY})`);
+      annotationText.selectAll("tspan").attr("x", 0);
+      const box = annotationText.node().getBBox();
+      annotationPlate.attr("x", midX + box.x - 7).attr("y", textY + box.y - 4)
+        .attr("width", box.width + 14).attr("height", box.height + 8);
+    }
+
+    function annotationOpacity() {
+      if (!currentFiltered || !root.classed("is-introduced")) return 0;
+      const focused = state.selectedId || state.hoveredId;
+      const visible = currentFiltered.links.some((link) => `${link.source}|${link.target}` === featuredLink.key);
+      return !focused && visible ? 1 : 0;
     }
 
     function scheduleNetworkIntro() {
       const introLabels = labelSelection.filter((node) => defaultLabelIds.has(node.id));
+      annotationLayer.attr("opacity", 0);
       linkSelection.style("opacity", 0);
       nodeSelection.style("opacity", 0);
       insetSelection.style("opacity", 0);
@@ -342,6 +386,8 @@
         introLabels.transition("intro").delay((node, index) => reducedMotion ? 0 : 180 + (index % 12) * 10)
           .duration(duration).ease(d3.easeCubicOut).style("opacity", 1)
           .on("end", function () { d3.select(this).style("opacity", null); });
+        annotationLayer.transition("intro").delay(reducedMotion ? 0 : 700).duration(duration)
+          .attr("opacity", annotationOpacity());
       }, reducedMotion);
     }
 
@@ -543,6 +589,8 @@
         if (!currentFiltered.nodeIds.has(node.id)) return 0;
         return visibleLabelIds.has(node.id) ? 1 : 0;
       });
+
+      annotationLayer.interrupt("focus").transition(transition).attr("opacity", annotationOpacity());
 
       haloSelection.interrupt("focus").transition(transition)
         .attr("d", (node) => nodeSymbol(node, node.id === focusId

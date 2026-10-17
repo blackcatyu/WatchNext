@@ -22,7 +22,7 @@
 
     d3.select("#genre-count").text(genres.length);
 
-    const margin = { top: 150, right: 35, bottom: 45, left: 135 };
+    const margin = { top: 150, right: 210, bottom: 45, left: 135 };
     const cellWidth = 68;
     const cellHeight = 36;
     const innerWidth = years.length * cellWidth;
@@ -70,6 +70,20 @@
         if (pinnedCell && cellKey(pinnedCell) === cellKey(cell)) clearPinnedCell();
         else pinCell(cell);
       });
+
+    // Story annotation: outline the genre that leads the active metric over the complete
+    // years (2026 is partial), so the chapter's finding is visible before any interaction.
+    const fullYearCells = cells.filter((cell) => +cell.year !== 2026);
+    const annotation = chart.append("g").attr("class", "heatmap-annotation").attr("pointer-events", "none");
+    const annotationBox = annotation.append("rect").attr("x", -6).attr("width", innerWidth + 12)
+      .attr("height", y.bandwidth() + 8).attr("rx", 6).attr("fill", "none")
+      .attr("stroke", "#f2cf7a").attr("stroke-width", 2).attr("stroke-dasharray", "6 4");
+    const annotationTick = annotation.append("line").attr("x1", innerWidth + 6).attr("x2", innerWidth + 18)
+      .attr("stroke", "#f2cf7a").attr("stroke-width", 1.5);
+    const annotationLabel = annotation.append("text").attr("x", innerWidth + 24).attr("fill", "#f2cf7a")
+      .attr("font-size", 12).attr("font-weight", 700);
+    const annotationValue = annotation.append("text").attr("x", innerWidth + 24).attr("fill", "#e9e3d9")
+      .attr("font-size", 12);
 
     const legendX = margin.left;
     const legendY = 38;
@@ -141,8 +155,47 @@
       return { extent, interpolator, scale: scale.domain(extent) };
     }
 
+    function metricLeader() {
+      const byGenre = d3.rollups(fullYearCells, (group) => {
+        const votes = d3.sum(group, (cell) => +cell.total_votes || 0);
+        if (metric === "weighted_rating") {
+          return votes ? d3.sum(group, (cell) => (+cell.weighted_rating || 0) * (+cell.total_votes || 0)) / votes : null;
+        }
+        return d3.sum(group, (cell) => +cell[metric] || 0);
+      }, (cell) => cell.genre).filter(([, value]) => value != null);
+      const [genre, value] = d3.greatest(byGenre, ([, value]) => value) || [];
+      return genre ? { genre, value } : null;
+    }
+
+    function renderAnnotation(animate) {
+      const leader = metricLeader();
+      if (!leader) return annotation.attr("display", "none");
+      const firstYear = d3.min(fullYearCells, (cell) => +cell.year);
+      const lastYear = d3.max(fullYearCells, (cell) => +cell.year);
+      const span = `${firstYear}–${String(lastYear).slice(-2)}`;
+      const copy = {
+        weighted_rating: [`Highest rated, ${span}`, `${leader.genre} · ${logic.formatMetricValue(metric, leader.value)} / 10`],
+        total_votes: [`Most votes, ${span}`, `${leader.genre} · ${d3.format(".3~s")(leader.value).replace("G", "B")} votes`],
+        movie_count: [`Most movies, ${span}`, `${leader.genre} · ${logic.formatMetricValue(metric, leader.value)} films`],
+      }[metric];
+      const top = y(leader.genre) - 4;
+      const mid = y(leader.genre) + y.bandwidth() / 2;
+      const transition = annotation.transition("annotation").duration(animate ? DURATION : 0).ease(d3.easeCubicInOut);
+      annotation.attr("display", null).attr("aria-label", `${copy[0]}: ${copy[1]}`);
+      annotationBox.transition(transition).attr("y", top);
+      annotationTick.transition(transition).attr("y1", mid).attr("y2", mid);
+      annotationLabel.text(copy[0]).transition(transition).attr("y", mid - 3);
+      annotationValue.text(copy[1]).transition(transition).attr("y", mid + 13);
+    }
+
+    function setAnnotationDimmed(dimmed) {
+      annotation.interrupt("annotation-dim").transition("annotation-dim")
+        .duration(logic.motionDuration(150, reducedMotion)).attr("opacity", dimmed ? 0.25 : 1);
+    }
+
     function scheduleHeatmapIntro() {
       cellSelection.style("opacity", 0);
+      annotation.style("opacity", 0);
       legend.attr("opacity", 0);
       xAxisGroup.attr("opacity", 0);
       yAxisGroup.attr("opacity", 0);
@@ -155,6 +208,7 @@
         cellSelection.transition("intro")
           .delay((cell) => reducedMotion ? 0 : logic.heatmapTransitionDelay(+cell.year, genres.indexOf(cell.genre)))
           .duration(duration).ease(d3.easeCubicOut).style("opacity", 1);
+        annotation.transition("intro").delay(reducedMotion ? 0 : 650).duration(duration).style("opacity", 1);
       }, reducedMotion);
     }
 
@@ -186,6 +240,7 @@
       d3.select("#metric-state").text(config.label);
       d3.select("#metric-description").text(config.description);
       syncMetricControls();
+      renderAnnotation(animate);
       if (pinnedCell) applyCellFocus(pinnedCell, true);
       else clearVisualFocus();
     }
@@ -206,6 +261,7 @@
         .attr("opacity", (other) => other.genre === cell.genre || +other.year === +cell.year ? 1 : 0.34)
         .attr("stroke-width", (other) => other === cell ? 2.2 : 0)
         .attr("transform", (other) => other === cell ? "translate(0,-2) scale(1.018)" : null);
+      setAnnotationDimmed(true);
       columnBand.interrupt("band").transition("band").duration(logic.motionDuration(170, reducedMotion))
         .ease(d3.easeCubicOut).attr("x", x(+cell.year) - 4).attr("width", x.bandwidth() + 8).attr("opacity", 1);
       rowBand.interrupt("band").transition("band").duration(logic.motionDuration(170, reducedMotion))
@@ -237,6 +293,7 @@
       cellSelection.interrupt("highlight").transition("highlight").duration(logic.motionDuration(150, reducedMotion))
         .attr("opacity", 1).attr("stroke-width", 0).attr("transform", null);
       cellSelection.classed("is-active", false).classed("is-pinned", false);
+      setAnnotationDimmed(false);
       columnBand.interrupt("band").transition("band").duration(logic.motionDuration(150, reducedMotion)).attr("opacity", 0);
       rowBand.interrupt("band").transition("band").duration(logic.motionDuration(150, reducedMotion)).attr("opacity", 0);
       xAxisGroup.selectAll(".tick text").classed("is-highlighted", false);

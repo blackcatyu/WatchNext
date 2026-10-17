@@ -29,6 +29,7 @@
   let frame = null;
   let zoom;
   let bounds; // [[minX, minY], [maxX, maxY]] of all stars
+  let notes = null; // story annotation: one franchise cluster
 
   const num = d3.format(",");
   const pct = d3.format(".1%");
@@ -137,6 +138,8 @@
       [d3.max(stars, (s) => s.x), d3.max(stars, (s) => s.y)],
     ];
 
+    notes = buildNotes();
+
     zoom = d3
       .zoom()
       .on("zoom", (event) => {
@@ -164,6 +167,50 @@
   }
 
 
+
+  // Story annotation, in layout coordinates: a ring around one series whose films all share
+  // a neighborhood.
+  function buildNotes() {
+    const audience = stars.filter((s) => s.mode === "audience" && s.m.year);
+    const series = audience.filter((s) => s.m.title.startsWith("Harry Potter and the"));
+    let cluster = null;
+    if (series.length >= 3) {
+      const cx = d3.mean(series, (s) => s.x);
+      const cy = d3.mean(series, (s) => s.y);
+      cluster = {
+        x: cx,
+        y: cy,
+        r: d3.max(series, (s) => Math.hypot(s.x - cx, s.y - cy)),
+      };
+    }
+    return { cluster };
+  }
+
+  function paintNotes(zoomFactor, active) {
+    if (!notes || active || highlight != null) return;
+    const alpha = intro * Math.max(0, Math.min(1, (2.2 - zoomFactor) / 0.8));
+    if (alpha <= 0.01) return;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.shadowColor = "rgba(5,7,12,0.9)";
+    ctx.shadowBlur = 4;
+
+    // Franchise ring.
+    const c = notes.cluster;
+    if (c) {
+      const x = transform.applyX(c.x);
+      const y = transform.applyY(c.y);
+      const r = Math.max(12, c.r * transform.k + 9);
+      ctx.strokeStyle = "rgba(242,207,122,0.85)";
+      ctx.lineWidth = 1.2;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    ctx.restore();
+  }
 
   function resize() {
     const stage = root.select(".universe-stage").node();
@@ -262,6 +309,7 @@
       ctx.stroke();
     }
     paintLabels(zoomFactor, linked, active);
+    paintNotes(zoomFactor, active);
   }
 
   // Titles for the brightest stars on screen; more appear as you zoom in.
@@ -483,8 +531,8 @@
           <li><strong>Hover</strong> a star to draw lines to its nearest neighbors; <strong>click</strong> it to
             zoom in on it and its neighbors. Click it again to deselect and zoom back out; click empty
             space to deselect without moving.</li>
-          <li><strong>Color by decade</strong> to see the strongest pattern here: shared audiences
-            follow release era more than genre.</li>
+          <li><strong>Color by decade</strong> to see the strongest pattern here: audience neighborhoods
+            line up by release era from left to right, and neighbors usually share a genre too.</li>
           <li><strong>Search</strong> above to fly to any movie.</li>
         </ul>`);
       return;
