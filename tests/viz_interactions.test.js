@@ -26,6 +26,10 @@ const {
   collaborationLinkStrength,
   collaborationChargeStrength,
   visibleMoviesForCell,
+  careerYearDomain,
+  careerTrendPoints,
+  careerGenreProfiles,
+  heatmapReadingGuide,
 } = require("../docs/js/viz_interactions.js");
 
 const moviesById = new Map([
@@ -78,11 +82,79 @@ test("defines truthful labels and legend semantics for all heatmap metrics", () 
   assert.deepEqual(metricConfig.movie_count.semantic, ["Fewer movies", "More movies"]);
 });
 
+test("heatmap side guidance follows the selected metric without changing its meaning", () => {
+  assert.deepEqual(heatmapReadingGuide("weighted_rating"), {
+    title: "Weighted average rating",
+    meaning: "Each cell shows the vote-count-weighted average of TMDB movie ratings for one genre and release year.",
+    lookFor: "rows and years; the outlined row marks the highest-rated genre across complete years.",
+    caveat: "Movies with more TMDB votes have more influence on the cell average.",
+  });
+  assert.match(heatmapReadingGuide("total_votes").meaning, /voting activity/i);
+  assert.match(heatmapReadingGuide("movie_count").meaning, /number of movies/i);
+  assert.notEqual(heatmapReadingGuide("total_votes").title, heatmapReadingGuide("movie_count").title);
+});
+
 test("formats ratings with decimals and counts as whole numbers", () => {
   assert.equal(formatMetricValue("weighted_rating", 6.608), "6.61");
   assert.equal(formatMetricValue("total_votes", 355391), "355,391");
   assert.equal(formatMetricValue("movie_count", 52), "52");
   assert.equal(formatMetricValue("weighted_rating", null), "No data");
+});
+
+test("career timelines keep the earliest and latest films away from the chart edges", () => {
+  assert.deepEqual(careerYearDomain([2000, 2002, 2026]), [1999, 2027]);
+  assert.deepEqual(careerYearDomain([2023]), [2022, 2024]);
+});
+
+test("career trend uses one average rating per year instead of vertical same-year links", () => {
+  assert.deepEqual(careerTrendPoints([
+    { year: 2006, vote_average: 8.2 },
+    { year: 2001, vote_average: 6.3 },
+    { year: 2006, vote_average: 6.4 },
+    { year: 2001, vote_average: 6.7 },
+    { year: "unknown", vote_average: 9.9 },
+  ]), [
+    { year: 2001, vote_average: 6.5, movie_count: 2 },
+    { year: 2006, vote_average: 7.3, movie_count: 2 },
+  ]);
+});
+
+test("career genre profiles summarize experience, weighted ratings, votes, and reported revenue", () => {
+  const profiles = careerGenreProfiles([
+    { genres: ["Action", "Drama"], vote_average: 8, vote_count: 100, revenue: 100 },
+    { genres: ["Action"], vote_average: 6, vote_count: 300, revenue: 300 },
+    { genres: ["Drama"], vote_average: 9, vote_count: 0, revenue: 0 },
+  ]);
+
+  assert.deepEqual(profiles, [
+    {
+      genre: "Drama",
+      movie_count: 2,
+      weighted_rating: 8,
+      total_votes: 100,
+      median_revenue: 100,
+      reported_revenue_count: 1,
+    },
+    {
+      genre: "Action",
+      movie_count: 2,
+      weighted_rating: 6.5,
+      total_votes: 400,
+      median_revenue: 200,
+      reported_revenue_count: 2,
+    },
+  ]);
+});
+
+test("pages load the current shared visualization logic after interaction changes", () => {
+  ["index.html", "viz3.html", "viz4.html"].forEach((file) => {
+    const html = fs.readFileSync(path.join(__dirname, "../docs", file), "utf8");
+    assert.match(html, /js\/viz_interactions\.js\?v=20261018h/, `${file} uses stale shared logic`);
+  });
+  ["index.html", "viz3.html", "viz4.html"].forEach((file) => {
+    const html = fs.readFileSync(path.join(__dirname, "../docs", file), "utf8");
+    assert.match(html, /css\/style\.css\?v=20261018g/, `${file} uses stale visualization layout`);
+  });
 });
 
 test("places crowded network labels inside the chart without overlapping", () => {

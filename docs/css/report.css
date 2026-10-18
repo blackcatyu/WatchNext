@@ -40,6 +40,23 @@
 .report-figure { max-width: 900px; margin: 2rem 0 3.4rem; }
 .report-figure img { display: block; width: 100%; height: auto; border: 1px solid var(--cinema-line-strong); border-radius: 7px; background: #0a0d11; box-shadow: var(--cinema-shadow); }
 .report-figure figcaption { margin-top: 0.8rem; color: #8f8d88; font-size: 0.78rem; line-height: 1.55; }
+.report-detail-flow {
+  max-width: 900px;
+  margin: 2rem 0 1rem;
+  padding: 1.15rem 1.25rem 1.25rem;
+  background: linear-gradient(135deg, rgba(226, 181, 114, 0.07), rgba(13, 16, 20, 0.9) 46%);
+  border: 1px solid rgba(226, 181, 114, 0.24);
+  border-radius: 7px;
+}
+.report-detail-kicker { margin: 0 0 0.3rem; color: var(--cinema-gold) !important; font-size: 0.66rem !important; font-weight: 800; letter-spacing: 0.13em; text-transform: uppercase; }
+.report-detail-flow h4 { margin: 0; color: #eee7dc; font-family: var(--cinema-serif); font-size: 1.25rem; }
+.report-detail-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; margin-top: 0.9rem; background: rgba(222, 211, 194, 0.12); }
+.report-detail-steps p { max-width: none; margin: 0; padding: 0.85rem 0.9rem; background: #0d1014; font-size: 0.8rem; line-height: 1.55; }
+.report-detail-link { display: block; max-width: 900px; text-decoration: none; }
+.report-detail-figure { margin-top: 1rem; }
+.report-detail-figure img { transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease; }
+.report-detail-link:hover .report-detail-figure img { border-color: rgba(226, 181, 114, 0.7); transform: translateY(-2px); box-shadow: 0 20px 48px rgba(0, 0, 0, 0.42); }
+.report-detail-link:focus-visible { border-radius: 7px; }
 .report-table-wrap { max-width: 900px; margin: 1.6rem 0 1.8rem; overflow-x: auto; border: 1px solid var(--cinema-line); border-radius: 7px; }
 .report-story-table { width: 100%; min-width: 620px; border-collapse: collapse; font-size: 0.88rem; line-height: 1.5; }
 .report-story-table th { padding: 0.75rem 0.9rem; color: var(--cinema-gold); background: rgba(13, 16, 20, 0.96); font-size: 0.68rem; font-weight: 800; letter-spacing: 0.12em; text-align: left; text-transform: uppercase; }
@@ -59,5 +76,5 @@
 .report-references { padding-left: 1.25rem; }
 .report-footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-top: 1.5rem; color: #7f7e79; border-top: 1px solid var(--cinema-line); font-size: 0.76rem; }
 @media (max-width: 880px) { .report-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .report-layout { grid-template-columns: 1fr; gap: 3rem; } .report-toc { position: static; } .report-toc ol { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 1.5rem; } .report-view-links { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 640px) { .report-topbar { align-items: flex-start; flex-direction: column; margin-bottom: 3.5rem; } .report-title { overflow-wrap: anywhere; font-size: clamp(2.5rem, 13vw, 4.6rem); } .report-stats, .report-contributions, .report-view-links { grid-template-columns: 1fr; } .report-toc ol { grid-template-columns: 1fr; } .report-question-list li { padding-left: 2.6rem; } .report-footer { align-items: flex-start; flex-direction: column; } }
+@media (max-width: 640px) { .report-topbar { align-items: flex-start; flex-direction: column; margin-bottom: 3.5rem; } .report-title { overflow-wrap: anywhere; font-size: clamp(2.5rem, 13vw, 4.6rem); } .report-stats, .report-contributions, .report-view-links, .report-detail-steps { grid-template-columns: 1fr; } .report-toc ol { grid-template-columns: 1fr; } .report-question-list li { padding-left: 2.6rem; } .report-footer { align-items: flex-start; flex-direction: column; } }
 @media print { html, .report-body { color-scheme: light; color: #111; background: #fff; } .report-body::before, .report-body::after, .report-toc, .report-topbar { display: none; } .report-title, .report-section h2, .report-section h3, .report-section strong, .report-stat dd { color: #111; } .report-deck, .report-section p, .report-section li, .report-figure figcaption, .report-footer, .report-story-table td { color: #333; } .report-story-table th { color: #111; background: #f2f2f2; } .report-layout { display: block; } .report-section { break-inside: avoid; } .report-figure img { box-shadow: none; } }

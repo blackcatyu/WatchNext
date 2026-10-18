@@ -10,6 +10,8 @@
 
 (async function () {
   const data = await d3.json("data/viz1_similarity_explorer.json");
+  const storyEmbed = Boolean(document.querySelector("[data-story-audience-explorer]"));
+  const STORY_MOVIE_ID = 287699; // Oppenheimer, the movie followed through the homepage story
 
   const WIDTH = 1000;
   const HEIGHT = 720;
@@ -716,6 +718,18 @@
   function reset() {
     searchInput.property("value", "");
     results.html("").style("display", "none");
+    if (storyEmbed) {
+      state.focusId = null;
+      state.history = [];
+      state.genre = null;
+      state.hoverId = null;
+      state.lens = "all";
+      clearAdded();
+      simNodes.forEach((d) => (d.fx = d.fy = null));
+      window.viz1Universe.reset();
+      focus(STORY_MOVIE_ID);
+      return;
+    }
     if (universeActive) {
       window.viz1Universe.reset();
       return;
@@ -808,7 +822,7 @@
     topGenres,
     panel,
     open(id) {
-      leaveUniverse();
+      if (!storyEmbed) leaveUniverse();
       state.history = [];
       state.focusId = null; // so focus() re-renders even if this movie was already centered
       focus(id);
@@ -818,6 +832,13 @@
 
   d3.select("#viz1-count").text(num(data.movies.length + data.unrated.length));
   render();
+  if (storyEmbed) {
+    window.viz1Universe.show();
+    state.history = [];
+    state.focusId = null;
+    focus(STORY_MOVIE_ID);
+    return;
+  }
   // The universe is the default view; #audience opens the network and #movie=<id>
   // (used by the homepage universe) opens the network centered on that movie.
   const linked = +(location.hash.match(/^#movie=(\d+)$/) || [])[1];

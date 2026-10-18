@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WatchNext — Final Project</title>
-  <link rel="stylesheet" href="css/style.css?v=20261016d" />
+  <link rel="stylesheet" href="css/style.css?v=20261018g" />
   <style>
     .viz-gallery { max-width: 1180px; }
     .inline-chart {
@@ -25,7 +25,7 @@
     .inline-universe { margin: 1rem 0; }
   </style>
   <link rel="stylesheet" href="css/cinematic.css?v=20261017a" />
-  <link rel="stylesheet" href="css/story.css?v=20261017b" />
+  <link rel="stylesheet" href="css/story.css?v=20261018d" />
 </head>
 
 <body>
@@ -47,6 +47,16 @@
       entire groups of movies. WatchNext combines MovieLens audience ratings with TMDB metadata and
       reviews to explore what a single rating leaves out.
     </p>
+
+    <section class="story-questions" aria-labelledby="story-questions-title">
+      <p id="story-questions-title" class="story-questions-title">Research questions</p>
+      <ol>
+        <li>How do genre reception and audience voting activity change over time?</li>
+        <li>Which movies attract similar audiences? If viewers like one movie, what other movies are they likely to enjoy?</li>
+        <li>How do ratings differ from audience attention and written-review tone?</li>
+        <li>Which actor–director partnerships recur, and what do individual career timelines reveal about genre experience, audience reception, and commercial scale?</li>
+      </ol>
+    </section>
 
     <dl class="story-stats" aria-label="Dataset at a glance">
       <div><dt>2,914</dt><dd>movies, released 1922–2026</dd></div>
@@ -105,9 +115,10 @@
     </nav>
 
     <p class="story-case story-case--intro">
-      <span class="story-case-label">One movie, four views</span>
-      We follow <em>Oppenheimer</em> (2023) through every chapter: its genre, its audience
-      neighborhood, its ratings and attention, and the director behind it.
+      <span class="story-case-label">One movie, four chapters, five views</span>
+      We follow <em>Oppenheimer</em> (2023) through five visualization views: its genre context,
+      its position in the Movie Universe, its Audience Network, its ratings and attention, and the
+      collaboration network behind its director.
     </p>
   </div>
 
@@ -118,7 +129,7 @@
 
   <section id="genres" class="viz-section story-chapter">
 
-    <p class="story-stage">Chapter 1 · Context — when and where</p>
+    <p class="story-stage">Chapter 1 · View 1 · Context — when and where</p>
     <h2>Animation leads in ratings; Action draws the most votes</h2>
 
     <p class="story-lede">
@@ -167,11 +178,25 @@
         <div class="summary-item">Source: <strong>TMDB</strong></div>
       </div>
 
-      <section class="heatmap-panel chart-shell viz-card-canvas" aria-label="Interactive genre ratings heatmap">
-        <div id="heatmap"></div>
-        <div id="heatmap-tooltip" class="chart-tooltip" role="tooltip"></div>
-        <p class="chart-hint">Hover to compare · click or tap a cell to explore its movies</p>
-      </section>
+      <div class="viz-explainer-layout viz-explainer-layout--heatmap">
+        <section class="heatmap-panel chart-shell viz-card-canvas" aria-label="Interactive genre ratings heatmap">
+          <div id="heatmap"></div>
+          <div id="heatmap-tooltip" class="chart-tooltip" role="tooltip"></div>
+          <p class="chart-hint">Hover to compare · click or tap a cell to explore its movies</p>
+        </section>
+        <aside id="heatmap-guide" class="viz-side-guide" aria-live="polite" aria-label="How to read the selected heatmap metric">
+          <h3 id="heatmap-guide-title">Weighted average rating</h3>
+          <p id="heatmap-guide-meaning" class="viz-side-guide-summary">Each cell shows the vote-count-weighted average of TMDB movie ratings for one genre and release year.</p>
+          <ul class="viz-side-guide-help">
+            <li><strong>Compare</strong> <span id="heatmap-guide-look">rows and years; the outlined row marks the highest-rated genre across complete years.</span></li>
+            <li><strong>Hover</strong> a cell to emphasize its genre row and year column.</li>
+            <li><strong>Click</strong> a cell to open its ranked movie list below.</li>
+            <li><strong>Switch metric</strong> to compare rating, voting activity, or the number of movies without changing the layout.</li>
+          </ul>
+          <p class="viz-side-guide-note"><strong>Keep in mind.</strong> <span id="heatmap-guide-caveat">Movies with more TMDB votes have more influence on the cell average.</span></p>
+          <p class="viz-side-guide-partial"><strong>2026*</strong> contains partial-year data.</p>
+        </aside>
+      </div>
       <section id="heatmap-detail" class="heatmap-detail heatmap-detail--embedded" aria-labelledby="heatmap-detail-title" hidden>
         <div class="heatmap-detail-heading">
           <div>
@@ -239,7 +264,7 @@
 
   <section id="neighborhoods" class="viz-section story-chapter">
 
-    <p class="story-stage">Chapter 2 · Overview and detail — what and where</p>
+    <p class="story-stage">Chapter 2 · Views 2 and 3 · Overview and detail — what and where</p>
     <h2>Audience taste creates neighborhoods shaped by both era and genre</h2>
 
     <p class="story-lede">
@@ -291,6 +316,72 @@
       click a star to zoom in.
     </p>
 
+    <section class="story-linkage" data-story-linkage="audience" aria-labelledby="audience-linkage-title">
+      <p class="story-linkage-kicker">Views 2 and 3 · Linked exploration</p>
+      <h3 id="audience-linkage-title">From the Movie Universe to one audience neighborhood</h3>
+      <p class="story-linkage-intro">
+        The overview first shows where a movie sits among all 2,914 titles. The detail view then
+        explains which audience connections place it there.
+      </p>
+      <div class="story-linkage-steps">
+        <article class="story-linkage-step">
+          <span>View 2 · Movie Universe</span>
+          <h4>Choose an anchor movie</h4>
+          <p><strong>Search or click a movie.</strong> Zoom and color by genre or decade to see its position in the full landscape.</p>
+        </article>
+        <article class="story-linkage-step story-linkage-step--action">
+          <span>Interaction link</span>
+          <h4>Carry the same movie into detail</h4>
+          <p>Open <strong>Audience Network</strong>. The selected movie becomes the focus, while its strongest audience neighbors become directly comparable.</p>
+        </article>
+        <article class="story-linkage-step">
+          <span>View 3 · Audience Network</span>
+          <h4>Read the audience links</h4>
+          <p>Each node is a movie. A link connects movies when the same MovieLens users rated both movies at least 4 out of 5. Thicker links mean stronger audience overlap.</p>
+        </article>
+      </div>
+      <p class="story-linkage-result">
+        <strong>What the viewer learns.</strong> The Universe reveals the global neighborhood. The
+        Audience Network shows which specific films share viewers with the selected movie and whether
+        those connections also share a genre or release era.
+      </p>
+    </section>
+
+    <section id="audience-detail" class="story-audience-shell" data-story-audience-explorer aria-labelledby="story-audience-title">
+      <div class="story-detail-heading">
+        <div>
+          <p class="story-linkage-kicker">View 3 · Live linked detail</p>
+          <h3 id="story-audience-title">Oppenheimer audience neighborhood</h3>
+        </div>
+        <p>Click another MovieLens star above, or search here, to carry that movie into this network.</p>
+      </div>
+
+      <div class="explorer-toolbar story-audience-toolbar">
+        <div class="search-wrap">
+          <input id="viz1-search" type="search" placeholder="Search a movie title…" autocomplete="off"
+                 aria-label="Search for a movie to show in the audience network" />
+          <ul id="viz1-results" role="listbox"></ul>
+        </div>
+        <button id="viz1-reset" class="tool-btn" type="button">Reset to Oppenheimer</button>
+        <nav id="viz1-crumbs" aria-label="Audience-network exploration path"></nav>
+      </div>
+
+      <div class="story-audience-explorer">
+        <div class="explorer-graph">
+          <div class="lens-bar">
+            <label>Start from <select id="viz1-lens" aria-label="Audience-network starting view"></select></label>
+            <span id="viz1-status" aria-live="polite"></span>
+          </div>
+          <div id="viz1-legend" class="legend-bar" aria-label="Audience-network genre filter"></div>
+          <div id="viz1-genre-stat"></div>
+          <svg id="viz1-svg" role="img" aria-label="Audience network centered on the selected movie"></svg>
+          <div class="encoding-note" id="viz1-encoding"></div>
+          <div id="viz1-tooltip"></div>
+        </div>
+        <aside id="viz1-panel" aria-live="polite"></aside>
+      </div>
+    </section>
+
     <div class="story-notes">
       <div class="story-try">
         <span class="story-note-label">Try this</span>
@@ -336,7 +427,7 @@
 
   <section id="discussion" class="viz-section story-chapter">
 
-    <p class="story-stage">Chapter 3 · Important difference — what relationships exist</p>
+    <p class="story-stage">Chapter 3 · View 4 · Important difference — what relationships exist</p>
     <h2>A movie can be loved, widely discussed, or warmly reviewed — these are not the same thing</h2>
 
     <p class="story-lede">
@@ -415,14 +506,15 @@
 
   <section id="collaboration" class="viz-section story-chapter">
 
-    <p class="story-stage">Chapter 4 · People and relationships — who is involved</p>
+    <p class="story-stage">Chapter 4 · View 5 with linked detail · People and relationships — who is involved</p>
     <h2>Repeated creative partnerships form durable movie communities</h2>
 
     <p class="story-lede">
       Actors (circles) and directors (diamonds) are linked when they made at least three movies
       together. Colors mark communities the network detects on its own, and they turn out to be
       recognizable working relationships rather than decorative clusters. Select a person to follow
-      their career below the network.
+      their Career Timeline and compare the genres where their work has the most experience, strongest
+      audience reception, or greatest commercial scale.
     </p>
 
     <dl class="story-evidence">
@@ -440,7 +532,7 @@
       </div>
     </dl>
 
-    <section class="viz-card viz-card--network viz-card--embedded" aria-label="Actor and director collaboration explorer">
+    <section class="viz-card viz-card--network viz-card--embedded" data-story-collaboration-explorer aria-label="Actor and director collaboration explorer">
       <section id="viz3-controls" class="viz-toolbar viz-toolbar--network viz-card-toolbar" aria-label="Collaboration network controls">
         <div class="control-group control-group--search">
           <label for="person-search">Find a person</label>
@@ -476,29 +568,91 @@
         <div class="encoding-item">Edge width = Shared movies</div>
       </div>
 
-      <section class="network-panel chart-shell viz-card-canvas" aria-label="Interactive actor and director collaboration network">
-        <div id="network"></div>
-        <div id="network-tooltip" class="chart-tooltip" role="tooltip"></div>
-        <p class="chart-hint">Scroll to zoom · drag to pan · move a person and watch the network settle</p>
-      </section>
+      <div class="viz-explainer-layout viz-explainer-layout--network">
+        <section class="network-panel chart-shell viz-card-canvas" aria-label="Interactive actor and director collaboration network">
+          <div id="network"></div>
+          <div id="network-tooltip" class="chart-tooltip" role="tooltip"></div>
+          <p class="chart-hint">Scroll to zoom · drag to pan · move a person and watch the network settle</p>
+        </section>
+        <aside class="viz-side-guide" aria-label="How to read the collaboration network">
+          <h3>Collaboration network</h3>
+          <p class="viz-side-guide-summary">People are connected when they repeatedly make movies together. The network starts with collaborations shared across at least three films.</p>
+          <ul class="viz-side-guide-help">
+            <li><strong>Circles and diamonds</strong> represent actors and directors.</li>
+            <li><strong>Size and color</strong> show collaboration strength and network-detected communities.</li>
+            <li><strong>Hover</strong> a person or link to see exact names and shared movies.</li>
+            <li><strong>Click</strong> a person to focus direct collaborators and open the Career View below.</li>
+            <li><strong>Filter</strong> by genre or shared-movie threshold to recalculate the visible relationships.</li>
+            <li><strong>Drag or zoom</strong> to inspect crowded communities.</li>
+          </ul>
+          <p class="viz-side-guide-note"><strong>Keep in mind.</strong> Genre filters recompute every link from the movies the pair made together; they do not simply recolor the network.</p>
+        </aside>
+      </div>
 
       <section id="career-panel" class="career-panel career-panel--embedded" aria-labelledby="career-title">
         <div class="career-heading">
           <div><p class="eyebrow">Individual detail</p><h4 id="career-title">Select a person to explore their career</h4></div>
           <p id="career-subtitle">Click a circle or diamond in the network above.</p>
         </div>
-        <div id="career-empty" class="chart-empty"><span class="chart-empty-icon" aria-hidden="true">✦</span>Network overview → individual career view</div>
-        <div id="career-chart" class="career-chart" hidden></div>
+        <div id="career-empty" class="chart-empty chart-empty--story-linkage">
+          <section class="story-linkage story-linkage--embedded" data-story-linkage="career" aria-labelledby="career-linkage-title">
+            <p class="story-linkage-kicker">View 5 · Collaboration Network with linked detail</p>
+            <h4 id="career-linkage-title">From a collaboration community to one person's career</h4>
+            <div class="story-linkage-steps">
+              <article class="story-linkage-step">
+                <span>1 · Shape the network</span>
+                <h4>Find a meaningful relationship</h4>
+                <p>Search for a person, choose a genre, or raise the shared-movie threshold. Circles are actors, diamonds are directors, and link width is the number of movies made together.</p>
+              </article>
+              <article class="story-linkage-step story-linkage-step--action">
+                <span>2 · Interaction link</span>
+                <h4>Select one person</h4>
+                <p><strong>Click a circle or diamond.</strong> The network keeps that person and their direct collaborators in focus, then opens the Career View below.</p>
+              </article>
+              <article class="story-linkage-step">
+                <span>3 · Career Timeline + Genre Profile</span>
+                <h4>Follow a career and compare its genre strengths</h4>
+                <p>Each career-view circle is one film: release year on the x-axis, TMDB rating on the y-axis, revenue as size, and primary genre as color. Switch the radar between Experience, Rating, and Revenue, then click a genre to highlight its films.</p>
+              </article>
+            </div>
+            <p class="story-linkage-result">
+              <strong>What the viewer learns.</strong> The network reveals recurring creative
+              partnerships. The Career Timeline shows how the selected person's films, genres,
+              ratings, and commercial scale change over time. The Genre Profile compares where they
+              have more experience, stronger audience reception, or greater commercial scale. The
+              profile supports interpretation, but does not directly measure acting or directing skill.
+            </p>
+          </section>
+        </div>
+        <div id="career-detail-layout" class="career-detail-layout" hidden>
+          <div class="career-timeline-column">
+            <div id="career-chart" class="career-chart"></div>
+            <div id="career-legend" class="career-legend" aria-label="Career primary genre colors"></div>
+          </div>
+          <aside id="career-profile" class="career-profile" aria-labelledby="career-profile-title">
+            <div class="career-profile-heading">
+              <div><p class="eyebrow">Genre profile</p><h3 id="career-profile-title">Where this career is strongest</h3></div>
+              <div id="career-profile-metrics" class="metric-switch career-profile-metrics" role="group" aria-label="Genre profile metric">
+                <button type="button" data-career-metric="experience" aria-pressed="true">Experience</button>
+                <button type="button" data-career-metric="rating" aria-pressed="false">Rating</button>
+                <button type="button" data-career-metric="revenue" aria-pressed="false">Revenue</button>
+              </div>
+            </div>
+            <p id="career-profile-description" class="career-profile-description"></p>
+            <div id="career-profile-chart" class="career-profile-chart"></div>
+            <p id="career-profile-note" class="career-profile-note">Click a genre to highlight its films in the timeline.</p>
+          </aside>
+        </div>
         <div id="career-tooltip" class="chart-tooltip" role="tooltip"></div>
-        <div id="career-legend" class="career-legend" aria-label="Career primary genre colors"></div>
       </section>
     </section>
 
     <p class="viz-caption">
       <strong>How to read it.</strong> Node size is collaboration strength and edge width is the
       number of shared movies. The genre filter recomputes every link from the shared movies in
-      that genre. In the career chart, each circle is one film: year on the x-axis, TMDB rating on
-      the y-axis, box office as size, and primary genre as color.
+      that genre. In the Career Timeline, each circle is one film: year on the x-axis, TMDB rating on
+      the y-axis, box office as size, and primary genre as color. The linked Genre Profile summarizes
+      experience, audience reception, and commercial scale across the person's six most frequent genres.
     </p>
 
     <div class="story-notes">
@@ -522,8 +676,9 @@
     <p class="story-case">
       <span class="story-case-label">Following <em>Oppenheimer</em></span>
       Search for <strong>Christopher Nolan</strong>. The network shows his recurring collaborators,
-      and his career chart places <em>Oppenheimer</em> among 12 films from <em>Memento</em> (2000)
-      to <em>The Odyssey</em> (2026).
+      and his Career Timeline places <em>Oppenheimer</em> among 12 films from <em>Memento</em> (2000)
+      to <em>The Odyssey</em> (2026). Switch the Genre Profile to compare the genres in which his films
+      are most frequent, best received, or largest in reported box office.
     </p>
 
     <p class="story-links">
@@ -697,11 +852,12 @@
 
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
-  <script src="js/viz1_universe.js?v=20261017c"></script>
+  <script src="js/viz1_similarity_explorer.js?v=20261018b"></script>
+  <script src="js/viz1_universe.js?v=20261018b"></script>
   <script src="js/viz2_scatter.js?v=20261017a"></script>
-  <script src="js/viz_interactions.js?v=20261016f"></script>
-  <script src="js/viz3_collaboration_network.js?v=20261017b"></script>
-  <script src="js/viz4_heatmap.js?v=20261017a"></script>
+  <script src="js/viz_interactions.js?v=20261018h"></script>
+  <script src="js/viz3_collaboration_network.js?v=20261018e"></script>
+  <script src="js/viz4_heatmap.js?v=20261018b"></script>
 </body>
 
 </html>

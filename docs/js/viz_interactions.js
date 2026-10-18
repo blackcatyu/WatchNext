@@ -24,6 +24,31 @@
     },
   };
 
+  const heatmapReadingGuides = {
+    weighted_rating: {
+      title: "Weighted average rating",
+      meaning: "Each cell shows the vote-count-weighted average of TMDB movie ratings for one genre and release year.",
+      lookFor: "rows and years; the outlined row marks the highest-rated genre across complete years.",
+      caveat: "Movies with more TMDB votes have more influence on the cell average.",
+    },
+    total_votes: {
+      title: "Total vote count",
+      meaning: "Each cell shows voting activity as the total TMDB vote count received by movies in one genre and release year.",
+      lookFor: "rows and years to find where voting activity is highest; the outlined row marks the genre with the most votes.",
+      caveat: "Vote count measures voting activity, not the total size of a movie's audience.",
+    },
+    movie_count: {
+      title: "Number of movies",
+      meaning: "Each cell shows the number of movies that belong to one genre and release year in this dataset.",
+      lookFor: "rows and years to see how the dataset's genre mix changes; the outlined row marks the genre with the most movies.",
+      caveat: "Movies with multiple genres contribute to every relevant genre row.",
+    },
+  };
+
+  function heatmapReadingGuide(metric) {
+    return heatmapReadingGuides[metric] || heatmapReadingGuides.weighted_rating;
+  }
+
   function movieIdSetForGenre(link, genre, moviesById) {
     return (link.movies || []).filter((movieId) => {
       if (genre === "All") return true;
@@ -71,6 +96,82 @@
     if (value == null || !Number.isFinite(+value)) return "No data";
     if (metric === "weighted_rating") return (+value).toFixed(2);
     return Math.round(+value).toLocaleString("en-US");
+  }
+
+  function careerYearDomain(years, padding = 1) {
+    const numericYears = (years || []).map(Number).filter(Number.isFinite);
+    if (!numericYears.length) return [0, 1];
+    const first = Math.min(...numericYears);
+    const last = Math.max(...numericYears);
+    const buffer = Math.max(1, +padding || 0);
+    return [first - buffer, last + buffer];
+  }
+
+  function careerTrendPoints(movies) {
+    const ratingsByYear = new Map();
+    (movies || []).forEach((movie) => {
+      const year = +movie.year;
+      const rating = +movie.vote_average;
+      if (!Number.isFinite(year) || !Number.isFinite(rating)) return;
+      if (!ratingsByYear.has(year)) ratingsByYear.set(year, []);
+      ratingsByYear.get(year).push(rating);
+    });
+    return [...ratingsByYear.entries()]
+      .sort(([yearA], [yearB]) => yearA - yearB)
+      .map(([year, ratings]) => ({
+        year,
+        vote_average: ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length,
+        movie_count: ratings.length,
+      }));
+  }
+
+  function careerGenreProfiles(movies, limit = 6) {
+    const profiles = new Map();
+    (movies || []).forEach((movie) => {
+      const genres = [...new Set((movie.genres || []).filter(Boolean))];
+      genres.forEach((genre) => {
+        if (!profiles.has(genre)) {
+          profiles.set(genre, {
+            genre,
+            movie_count: 0,
+            rating_total: 0,
+            total_votes: 0,
+            revenues: [],
+          });
+        }
+        const profile = profiles.get(genre);
+        const rating = +movie.vote_average;
+        const votes = Math.max(0, +movie.vote_count || 0);
+        const revenue = +movie.revenue || 0;
+        profile.movie_count += 1;
+        if (Number.isFinite(rating) && votes > 0) {
+          profile.rating_total += rating * votes;
+          profile.total_votes += votes;
+        }
+        if (revenue > 0) profile.revenues.push(revenue);
+      });
+    });
+
+    return [...profiles.values()]
+      .map((profile) => {
+        const revenues = profile.revenues.slice().sort((a, b) => a - b);
+        const middle = Math.floor(revenues.length / 2);
+        const medianRevenue = !revenues.length ? 0 : revenues.length % 2
+          ? revenues[middle]
+          : (revenues[middle - 1] + revenues[middle]) / 2;
+        return {
+          genre: profile.genre,
+          movie_count: profile.movie_count,
+          weighted_rating: profile.total_votes ? profile.rating_total / profile.total_votes : 0,
+          total_votes: profile.total_votes,
+          median_revenue: medianRevenue,
+          reported_revenue_count: revenues.length,
+        };
+      })
+      .sort((a, b) => b.movie_count - a.movie_count
+        || b.weighted_rating - a.weighted_rating
+        || a.genre.localeCompare(b.genre))
+      .slice(0, Math.max(1, +limit || 6));
   }
 
   function placeLabels(labels, width, height) {
@@ -294,7 +395,11 @@
     filterCollaborationGraph,
     selectionSurvives,
     metricConfig,
+    heatmapReadingGuide,
     formatMetricValue,
+    careerYearDomain,
+    careerTrendPoints,
+    careerGenreProfiles,
     placeLabels,
     restoreNodePositions,
     networkLinkStyle,

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Visualization 4 — Genre Ratings Over Time</title>
-  <link rel="stylesheet" href="css/style.css?v=20261016d" />
+  <link rel="stylesheet" href="css/style.css?v=20261018g" />
   <link rel="stylesheet" href="css/cinematic.css?v=20261016a" />
 </head>
 <body>
@@ -40,11 +40,25 @@
       <div class="summary-item">Source: <strong>TMDB</strong></div>
     </div>
 
-    <section class="heatmap-panel chart-shell viz-card-canvas" aria-label="Interactive genre ratings heatmap">
-      <div id="heatmap"></div>
-      <div id="heatmap-tooltip" class="chart-tooltip" role="tooltip"></div>
-      <p class="chart-hint">Hover to compare · click or tap a cell to explore its movies</p>
-    </section>
+    <div class="viz-explainer-layout viz-explainer-layout--heatmap">
+      <section class="heatmap-panel chart-shell viz-card-canvas" aria-label="Interactive genre ratings heatmap">
+        <div id="heatmap"></div>
+        <div id="heatmap-tooltip" class="chart-tooltip" role="tooltip"></div>
+        <p class="chart-hint">Hover to compare · click or tap a cell to explore its movies</p>
+      </section>
+      <aside id="heatmap-guide" class="viz-side-guide" aria-live="polite" aria-label="How to read the selected heatmap metric">
+        <h3 id="heatmap-guide-title">Weighted average rating</h3>
+        <p id="heatmap-guide-meaning" class="viz-side-guide-summary">Each cell shows the vote-count-weighted average of TMDB movie ratings for one genre and release year.</p>
+        <ul class="viz-side-guide-help">
+          <li><strong>Compare</strong> <span id="heatmap-guide-look">rows and years; the outlined row marks the highest-rated genre across complete years.</span></li>
+          <li><strong>Hover</strong> a cell to emphasize its genre row and year column.</li>
+          <li><strong>Click</strong> a cell to open its ranked movie list below.</li>
+          <li><strong>Switch metric</strong> to compare rating, voting activity, or the number of movies without changing the layout.</li>
+        </ul>
+        <p class="viz-side-guide-note"><strong>Keep in mind.</strong> <span id="heatmap-guide-caveat">Movies with more TMDB votes have more influence on the cell average.</span></p>
+        <p class="viz-side-guide-partial"><strong>2026*</strong> contains partial-year data.</p>
+      </aside>
+    </div>
     <section id="heatmap-detail" class="heatmap-detail" aria-labelledby="heatmap-detail-title" hidden>
       <div class="heatmap-detail-heading">
         <div>
@@ -69,7 +83,7 @@
     <a class="back-link" href="index.html">← Back to Project Overview</a>
   </main>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
-  <script src="js/viz_interactions.js?v=20261016d"></script>
-  <script src="js/viz4_heatmap.js?v=20261017a"></script>
+  <script src="js/viz_interactions.js?v=20261018h"></script>
+  <script src="js/viz4_heatmap.js?v=20261018b"></script>
 </body>
 </html>

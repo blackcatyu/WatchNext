@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Visualization 3 — Actor &amp; Director Collaboration Network</title>
-  <link rel="stylesheet" href="css/style.css?v=20261016d" />
+  <link rel="stylesheet" href="css/style.css?v=20261018g" />
   <link rel="stylesheet" href="css/cinematic.css?v=20261017a" />
 </head>
 <body>
@@ -51,6 +51,7 @@
       <div class="encoding-item">Edge width = Shared movies</div>
     </div>
 
+    <div class="viz-explainer-layout viz-explainer-layout--network">
     <section class="network-panel chart-shell viz-card-canvas" aria-label="Interactive actor and director collaboration network">
       <div id="network"></div>
       <div id="network-tooltip" class="chart-tooltip" role="tooltip"></div>
@@ -71,6 +72,20 @@
         </div>
       </div>
     </section>
+    <aside class="viz-side-guide" aria-label="How to read the collaboration network">
+      <h3>Collaboration network</h3>
+      <p class="viz-side-guide-summary">People are connected when they repeatedly make movies together. The network starts with collaborations shared across at least three films.</p>
+      <ul class="viz-side-guide-help">
+        <li><strong>Circles and diamonds</strong> represent actors and directors.</li>
+        <li><strong>Size and color</strong> show collaboration strength and network-detected communities.</li>
+        <li><strong>Hover</strong> a person or link to see exact names and shared movies.</li>
+        <li><strong>Click</strong> a person to focus direct collaborators and open the Career View below.</li>
+        <li><strong>Filter</strong> by genre or shared-movie threshold to recalculate the visible relationships.</li>
+        <li><strong>Drag or zoom</strong> to inspect crowded communities.</li>
+      </ul>
+      <p class="viz-side-guide-note"><strong>Keep in mind.</strong> Genre filters recompute every link from the movies the pair made together; they do not simply recolor the network.</p>
+    </aside>
+    </div>
     </section>
 
     <p class="network-note">People enter the dataset after appearing in at least five movies. The genre control recomputes each edge from its shared movie IDs; it does not merely hide people. Raising the threshold removes weaker links and people left with no remaining collaboration.</p>
@@ -81,15 +96,32 @@
         <p id="career-subtitle">Click a circle or diamond in the network above.</p>
       </div>
       <div id="career-empty" class="chart-empty"><span class="chart-empty-icon" aria-hidden="true">✦</span>Network overview → individual career view</div>
-      <div id="career-chart" class="career-chart" hidden></div>
+      <div id="career-detail-layout" class="career-detail-layout" hidden>
+        <div class="career-timeline-column">
+          <div id="career-chart" class="career-chart"></div>
+          <div id="career-legend" class="career-legend" aria-label="Career primary genre colors"></div>
+        </div>
+        <aside id="career-profile" class="career-profile" aria-labelledby="career-profile-title">
+          <div class="career-profile-heading">
+            <div><p class="eyebrow">Genre profile</p><h3 id="career-profile-title">Where this career is strongest</h3></div>
+            <div id="career-profile-metrics" class="metric-switch career-profile-metrics" role="group" aria-label="Genre profile metric">
+              <button type="button" data-career-metric="experience" aria-pressed="true">Experience</button>
+              <button type="button" data-career-metric="rating" aria-pressed="false">Rating</button>
+              <button type="button" data-career-metric="revenue" aria-pressed="false">Revenue</button>
+            </div>
+          </div>
+          <p id="career-profile-description" class="career-profile-description"></p>
+          <div id="career-profile-chart" class="career-profile-chart"></div>
+          <p id="career-profile-note" class="career-profile-note">Click a genre to highlight its films in the timeline.</p>
+        </aside>
+      </div>
       <div id="career-tooltip" class="chart-tooltip" role="tooltip"></div>
-      <div id="career-legend" class="career-legend" aria-label="Career primary genre colors"></div>
     </section>
 
     <a class="back-link" href="index.html">← Back to Project Overview</a>
   </main>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
-  <script src="js/viz_interactions.js?v=20261016f"></script>
-  <script src="js/viz3_collaboration_network.js?v=20261017b"></script>
+  <script src="js/viz_interactions.js?v=20261018h"></script>
+  <script src="js/viz3_collaboration_network.js?v=20261018e"></script>
 </body>
 </html>

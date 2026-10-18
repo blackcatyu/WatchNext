@@ -214,6 +214,7 @@
 
     function renderMetric(animate) {
       const config = logic.metricConfig[metric];
+      const readingGuide = logic.heatmapReadingGuide(metric);
       const scaleData = scaleForMetric();
       colorScale = scaleData.scale;
       const duration = animate ? DURATION : 0;
@@ -239,6 +240,10 @@
       legendHigh.text(config.semantic[1]);
       d3.select("#metric-state").text(config.label);
       d3.select("#metric-description").text(config.description);
+      d3.select("#heatmap-guide-title").text(readingGuide.title);
+      d3.select("#heatmap-guide-meaning").text(readingGuide.meaning);
+      d3.select("#heatmap-guide-look").text(readingGuide.lookFor);
+      d3.select("#heatmap-guide-caveat").text(readingGuide.caveat);
       syncMetricControls();
       renderAnnotation(animate);
       if (pinnedCell) applyCellFocus(pinnedCell, true);

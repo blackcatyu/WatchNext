@@ -8,13 +8,14 @@ This document defines the final narrative for the website and presentation. Watc
 
 WatchNext is designed for general moviegoers who want to discover films and understand the relationships behind ratings, attention, recommendations, and creative partnerships. A rating can tell us whether a movie was liked, but it cannot explain the whole picture. The four visualizations therefore move from broad changes over time to audience neighborhoods, differences between acclaim and attention, and the people who repeatedly make movies together.
 
-The story should answer the following audience questions:
+The story should answer four connected research questions:
 
-- **When does movie reception change?** Compare genres and years.
-- **Where does a movie belong?** Place it among movies liked by similar audiences.
-- **How is acclaim different from attention?** Compare ratings, voting activity, and written-review tone.
-- **Who is connected?** Explore the actors and directors behind repeated collaborations.
-- **Why does this matter?** Use several kinds of evidence, rather than one rating, to find and understand a movie.
+1. **How do genre reception and audience voting activity change over time?**
+2. **Which movies attract similar audiences? If viewers like one movie, what other movies are they likely to enjoy?**
+3. **How do ratings differ from audience attention and written-review tone?**
+4. **Which actor–director partnerships recur, and what do individual career timelines reveal about genre experience, audience reception, and commercial scale?**
+
+Together, these questions use several kinds of evidence, rather than one rating, to help viewers find and understand a movie. The fourth question links the collaboration overview to the individual Career Timeline and Genre Profile.
 
 ## 2. Verified findings that support the story
 
@@ -155,7 +156,7 @@ These labels should be treated as examples from this dataset, not universal cate
 
 **Headline:** **Repeated creative partnerships form durable movie communities.**
 
-**Visualization:** Actor–director collaboration network linked to the individual career view.
+**Visualization:** Actor–director collaboration network linked to the individual Career Timeline and Genre Profile.
 
 **Immediate evidence:**
 
@@ -165,9 +166,9 @@ These labels should be treated as examples from this dataset, not universal cate
 
 **Try this:**
 
-> Search for Christopher Nolan, inspect his recurring collaborators, and then follow his career view to *Oppenheimer*. Change the genre or shared-movie threshold to see which relationships remain.
+> Search for Christopher Nolan, inspect his recurring collaborators, and then follow his Career Timeline to *Oppenheimer*. Switch the Genre Profile between Experience, Rating, and Revenue, then click a genre to highlight its films.
 
-**On-demand detail:** Person, collaboration, and movie tooltips provide exact values. Clicking a person reveals their films over time, while the network remains the structural overview.
+**On-demand detail:** Person, collaboration, and movie tooltips provide exact values. Clicking a person reveals their films over time, while the network remains the structural overview. The timeline helps viewers understand the span and rhythm of an actor's or director's career. The radar summarizes genres where their work has more experience, stronger audience reception, or greater commercial scale. It can support discussion of likely strengths and commercial value, but it does not directly measure acting or directing skill.
 
 **Caveat:** This view intentionally includes people with at least five movies and collaborations represented by at least three shared movies. It describes repeated partnerships within the selected dataset, not every credit in the film industry.
 

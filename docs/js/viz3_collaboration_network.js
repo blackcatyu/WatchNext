@@ -3,6 +3,7 @@
 
   const root = d3.select("#network");
   if (root.empty()) return;
+  const storyEmbed = Boolean(document.querySelector("[data-story-collaboration-explorer]"));
 
   const logic = window.WatchNextViz;
   const WIDTH = 1100;
@@ -12,6 +13,7 @@
   const FOCUS_DURATION = logic.motionDuration(520, reducedMotion);
   const DEFAULT_THRESHOLD = 3;
   const GUIDE_PERSON_ID = "director_525"; // Christopher Nolan, the story's case-study director
+  const requestedPersonId = new URLSearchParams(window.location.search).get("person");
   const formatInteger = d3.format(",");
 
   const escapeHtml = (value) => String(value ?? "")
@@ -326,6 +328,8 @@
     setupControls();
     setupGuide();
     updateGraph(false);
+    const initialPersonId = storyEmbed ? GUIDE_PERSON_ID : requestedPersonId;
+    if (initialPersonId && nodeById.has(initialPersonId)) selectPerson(initialPersonId, false);
     scheduleNetworkIntro();
 
     function nodeSymbol(node, radius) {
@@ -672,11 +676,11 @@
       d3.select("#network-reset").on("click", () => {
         state.genre = "All";
         state.threshold = DEFAULT_THRESHOLD;
-        state.selectedId = null;
+        state.selectedId = storyEmbed ? GUIDE_PERSON_ID : null;
         state.hoveredId = null;
         d3.select("#genre-filter").property("value", "All");
         d3.select("#shared-movies").property("value", DEFAULT_THRESHOLD);
-        d3.select("#person-search").property("value", "");
+        d3.select("#person-search").property("value", storyEmbed ? nodeById.get(GUIDE_PERSON_ID)?.name || "" : "");
         closeSearchResults();
         layoutSimulation.stop().alphaTarget(0);
         nodes.forEach((node) => { node.fx = null; node.fy = null; });
@@ -769,9 +773,12 @@
       const panel = d3.select("#career-panel");
       if (panel.empty()) return;
       const chart = d3.select("#career-chart");
+      const detailLayout = d3.select("#career-detail-layout");
+      const profileChart = d3.select("#career-profile-chart");
       const empty = d3.select("#career-empty");
       const legend = d3.select("#career-legend");
       chart.selectAll("*").remove();
+      profileChart.selectAll("*").remove();
       legend.selectAll("*").remove();
 
       if (!state.selectedId) {
@@ -779,30 +786,32 @@
         d3.select("#career-title").text("Select a person to explore their career");
         d3.select("#career-subtitle").text("Click a circle or diamond in the network above.");
         empty.attr("hidden", null);
-        chart.attr("hidden", true);
+        detailLayout.attr("hidden", true);
         hideCareerTooltip();
         return;
       }
 
       const person = nodeById.get(state.selectedId);
-      const movies = (careers[state.selectedId] || []).filter((movie) => Number.isFinite(+movie.year) && Number.isFinite(+movie.vote_average));
+      const movies = (careers[state.selectedId] || [])
+        .filter((movie) => Number.isFinite(+movie.year) && Number.isFinite(+movie.vote_average))
+        .sort((a, b) => d3.ascending(+a.year, +b.year) || d3.ascending(+a.tmdbId, +b.tmdbId));
       d3.select("#career-title").text(`${person.name}'s career`);
-      d3.select("#career-subtitle").text(`${person.role} · ${movies.length} films in this dataset`);
+      d3.select("#career-subtitle").text(`${person.role} · ${movies.length} films · line = yearly average rating`);
       empty.attr("hidden", true);
-      chart.attr("hidden", null);
+      detailLayout.attr("hidden", null);
       panel.classed("has-selection", true);
 
-      const width = 1060;
-      const height = 380;
-      const margin = { top: 24, right: 26, bottom: 54, left: 58 };
+      const width = 900;
+      const height = 500;
+      const margin = { top: 30, right: 38, bottom: 60, left: 70 };
       const innerWidth = width - margin.left - margin.right;
       const innerHeight = height - margin.top - margin.bottom;
       const careerSvg = chart.append("svg").attr("viewBox", `0 0 ${width} ${height}`).attr("role", "img")
         .attr("aria-label", `${person.name} film career by release year and TMDB rating`);
       const plot = careerSvg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
       const yearExtent = d3.extent(movies, (movie) => +movie.year);
-      if (yearExtent[0] === yearExtent[1]) { yearExtent[0] -= 1; yearExtent[1] += 1; }
-      const x = d3.scaleLinear().domain(yearExtent).nice().range([0, innerWidth]);
+      const yearDomain = logic.careerYearDomain(movies.map((movie) => +movie.year));
+      const x = d3.scaleLinear().domain(yearDomain).range([0, innerWidth]);
       const ratingExtent = d3.extent(movies, (movie) => +movie.vote_average);
       const ratingPad = Math.max(0.35, (ratingExtent[1] - ratingExtent[0]) * 0.15);
       const y = d3.scaleLinear().domain([Math.max(0, ratingExtent[0] - ratingPad), Math.min(10, ratingExtent[1] + ratingPad)]).nice().range([innerHeight, 0]);
@@ -818,13 +827,30 @@
       careerSvg.append("text").attr("transform", `translate(15,${margin.top + innerHeight / 2}) rotate(-90)`).attr("text-anchor", "middle")
         .attr("fill", "#8b949e").attr("font-size", 11).text("TMDB rating");
 
-      plot.selectAll("circle").data(movies, (movie) => movie.tmdbId).join("circle")
+      const careerTrend = logic.careerTrendPoints(movies);
+      const careerLine = d3.line()
+        .x((point) => x(point.year))
+        .y((point) => y(point.vote_average))
+        .curve(d3.curveMonotoneX);
+      const path = plot.append("path")
+        .datum(careerTrend)
+        .attr("class", "career-line")
+        .attr("d", careerLine);
+      if (!reducedMotion) {
+        const length = path.node().getTotalLength();
+        path.attr("stroke-dasharray", `${length} ${length}`).attr("stroke-dashoffset", length)
+          .transition("career-line-enter").duration(680).ease(d3.easeCubicOut)
+          .attr("stroke-dashoffset", 0)
+          .on("end", () => path.attr("stroke-dasharray", null).attr("stroke-dashoffset", null));
+      }
+
+      const careerDots = plot.selectAll("circle").data(movies, (movie) => movie.tmdbId).join("circle")
         .attr("class", "career-dot")
         .attr("cx", (movie) => x(+movie.year)).attr("cy", (movie) => y(+movie.vote_average)).attr("r", 0)
         .attr("fill", (movie) => careerColor((movie.genres || ["Other"])[0] || "Other"))
         .attr("fill-opacity", 0.82)
-        .on("mouseenter", showMovieTooltip).on("mousemove", moveCareerTooltip).on("mouseleave", hideCareerTooltip)
-        .transition("career-enter")
+        .on("mouseenter", showMovieTooltip).on("mousemove", moveCareerTooltip).on("mouseleave", hideCareerTooltip);
+      careerDots.transition("career-enter")
         .delay((movie) => reducedMotion ? 0 : Math.max(0, +movie.year - yearExtent[0]) * 18)
         .duration(logic.motionDuration(320, reducedMotion)).ease(d3.easeBackOut.overshoot(1.15))
         .attr("r", (movie) => movie.revenue ? radius(+movie.revenue) : 4);
@@ -832,6 +858,143 @@
       const careerGenres = [...new Set(movies.map((movie) => (movie.genres || ["Other"])[0] || "Other"))].sort(d3.ascending);
       legend.selectAll("span").data(careerGenres).join("span")
         .html((genre) => `<i style="background:${careerColor(genre)}"></i>${escapeHtml(genre)}`);
+
+      const profiles = logic.careerGenreProfiles(movies, 6);
+      let profileMetric = "experience";
+      let focusedGenre = null;
+      const profileButtons = d3.select("#career-profile-metrics").selectAll("button");
+
+      function profileValue(profile) {
+        if (profileMetric === "rating") return profile.weighted_rating;
+        if (profileMetric === "revenue") return profile.median_revenue;
+        return profile.movie_count;
+      }
+
+      function formatRevenue(value) {
+        if (!value) return "Not reported";
+        return d3.format("$.3~s")(value).replace("G", "B");
+      }
+
+      function formatProfileValue(profile) {
+        if (profileMetric === "rating") return `${profile.weighted_rating.toFixed(2)} / 10`;
+        if (profileMetric === "revenue") return formatRevenue(profile.median_revenue);
+        return `${formatInteger(profile.movie_count)} film${profile.movie_count === 1 ? "" : "s"}`;
+      }
+
+      function updateCareerGenreFocus() {
+        const active = Boolean(focusedGenre);
+        careerDots
+          .classed("is-muted", (movie) => active && !(movie.genres || []).includes(focusedGenre))
+          .classed("is-genre-focus", (movie) => active && (movie.genres || []).includes(focusedGenre));
+        path.classed("is-muted", active);
+        profileChart.selectAll(".career-profile-axis, .career-profile-point")
+          .classed("is-selected", (profile) => active && profile.genre === focusedGenre);
+        const count = active
+          ? movies.filter((movie) => (movie.genres || []).includes(focusedGenre)).length
+          : 0;
+        d3.select("#career-profile-note").text(active
+          ? `${focusedGenre}: ${count} film${count === 1 ? "" : "s"} highlighted. Click again to show all films.`
+          : "Click a genre to highlight its films in the timeline. The line remains the yearly average across all films.");
+      }
+
+      function toggleCareerGenre(event, profile) {
+        event?.preventDefault?.();
+        focusedGenre = focusedGenre === profile.genre ? null : profile.genre;
+        updateCareerGenreFocus();
+      }
+
+      function showProfileTooltip(event, profile) {
+        const revenueNote = profile.reported_revenue_count
+          ? `${formatRevenue(profile.median_revenue)} from ${profile.reported_revenue_count} reported film${profile.reported_revenue_count === 1 ? "" : "s"}`
+          : "Not reported";
+        d3.select("#career-tooltip").html(`<div class="tooltip-title">${escapeHtml(profile.genre)}</div>
+          <div>${formatInteger(profile.movie_count)} film${profile.movie_count === 1 ? "" : "s"}</div>
+          <div>Vote-weighted rating: <strong>${profile.weighted_rating ? profile.weighted_rating.toFixed(2) : "No votes"}</strong>${profile.weighted_rating ? " / 10" : ""}</div>
+          <div>Total TMDB votes: ${formatInteger(profile.total_votes)}</div>
+          <div>Median reported revenue: ${revenueNote}</div>`).classed("is-visible", true);
+        moveCareerTooltip(event);
+      }
+
+      function renderCareerProfile() {
+        const descriptions = {
+          experience: "Film count by genre shows where this person has the most experience.",
+          rating: "Vote-count-weighted TMDB rating compares audience reception across genres.",
+          revenue: "Median reported box-office revenue compares commercial scale while reducing outlier influence.",
+        };
+        d3.select("#career-profile-description").text(descriptions[profileMetric]);
+        profileButtons
+          .classed("active", function () { return this.dataset.careerMetric === profileMetric; })
+          .attr("aria-pressed", function () { return String(this.dataset.careerMetric === profileMetric); });
+        profileChart.selectAll("*").remove();
+        if (!profiles.length) return;
+
+        const size = 350;
+        const center = size / 2;
+        const radiusMax = 96;
+        const labelRadius = 135;
+        const values = profiles.map(profileValue);
+        const metricMax = profileMetric === "rating" ? 10 : (d3.max(values) || 1);
+        const angle = (index) => -Math.PI / 2 + index * Math.PI * 2 / profiles.length;
+        const point = (index, ratio, distance = radiusMax) => [
+          center + Math.cos(angle(index)) * distance * ratio,
+          center + Math.sin(angle(index)) * distance * ratio,
+        ];
+        const ratioFor = (profile) => Math.max(0, Math.min(1, profileValue(profile) / metricMax));
+        const radarLine = d3.line().curve(d3.curveLinearClosed);
+        const radarSvg = profileChart.append("svg")
+          .attr("viewBox", `0 0 ${size} ${size}`)
+          .attr("width", size)
+          .attr("height", size)
+          .attr("role", "img")
+          .attr("aria-label", `${person.name} genre profile by ${profileMetric}`);
+
+        radarSvg.selectAll("path.career-profile-ring").data([0.25, 0.5, 0.75, 1]).join("path")
+          .attr("class", "career-profile-ring")
+          .attr("d", (ring) => radarLine(profiles.map((profile, index) => point(index, ring))));
+
+        const axes = radarSvg.selectAll("g.career-profile-axis").data(profiles, (profile) => profile.genre).join("g")
+          .attr("class", "career-profile-axis")
+          .attr("role", "button").attr("tabindex", 0)
+          .attr("aria-label", (profile) => `${profile.genre}, ${formatProfileValue(profile)}. Highlight this genre.`)
+          .on("click", toggleCareerGenre)
+          .on("keydown", (event, profile) => {
+            if (event.key === "Enter" || event.key === " ") toggleCareerGenre(event, profile);
+          })
+          .on("mouseenter", showProfileTooltip).on("mousemove", moveCareerTooltip).on("mouseleave", hideCareerTooltip);
+        axes.append("line")
+          .attr("x1", center).attr("y1", center)
+          .attr("x2", (profile, index) => point(index, 1)[0])
+          .attr("y2", (profile, index) => point(index, 1)[1]);
+        axes.append("text")
+          .attr("x", (profile, index) => point(index, 1, labelRadius)[0])
+          .attr("y", (profile, index) => point(index, 1, labelRadius)[1] - 3)
+          .attr("dominant-baseline", "middle")
+          .each(function (profile) {
+            const label = d3.select(this);
+            label.append("tspan").attr("x", label.attr("x")).text(profile.genre);
+            label.append("tspan").attr("x", label.attr("x")).attr("dy", "1.25em").text(formatProfileValue(profile));
+          });
+
+        radarSvg.append("path").datum(profiles).attr("class", "career-profile-shape")
+          .attr("d", radarLine(profiles.map((profile, index) => point(index, ratioFor(profile)))))
+          .attr("opacity", 0)
+          .transition("profile-enter").duration(logic.motionDuration(320, reducedMotion)).attr("opacity", 1);
+        radarSvg.selectAll("circle.career-profile-point").data(profiles, (profile) => profile.genre).join("circle")
+          .attr("class", "career-profile-point")
+          .attr("cx", (profile, index) => point(index, ratioFor(profile))[0])
+          .attr("cy", (profile, index) => point(index, ratioFor(profile))[1])
+          .attr("r", 4.5)
+          .attr("fill", (profile) => careerColor(profile.genre))
+          .on("click", toggleCareerGenre)
+          .on("mouseenter", showProfileTooltip).on("mousemove", moveCareerTooltip).on("mouseleave", hideCareerTooltip);
+        updateCareerGenreFocus();
+      }
+
+      profileButtons.on("click", function () {
+        profileMetric = this.dataset.careerMetric;
+        renderCareerProfile();
+      });
+      renderCareerProfile();
     }
 
     function networkTooltip() {

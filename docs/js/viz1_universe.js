@@ -7,6 +7,7 @@
 
 (function () {
   const root = d3.select("#universe");
+  const storyEmbed = Boolean(document.querySelector("[data-story-audience-explorer]"));
   const canvasEl = root.select("canvas").node();
   const ctx = canvasEl.getContext("2d");
   const tooltip = root.select(".universe-tooltip");
@@ -118,6 +119,9 @@
 
   function init(pos, data) {
     ex = window.viz1Explorer || standalone(data);
+    // The homepage keeps the Universe and Audience Network visible together. Keep the
+    // Universe's compact card local instead of replacing the linked detail panel below.
+    if (storyEmbed && window.viz1Explorer) ex = { ...window.viz1Explorer, panel: null };
     const make = (mode, list) => {
       const items = new Map(list.map((m) => [m.id, m]));
       return ([id, x, y]) => ({ key: `${mode}:${id}`, mode, id, x, y, m: items.get(id) });
@@ -394,7 +398,10 @@
     if (event.defaultPrevented) return; // end of a drag
     const s = starAt(event);
     if (s && s === selected) zoomOut(); // second click on the selected star
-    else if (s) flyTo(s.mode, s.id);
+    else if (s) {
+      flyTo(s.mode, s.id);
+      if (storyEmbed && s.mode === "audience") ex.open(s.id);
+    }
     else select(null);
   }
 
