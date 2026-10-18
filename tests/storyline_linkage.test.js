@@ -46,6 +46,13 @@ test('chapter 4 distinguishes the default collaboration threshold from the optio
   assert.match(indexHtml, /raise it from 3 to 5/i);
 });
 
+test('homepage footer links to the analysis and complete visualization source code', () => {
+  assert.match(indexHtml, /class="project-source-footer"/);
+  assert.match(indexHtml, /href="https:\/\/github\.com\/blackcatyu\/WatchNext\/tree\/main\/src"[^>]*>[\s\S]*Data cleaning and analysis code/);
+  assert.match(indexHtml, /href="https:\/\/github\.com\/blackcatyu\/WatchNext\/tree\/main\/docs"[^>]*>[\s\S]*Complete visualization source code/);
+  assert.match(storyCss, /\.project-source-footer\s*\{/);
+});
+
 test('story linkage guidance has a responsive reusable visual treatment', () => {
   assert.match(storyCss, /\.story-linkage\s*\{/);
   assert.match(storyCss, /\.story-linkage-steps\s*\{/);

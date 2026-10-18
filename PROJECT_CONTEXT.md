@@ -145,3 +145,8 @@
 
 - Clarified the Chapter 4 “Try this” prompt on the homepage: the Collaboration Network defaults to 3 shared movies, while raising the control from 3 to 5 is an optional demonstration for focusing on stronger partnerships.
 - Kept the data, control range, reset behavior, and filtering logic unchanged.
+
+## 2026-10-18 — Homepage source-code links
+
+- Added a final “Project source” section to the homepage with direct links to the data cleaning and analysis code in `src/` and the complete visualization source in `docs/`.
+- Linked the section heading to the full WatchNext GitHub repository and matched the existing responsive cinematic styling.

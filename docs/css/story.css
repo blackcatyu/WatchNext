@@ -805,6 +805,80 @@ body > .story-hero {
   opacity: 0.92;
 }
 
+/* Project source */
+.project-source-footer {
+  width: min(100%, 1180px);
+  margin: clamp(4rem, 9vw, 7rem) auto 2.5rem;
+  padding: clamp(1.5rem, 3vw, 2.3rem) clamp(1.2rem, 3vw, 2rem);
+  border-top: 1px solid rgba(217, 170, 98, 0.48);
+  border-bottom: 1px solid var(--cinema-line);
+}
+
+.project-source-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 1.4rem;
+}
+
+.project-source-heading h2,
+.project-source-heading p {
+  margin: 0;
+}
+
+.project-source-heading h2 {
+  font-size: clamp(1.7rem, 3vw, 2.65rem);
+}
+
+.project-source-heading h2 a {
+  color: var(--cinema-ivory);
+  text-decoration: none;
+}
+
+.project-source-heading h2 a:hover {
+  color: var(--cinema-gold);
+}
+
+.project-source-heading p {
+  max-width: 470px;
+  color: var(--cinema-muted);
+  text-align: right;
+}
+
+.project-source-links {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--cinema-line);
+  list-style: none;
+}
+
+.project-source-links a {
+  display: grid;
+  grid-template-columns: 2.2rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem 0.2rem;
+  color: var(--cinema-ivory);
+  border-bottom: 1px solid var(--cinema-line);
+  text-decoration: none;
+  transition: color 180ms ease, padding-left 180ms ease;
+}
+
+.project-source-links a:hover {
+  padding-left: 0.55rem;
+  color: var(--cinema-gold);
+}
+
+.project-source-links a > span:first-child {
+  color: var(--cinema-gold);
+  font-family: var(--cinema-serif);
+}
+
+.project-source-links a > span:last-child {
+  color: var(--cinema-muted);
+}
+
 @media (max-width: 900px) {
   .story-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -822,6 +896,16 @@ body > .story-hero {
 
   .story-audience-explorer {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .project-source-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .project-source-heading p {
+    text-align: left;
   }
 }
 
@@ -865,7 +949,8 @@ body > .story-hero {
 
 @media (prefers-reduced-motion: reduce) {
   .story-map a,
-  .story-takeaways a {
+  .story-takeaways a,
+  .project-source-links a {
     transition: none;
   }
 
