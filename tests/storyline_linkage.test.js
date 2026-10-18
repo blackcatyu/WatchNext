@@ -41,6 +41,11 @@ test('chapter 4 explains how Collaboration Network links to Career View', () => 
   assert.match(indexHtml, /release year.*TMDB rating.*revenue.*primary genre/s);
 });
 
+test('chapter 4 distinguishes the default collaboration threshold from the optional stronger filter', () => {
+  assert.match(indexHtml, /starts at\s*<strong>3 shared movies<\/strong>/i);
+  assert.match(indexHtml, /raise it from 3 to 5/i);
+});
+
 test('story linkage guidance has a responsive reusable visual treatment', () => {
   assert.match(storyCss, /\.story-linkage\s*\{/);
   assert.match(storyCss, /\.story-linkage-steps\s*\{/);

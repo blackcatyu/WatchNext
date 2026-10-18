@@ -133,3 +133,15 @@
 - Verified 48 automated tests, JavaScript and Python syntax, all published JSON and processed CSV/JSONL files, internal website references, final-dataset counts and uniqueness, desktop interactions, 390 px responsive layout, and clean browser logs.
 - Confirmed the local branch matched `origin/main` before committing. Poster metadata and PDF export were deliberately excluded from the blocking audit at the user's request; the editable A1 source remains in `poster/`.
 - Kept the untracked poster drafts out of this website/report commit so the editable poster can be finalized separately.
+
+## 2026-10-18 — Final editable poster synchronization
+
+- Expanded Poster Question 4 to match the final report: recurring actor–director partnerships plus what Career Timelines reveal about genre experience, audience reception, and commercial scale.
+- Replaced the outdated V3 timeline-only inset with the final Christopher Nolan Career Timeline and linked Genre Profile screenshot.
+- Synchronized the V3 exploration instructions, live-demonstration sequence, viewer takeaway, and conclusion with the current website and report while preserving the one-page A1 design.
+- Kept the poster local and untracked, as requested. The final deliverable is an editable PPTX rather than a PDF.
+
+## 2026-10-18 — Collaboration threshold wording
+
+- Clarified the Chapter 4 “Try this” prompt on the homepage: the Collaboration Network defaults to 3 shared movies, while raising the control from 3 to 5 is an optional demonstration for focusing on stronger partnerships.
+- Kept the data, control range, reset behavior, and filtering logic unchanged.
